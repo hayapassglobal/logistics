@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { Header, Footer } from './components';
-import { HomePage, AboutPage, ServicesOverviewPage, ServiceDomesticPage, ServiceInternationalPage, ServiceWarehousingPage, ServiceCustomsPage, ServiceSpecializedPage, ServiceConsultancyPage, TrackingPage, QuoteRequestPage, FaqPage, ContactPage, PrivacyPolicyPage, TermsPage, AdminLoginPage, ClientAuthPage, ClientDashboardPage } from './pages';
+import { HomePage, AboutPage, ServicesOverviewPage, ServiceDomesticPage, ServiceInternationalPage, ServiceWarehousingPage, ServiceCustomsPage, ServiceSpecializedPage, ServiceConsultancyPage, TrackingPage, QuoteRequestPage, FaqPage, ContactPage, PrivacyPolicyPage, TermsPage, AdminLoginPage, ClientAuthPage, ClientDashboardPage, RatesCalculatorPage } from './pages';
 
 // Helper component to scroll to top on page change
 const ScrollToTop = (): null => {
@@ -42,6 +42,7 @@ const App: React.FC = () => {
           <Route path="/services/specialized" element={<ServiceSpecializedPage />} />
           <Route path="/services/consultancy" element={<ServiceConsultancyPage />} />
           <Route path="/tracking" element={<TrackingPage />} />
+          <Route path="/rates" element={<RatesCalculatorPage />} />
           <Route path="/quote" element={<QuoteRequestPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/contact" element={<ContactPage />} />

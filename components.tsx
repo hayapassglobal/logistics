@@ -116,6 +116,7 @@ export const Footer: React.FC = () => {
                         <h4 className="text-white text-lg font-bold mb-4">Quick Actions</h4>
                         <ul className="space-y-3 text-sm">
                             <li><Link to="/tracking" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Track Shipment</Link></li>
+                            <li><Link to="/rates" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Calculate Rates</Link></li>
                             <li><Link to="/quote" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Get a Quote</Link></li>
                             <li><Link to="/contact" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Contact Support</Link></li>
                         </ul>
@@ -278,9 +279,16 @@ export const TrackingForm: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!trackingNumber) return;
-        setIsLoading(true);
         setError(null);
         setResult(null);
+
+        const trackingPattern = /^HGL(UK|NG)\d+$/i;
+        if (!trackingPattern.test(trackingNumber.trim())) {
+            setError("Invalid tracking number format. Expected format: HGLUK123 or HGLNG123.");
+            return;
+        }
+
+        setIsLoading(true);
 
         setTimeout(() => {
             const data = MOCK_TRACKING_DATA[trackingNumber.toUpperCase()];

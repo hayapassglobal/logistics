@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button } from './components';
 import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA } from './constants';
 import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck } from './constants';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification } from './types';
+import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult } from './types';
 
 
 export const HomePage: React.FC = () => (
@@ -192,46 +193,139 @@ export const TrackingPage: React.FC = () => (
         </div>
     </>
 );
-export const QuoteRequestPage: React.FC = () => (
-    <>
-        <PageHeader title="Request a Free Logistics Quote" subtitle="Tell us about your shipping needs, and our experts will provide a tailored, no-obligation quote." />
-        <div className="w-[90%] max-w-3xl mx-auto px-4 py-8">
-            <div className="bg-white p-8 rounded-lg shadow-lg">
-                <form onSubmit={(e) => { e.preventDefault(); alert('Quote request submitted!'); }}>
-                    <h3 className="text-xl font-bold text-gray-800 mb-6">Contact Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_name">Full Name / Company Name *</label>
-                            <input type="text" id="quote_name" required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_email">Email Address *</label>
-                            <input type="email" id="quote_email" required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
-                        </div>
+export const QuoteRequestPage: React.FC = () => {
+    const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+    const [formStatus, setFormStatus] = useState<'idle' | 'submitted' | 'booking'>('idle');
+    const [quoteData, setQuoteData] = useState<Record<string, string> | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setUploadedFiles(Array.from(e.target.files));
+        }
+    };
+
+    const handleQuoteSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries()) as Record<string, string>;
+        setQuoteData(data);
+        setFormStatus('submitted');
+    };
+
+    const renderContent = () => {
+        switch (formStatus) {
+            case 'submitted':
+                return (
+                    <div className="text-center p-8 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <h3 className="text-2xl font-bold text-green-700 dark:text-green-300">Quote Request Sent!</h3>
+                        <p className="my-4 text-gray-600 dark:text-gray-300">Thank you! Our team will review your request and get back to you shortly via email. You can now proceed to book your shipment.</p>
+                        <Button primary onClick={() => setFormStatus('booking')} className="mt-4">Book Shipment Now</Button>
                     </div>
-                     <h3 className="text-xl font-bold text-gray-800 my-6">Shipment Details</h3>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_origin_country">Origin Country *</label>
-                            <input type="text" id="quote_origin_country" required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
-                        </div>
-                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_dest_country">Destination Country *</label>
-                            <input type="text" id="quote_dest_country" required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
-                        </div>
-                    </div>
+                );
+            case 'booking':
+                return (
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_commodity">Brief Description of Goods *</label>
-                        <textarea id="quote_commodity" rows={3} required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]"></textarea>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Confirm Shipment Booking</h3>
+                        <p className="mb-6 text-sm text-gray-600">Please confirm the details below, which have been pre-filled from your quote request.</p>
+                        <form onSubmit={(e) => { e.preventDefault(); alert('Shipment booked successfully!'); }}>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="book_name">Full Name / Company</label>
+                                    <input type="text" id="book_name" defaultValue={quoteData?.quote_name || ''} required className="w-full p-2 border border-gray-300 rounded-md bg-gray-100" readOnly />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="book_email">Email</label>
+                                    <input type="email" id="book_email" defaultValue={quoteData?.quote_email || ''} required className="w-full p-2 border border-gray-300 rounded-md bg-gray-100" readOnly />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="book_origin">Origin Country</label>
+                                    <input type="text" id="book_origin" defaultValue={quoteData?.quote_origin_country || ''} required className="w-full p-2 border border-gray-300 rounded-md bg-gray-100" readOnly />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="book_dest">Destination Country</label>
+                                    <input type="text" id="book_dest" defaultValue={quoteData?.quote_dest_country || ''} required className="w-full p-2 border border-gray-300 rounded-md bg-gray-100" readOnly />
+                                </div>
+                            </div>
+                             <div className="mt-8">
+                                <Button type="submit" primary className="w-full py-3 text-base">Confirm and Book Shipment</Button>
+                            </div>
+                        </form>
                     </div>
-                     <div className="mt-8">
-                        <Button type="submit" primary className="w-full py-3 text-base">Get My Free Quote</Button>
-                    </div>
-                </form>
+                );
+            case 'idle':
+            default:
+                return (
+                    <form onSubmit={handleQuoteSubmit}>
+                        <h3 className="text-xl font-bold text-gray-800 mb-6 border-b pb-4">Contact Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_name">Full Name / Company Name *</label>
+                                <input type="text" id="quote_name" name="quote_name" required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_email">Email Address *</label>
+                                <input type="email" id="quote_email" name="quote_email" required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
+                            </div>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800 my-6 border-b pb-4">Shipment Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_origin_country">Origin Country *</label>
+                                <input type="text" id="quote_origin_country" name="quote_origin_country" required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_dest_country">Destination Country *</label>
+                                <input type="text" id="quote_dest_country" name="quote_dest_country" required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
+                            </div>
+                        </div>
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quote_commodity">Brief Description of Goods *</label>
+                            <textarea id="quote_commodity" name="quote_commodity" rows={3} required className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]"></textarea>
+                        </div>
+                        <div className="mb-8">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Attach Documents (Optional)</label>
+                            <p className="text-xs text-gray-500 mb-2">You can upload files like a commercial invoice or packing list.</p>
+                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                <div className="space-y-1 text-center">
+                                    <IconWrapper className="mx-auto h-12 w-12 text-gray-400"><IconUpload /></IconWrapper>
+                                    <div className="flex text-sm text-gray-600">
+                                        <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-[#00529b] hover:text-[#b58e31] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#b58e31]">
+                                            <span>Upload files</span>
+                                            <input id="file-upload" name="file-upload" type="file" className="sr-only" multiple onChange={handleFileChange} />
+                                        </label>
+                                        <p className="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p className="text-xs text-gray-500">PDF, PNG, JPG up to 10MB</p>
+                                    {uploadedFiles.length > 0 && (
+                                        <div className="pt-2 text-xs text-left text-gray-700">
+                                            <strong>Selected files:</strong>
+                                            <ul className="list-disc pl-5">
+                                                {uploadedFiles.map(file => <li key={file.name}>{file.name}</li>)}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-8">
+                            <Button type="submit" primary className="w-full py-3 text-base">Get My Free Quote</Button>
+                        </div>
+                    </form>
+                );
+        }
+    };
+    
+    return (
+        <>
+            <PageHeader title="Request a Free Logistics Quote" subtitle="Tell us about your shipping needs, and our experts will provide a tailored, no-obligation quote." />
+            <div className="w-[90%] max-w-3xl mx-auto px-4 py-8">
+                <div className="bg-white p-8 rounded-lg shadow-lg">
+                    {renderContent()}
+                </div>
             </div>
-        </div>
-    </>
-);
+        </>
+    );
+};
 export const FaqPage: React.FC = () => {
     const [openId, setOpenId] = useState<number | null>(0);
 
@@ -323,6 +417,156 @@ export const ContactPage: React.FC = () => (
         </div>
     </>
 );
+
+export const RatesCalculatorPage: React.FC = () => {
+    const [origin, setOrigin] = useState('GB');
+    const [destination, setDestination] = useState('NG');
+    const [weight, setWeight] = useState('');
+    const [dimensions, setDimensions] = useState({ length: '', width: '', height: '' });
+    const [isLoading, setIsLoading] = useState(false);
+    const [results, setResults] = useState<RateResult[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleDimensionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDimensions({
+            ...dimensions,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleCalculate = (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setResults(null);
+        setError(null);
+
+        if (origin === destination) {
+            setError("Origin and destination cannot be the same.");
+            setIsLoading(false);
+            return;
+        }
+        
+        if (!weight || !dimensions.length || !dimensions.width || !dimensions.height) {
+            setError("Please fill in all weight and dimension fields.");
+            setIsLoading(false);
+            return;
+        }
+
+        setTimeout(() => {
+            const actualWeight = parseFloat(weight);
+            const l = parseFloat(dimensions.length);
+            const w = parseFloat(dimensions.width);
+            const h = parseFloat(dimensions.height);
+
+            const volumetricWeight = (l * w * h) / 5000; // IATA standard for cm -> kg
+            const chargeableWeight = Math.max(actualWeight, volumetricWeight);
+
+            // Mock base rates (per kg in GBP)
+            const baseRates = {
+                airExpress: 22.50,
+                airStandard: 15.75,
+                seaLCL: 4.80,
+            };
+
+            const calculatedResults: RateResult[] = [
+                {
+                    serviceName: 'Air Freight (Express)',
+                    estimatedTime: '3-5 Business Days',
+                    estimatedCost: `£${(chargeableWeight * baseRates.airExpress).toFixed(2)}`,
+                },
+                {
+                    serviceName: 'Air Freight (Standard)',
+                    estimatedTime: '5-8 Business Days',
+                    estimatedCost: `£${(chargeableWeight * baseRates.airStandard).toFixed(2)}`,
+                },
+                {
+                    serviceName: 'Sea Freight (LCL)',
+                    estimatedTime: '3-5 Weeks',
+                    estimatedCost: `£${(chargeableWeight * baseRates.seaLCL).toFixed(2)}`,
+                }
+            ];
+            
+            setResults(calculatedResults);
+            setIsLoading(false);
+        }, 1500);
+    };
+
+    const RateResultCard: React.FC<{ result: RateResult }> = ({ result }) => (
+        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h4 className="text-lg font-bold text-[#00529b]">{result.serviceName}</h4>
+                <p className="text-sm text-gray-500">Est. Transit Time: {result.estimatedTime}</p>
+            </div>
+            <div className="text-left sm:text-right">
+                <p className="text-2xl font-bold text-gray-800">{result.estimatedCost}</p>
+                <Button asLink to="/quote" secondary className="mt-2 !py-1.5 !px-4 !text-sm">Book Now</Button>
+            </div>
+        </div>
+    );
+    
+    return (
+        <>
+            <PageHeader title="Shipping Rate Calculator" subtitle="Get an instant estimate for your shipment. Enter the details below to see your options." />
+            <div className="w-[90%] max-w-4xl mx-auto px-4 py-8">
+                <ContentBlock>
+                    <form onSubmit={handleCalculate}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                             <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="calc_origin">Origin Country *</label>
+                                <select id="calc_origin" value={origin} onChange={e => setOrigin(e.target.value)} required className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]">
+                                    <option value="GB">United Kingdom</option>
+                                    <option value="NG">Nigeria</option>
+                                    <option value="US">United States</option>
+                                    <option value="CN">China</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="calc_destination">Destination Country *</label>
+                                <select id="calc_destination" value={destination} onChange={e => setDestination(e.target.value)} required className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]">
+                                    <option value="NG">Nigeria</option>
+                                    <option value="GB">United Kingdom</option>
+                                    <option value="US">United States</option>
+                                    <option value="CN">China</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-end">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="calc_weight">Total Weight (kg) *</label>
+                                <input type="number" id="calc_weight" value={weight} onChange={e => setWeight(e.target.value)} step="0.1" min="0.1" required placeholder="e.g., 5.5" className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Package Dimensions (cm) *</label>
+                                <div className="flex gap-2">
+                                    <input type="number" name="length" value={dimensions.length} onChange={handleDimensionChange} placeholder="L" required className="w-1/3 p-2.5 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" aria-label="Length in cm" />
+                                    <input type="number" name="width" value={dimensions.width} onChange={handleDimensionChange} placeholder="W" required className="w-1/3 p-2.5 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" aria-label="Width in cm" />
+                                    <input type="number" name="height" value={dimensions.height} onChange={handleDimensionChange} placeholder="H" required className="w-1/3 p-2.5 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]" aria-label="Height in cm" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <Button type="submit" primary className="w-full md:w-auto py-3 px-10 text-base" disabled={isLoading}>
+                                {isLoading ? 'Calculating...' : 'Calculate Rates'}
+                            </Button>
+                        </div>
+                    </form>
+                </ContentBlock>
+
+                <div className="mt-12 min-h-[200px]">
+                    {isLoading && <p className="text-center text-gray-600">Finding the best rates for you...</p>}
+                    {error && <p className="text-center text-red-600 bg-red-50 p-4 rounded-md">{error}</p>}
+                    {results && (
+                        <div className="space-y-6 animate-fade-in">
+                             <h3 className="text-2xl font-bold text-gray-800 text-center mb-6">Your Estimated Rates</h3>
+                            {results.map((res, index) => <RateResultCard key={index} result={res} />)}
+                             <p className="text-center text-sm text-gray-500 pt-4">* Estimates are for informational purposes only and do not include customs duties or taxes. For a formal quote, please contact us or book now.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </>
+    );
+};
 
 export const PrivacyPolicyPage: React.FC = () => (
     <ServicePageLayout title="Privacy Policy" subtitle="Understanding How We Collect, Use, and Protect Your Personal Information.">
@@ -519,7 +763,7 @@ export const ClientAuthPage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [isBusiness, setIsBusiness] = useState(false);
-    const [passwordStrength, setPasswordStrength] = useState({ score: 0, text: '', className: '' });
+    const [passwordStrength, setPasswordStrength] = useState({ score: 0, text: '', className: '', feedback: [] as string[] });
     
     const [idDocName, setIdDocName] = useState<string | null>(null);
     const [bizRegDocName, setBizRegDocName] = useState<string | null>(null);
@@ -580,18 +824,39 @@ export const ClientAuthPage: React.FC = () => {
         let score = 0;
         let text = '';
         let className = '';
+        const feedback: string[] = [];
 
         if (password.length > 0) {
-            if (password.length >= 8) score++;
-            if (/[a-z]/.test(password)) score++;
-            if (/[A-Z]/.test(password)) score++;
-            if (/[0-9]/.test(password)) score++;
-            if (/[^A-Za-z0-9]/.test(password)) score++;
+            if (password.length >= 8) {
+                score++;
+            } else {
+                feedback.push("At least 8 characters");
+            }
+            if (/[a-z]/.test(password)) {
+                score++;
+            } else {
+                feedback.push("A lowercase letter");
+            }
+            if (/[A-Z]/.test(password)) {
+                score++;
+            } else {
+                feedback.push("An uppercase letter");
+            }
+            if (/[0-9]/.test(password)) {
+                score++;
+            } else {
+                feedback.push("A number");
+            }
+            if (/[^A-Za-z0-9]/.test(password)) {
+                score++;
+            } else {
+                feedback.push("A symbol (e.g., !@#$)");
+            }
         }
-
+    
         if (score <= 1) {
             text = 'Weak';
-            className = 'w-1/3 bg-red-500';
+            className = 'w-1/4 bg-red-500';
         } else if (score <= 3) {
             text = 'Medium';
             className = 'w-2/3 bg-yellow-500';
@@ -600,8 +865,11 @@ export const ClientAuthPage: React.FC = () => {
             className = 'w-full bg-green-500';
         }
         
-        if(password.length === 0) { text = ''; className = ''; }
-        setPasswordStrength({ score, text, className });
+        if(password.length === 0) { 
+            text = '';
+            className = '';
+        }
+        setPasswordStrength({ score, text, className, feedback });
     };
     
     const handleFileChange = (setter: React.Dispatch<React.SetStateAction<string | null>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -771,6 +1039,11 @@ export const ClientAuthPage: React.FC = () => {
                                     <div className={`h-full rounded-full transition-all duration-300 ${passwordStrength.className}`}></div>
                                 </div>
                                 <p className="text-right text-xs mt-1 h-4 text-gray-500">{passwordStrength.text}</p>
+                                {passwordStrength.feedback.length > 0 && passwordStrength.text !== 'Strong' && (
+                                    <ul className="text-xs text-red-500 dark:text-red-400 mt-2 list-disc pl-5">
+                                        {passwordStrength.feedback.map(tip => <li key={tip}>Needs {tip}</li>)}
+                                    </ul>
+                                )}
                             </div>
                              <div>
                                 <AuthLabel htmlFor="reg-confirm" required>Confirm Password</AuthLabel>
@@ -914,44 +1187,65 @@ const ShipmentsView: React.FC<{ onShipmentSelect: (id: string) => void, setAlert
     </>
 )};
 
-const CreatePreAlertModal: React.FC<{ isOpen: boolean, onClose: () => void, onAlertCreated: (msg: string) => void }> = ({ isOpen, onClose, onAlertCreated }) => {
+const CreatePreAlertModal: React.FC<{ isOpen: boolean, onClose: () => void, onAlertCreated: (msg: string) => void, preAlertToEdit?: ClientPreAlert | null, onAlertUpdated?: (updatedAlert: ClientPreAlert) => void }> = ({ isOpen, onClose, onAlertCreated, preAlertToEdit, onAlertUpdated }) => {
+    const [formData, setFormData] = useState<Partial<ClientPreAlert>>({});
+
+    useEffect(() => {
+        if (preAlertToEdit) {
+            setFormData(preAlertToEdit);
+        } else {
+            setFormData({});
+        }
+    }, [preAlertToEdit]);
+    
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onAlertCreated('New Pre-Alert has been successfully created!');
+        if(preAlertToEdit && onAlertUpdated) {
+             onAlertUpdated(formData as ClientPreAlert);
+             onAlertCreated('Pre-Alert updated successfully!');
+        } else {
+            onAlertCreated('New Pre-Alert has been successfully created!');
+        }
         onClose();
     };
     
+    const title = preAlertToEdit ? `Edit Pre-Alert ${preAlertToEdit.id}` : 'Create New Pre-Alert';
+
     return (
-        <DashboardModal isOpen={isOpen} onClose={onClose} title="Create New Pre-Alert">
+        <DashboardModal isOpen={isOpen} onClose={onClose} title={title}>
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <AuthLabel htmlFor="pa_facility" required>HGL Facility</AuthLabel>
-                        <AuthSelect id="pa_facility" name="facility" required>
+                        <AuthSelect id="pa_facility" name="facility" value={formData.facility || 'UK'} onChange={handleChange} required>
                             <option value="UK">UK Facility</option>
                             <option value="NG">NG Facility</option>
                         </AuthSelect>
                     </div>
                     <div>
                         <AuthLabel htmlFor="pa_carrier" required>Carrier</AuthLabel>
-                        <AuthInput id="pa_carrier" name="carrier" placeholder="e.g., Amazon, FedEx" required />
+                        <AuthInput id="pa_carrier" name="carrier" value={formData.carrier || ''} onChange={handleChange} placeholder="e.g., Amazon, FedEx" required />
                     </div>
                      <div>
                         <AuthLabel htmlFor="pa_tracking" required>Tracking Number</AuthLabel>
-                        <AuthInput id="pa_tracking" name="tracking" placeholder="Enter carrier tracking number" required />
+                        <AuthInput id="pa_tracking" name="tracking" value={formData.tracking || ''} onChange={handleChange} placeholder="Enter carrier tracking number" required />
                     </div>
                      <div>
                         <AuthLabel htmlFor="pa_arrival" required>Estimated Arrival</AuthLabel>
-                        <AuthInput type="date" id="pa_arrival" name="arrival_date" required />
+                        <AuthInput type="text" id="pa_arrival" name="estArrival" value={formData.estArrival || ''} onChange={handleChange} placeholder="e.g., 03 Nov 2025" required />
                     </div>
                     <div className="md:col-span-2">
                         <AuthLabel htmlFor="pa_desc" required>Description of Goods</AuthLabel>
-                        <textarea id="pa_desc" name="description" rows={3} required className="w-full p-2.5 border rounded-md bg-gray-100 dark:bg-[#3a4149] text-slate-800 dark:text-slate-200 border-gray-300 dark:border-[#495057] focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31] transition" placeholder="e.g., 2x Blue T-shirts, 1x iPhone 15 Pro"></textarea>
+                        <textarea id="pa_desc" name="description" rows={3} value={formData.description || ''} onChange={handleChange} required className="w-full p-2.5 border rounded-md bg-gray-100 dark:bg-[#3a4149] text-slate-800 dark:text-slate-200 border-gray-300 dark:border-[#495057] focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31] transition" placeholder="e.g., 2x Blue T-shirts, 1x iPhone 15 Pro"></textarea>
                     </div>
                 </div>
                 <div className="mt-6 pt-6 border-t dark:border-gray-600 flex justify-end gap-4">
                     <Button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 border-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-500">Cancel</Button>
-                    <Button type="submit" primary>Create Pre-Alert</Button>
+                    <Button type="submit" primary>{preAlertToEdit ? 'Update Pre-Alert' : 'Create Pre-Alert'}</Button>
                 </div>
             </form>
         </DashboardModal>
@@ -959,13 +1253,26 @@ const CreatePreAlertModal: React.FC<{ isOpen: boolean, onClose: () => void, onAl
 };
 
 const PreAlertsView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setAlertMessage }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+    const [editingAlert, setEditingAlert] = useState<ClientPreAlert | null>(null);
+    const [preAlerts, setPreAlerts] = useState<ClientPreAlert[]>(CLIENT_PREALERTS_DATA);
+
+    const handleUpdate = (updatedAlert: ClientPreAlert) => {
+        setPreAlerts(preAlerts.map(p => p.id === updatedAlert.id ? updatedAlert : p));
+    };
+
     return (
         <>
-        <CreatePreAlertModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAlertCreated={setAlertMessage} />
+        <CreatePreAlertModal 
+            isOpen={isCreateModalOpen || !!editingAlert} 
+            onClose={() => { setCreateModalOpen(false); setEditingAlert(null); }} 
+            onAlertCreated={setAlertMessage}
+            preAlertToEdit={editingAlert}
+            onAlertUpdated={handleUpdate}
+        />
         <DashboardModule>
             <DashboardModuleHeader title="Pre-Alerts">
-                <Button primary onClick={() => setIsModalOpen(true)}>New Pre-Alert</Button>
+                <Button primary onClick={() => setCreateModalOpen(true)}>New Pre-Alert</Button>
             </DashboardModuleHeader>
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -978,10 +1285,11 @@ const PreAlertsView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ s
                             <th scope="col" className="px-6 py-3">Description</th>
                             <th scope="col" className="px-6 py-3">Est. Arrival</th>
                             <th scope="col" className="px-6 py-3">Status</th>
+                             <th scope="col" className="px-6 py-3 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {CLIENT_PREALERTS_DATA.map(p => (
+                        {preAlerts.map(p => (
                             <tr key={p.id} className="bg-white dark:bg-[#2c333c] border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                 <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{p.id}</td>
                                 <td className="px-6 py-4">{p.facility}</td>
@@ -990,6 +1298,9 @@ const PreAlertsView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ s
                                 <td className="px-6 py-4">{p.description}</td>
                                 <td className="px-6 py-4">{p.estArrival}</td>
                                 <td className="px-6 py-4"><DashboardStatusBadge status={p.status} /></td>
+                                <td className="px-6 py-4 text-right">
+                                    <Button onClick={() => setEditingAlert(p)} outline className="!text-xs !py-1 !px-3">Edit</Button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -1102,7 +1413,22 @@ const TopUpWalletModal: React.FC<{ isOpen: boolean, onClose: () => void, onTopUp
 
 const WalletView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setAlertMessage }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    return(
+    const [exchangeRate, setExchangeRate] = useState<number | null>(null);
+    const [isRateLoading, setIsRateLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('https://open.er-api.com/v6/latest/GBP')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.rates && data.rates.NGN) {
+                    setExchangeRate(data.rates.NGN);
+                }
+            })
+            .catch(err => console.error("Failed to fetch exchange rate:", err))
+            .finally(() => setIsRateLoading(false));
+    }, []);
+
+    return (
     <>
         <TopUpWalletModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onTopUp={setAlertMessage} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1115,25 +1441,20 @@ const WalletView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setA
                      <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">NGN Wallet Balance</h3>
                      <p className="text-3xl font-bold text-gray-900 dark:text-white">₦ 15,000.00</p>
                 </DashboardModule>
+                 <DashboardModule>
+                    <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Live Exchange Rate</h3>
+                    {isRateLoading ? (
+                         <p className="text-sm text-gray-500 dark:text-gray-400">Loading rate...</p>
+                    ) : exchangeRate ? (
+                        <p className="text-xl font-bold text-gray-800 dark:text-gray-200">1 GBP ≈ ₦{exchangeRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    ) : (
+                        <p className="text-sm text-red-500 dark:text-red-400">Could not fetch rate.</p>
+                    )}
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Rates are for informational purposes.</p>
+                </DashboardModule>
                 <DashboardModule>
                     <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-4">Top Up Wallet</h3>
-                    <div className="space-y-4">
-                        <Button primary className="w-full" onClick={() => setIsModalOpen(true)}>Top Up Now</Button>
-                        <div>
-                            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-2">For Nigeria:</p>
-                            <div className="flex justify-center items-center gap-3 grayscale opacity-60">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Paystack_Logo.png" alt="Paystack" className="h-4"/>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Flutterwave_Logo.png" alt="Flutterwave" className="h-5"/>
-                            </div>
-                        </div>
-                         <div>
-                            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-2">For Rest of World:</p>
-                             <div className="flex justify-center items-center gap-4 grayscale opacity-60">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5"/>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" className="h-5"/>
-                            </div>
-                        </div>
-                    </div>
+                    <Button primary className="w-full" onClick={() => setIsModalOpen(true)}>Top Up Now</Button>
                 </DashboardModule>
             </div>
             <div className="lg:col-span-2">
@@ -1168,18 +1489,18 @@ const WalletView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setA
     </>
 )};
 
-const AddressBookView: React.FC = () => (
+const AddressBookView: React.FC<{ addresses: Address[], onEdit: (address: Address) => void, onAdd: () => void }> = ({ addresses, onEdit, onAdd }) => (
     <DashboardModule>
         <DashboardModuleHeader title="Address Book">
-            <Button primary onClick={() => alert("Open 'Add Address' modal.")}>Add New Address</Button>
+            <Button primary onClick={onAdd}>Add New Address</Button>
         </DashboardModuleHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {CLIENT_ADDRESSES_DATA.map(a => (
+            {addresses.map(a => (
                 <div key={a.id} className="p-4 border rounded-md dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
                     <div className="flex justify-between items-start mb-2">
                         <h4 className="font-bold text-gray-800 dark:text-gray-200">{a.label}</h4>
                         <div className="flex gap-2">
-                           <Button outline className="!text-xs !py-1 !px-2" onClick={() => alert(`Editing address: ${a.label}`)}>Edit</Button>
+                           <Button outline className="!text-xs !py-1 !px-2" onClick={() => onEdit(a)}>Edit</Button>
                            <Button secondary className="!text-xs !py-1 !px-2 !bg-red-600 !border-red-600 hover:!bg-red-700" onClick={() => confirm(`Are you sure you want to delete the address '${a.label}'?`)}>Delete</Button>
                         </div>
                     </div>
@@ -1199,66 +1520,57 @@ const AddressBookView: React.FC = () => (
     </DashboardModule>
 );
 
-const ShipmentDetailView: React.FC<{ shipmentId: string; onBack: () => void }> = ({ shipmentId, onBack }) => {
+const ShipmentDetailModal: React.FC<{ shipmentId: string | null; onClose: () => void }> = ({ shipmentId, onClose }) => {
+    if (!shipmentId) return null;
+    
     const shipment = CLIENT_SHIPMENT_DETAILS_DATA[shipmentId];
 
     if (!shipment) {
-        return <DashboardModule>
-            <p>Shipment not found.</p>
-            <Button onClick={onBack} outline className="mt-4">Back to Shipments</Button>
-        </DashboardModule>;
+        return <DashboardModal isOpen={true} onClose={onClose} title="Error"><p>Shipment not found.</p></DashboardModal>;
     }
     
     return (
-        <div>
-            <div className="mb-6">
-                <button onClick={onBack} className="text-sm font-semibold text-[#00529b] dark:text-[#e4b74e] hover:underline">
-                    &larr; Back to all shipments
-                </button>
-            </div>
-            <DashboardModule>
-                <DashboardModuleHeader title={`Shipment Details: ${shipment.id}`} />
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
-                         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
-                            <div><p className="text-sm text-gray-500 dark:text-gray-400">Status</p><DashboardStatusBadge status={shipment.status} /></div>
-                            <div><p className="text-sm text-gray-500 dark:text-gray-400">Origin</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.origin}</p></div>
-                            <div><p className="text-sm text-gray-500 dark:text-gray-400">Destination</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.destination}</p></div>
-                             <div><p className="text-sm text-gray-500 dark:text-gray-400">Est. Delivery</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.estDelivery}</p></div>
-                             <div><p className="text-sm text-gray-500 dark:text-gray-400">Weight</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.weight}</p></div>
-                            <div><p className="text-sm text-gray-500 dark:text-gray-400">Service</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.service}</p></div>
-                        </div>
-
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Tracking History</h3>
-                        <div className="border-l-2 border-[#00529b] dark:border-[#e4b74e] pl-6 space-y-8">
-                            {shipment.milestones.map((m, i) => (
-                                <div key={i} className="relative">
-                                    <div className="absolute -left-[34px] top-1 h-4 w-4 bg-[#b58e31] rounded-full border-4 border-white dark:border-[#2c333c]"></div>
-                                    <p className="font-semibold text-gray-800 dark:text-gray-200">{m.status}</p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">{m.location}</p>
-                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{m.date} at {m.time}</p>
-                                    {m.notes && <p className="text-sm italic text-orange-600 dark:text-orange-400 mt-2">Note: {m.notes}</p>}
-                                </div>
-                            ))}
-                        </div>
+        <DashboardModal isOpen={true} onClose={onClose} title={`Shipment Details: ${shipment.id}`} size="xl">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                     <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+                        <div><p className="text-sm text-gray-500 dark:text-gray-400">Status</p><DashboardStatusBadge status={shipment.status} /></div>
+                        <div><p className="text-sm text-gray-500 dark:text-gray-400">Origin</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.origin}</p></div>
+                        <div><p className="text-sm text-gray-500 dark:text-gray-400">Destination</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.destination}</p></div>
+                         <div><p className="text-sm text-gray-500 dark:text-gray-400">Est. Delivery</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.estDelivery}</p></div>
+                         <div><p className="text-sm text-gray-500 dark:text-gray-400">Weight</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.weight}</p></div>
+                        <div><p className="text-sm text-gray-500 dark:text-gray-400">Service</p><p className="font-semibold text-gray-800 dark:text-gray-200">{shipment.service}</p></div>
                     </div>
-                    <div className="space-y-6">
-                        <div className="p-4 border rounded-md dark:border-gray-700">
-                             <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Associated Invoices</h4>
-                             {shipment.associatedInvoiceIds.length > 0 ? (
-                                 <ul className="text-sm list-disc pl-5">
-                                    {shipment.associatedInvoiceIds.map(id => <li key={id}><a href={`#invoices`} className="text-[#00529b] dark:text-[#e4b74e] underline">{id}</a></li>)}
-                                 </ul>
-                             ) : <p className="text-sm text-gray-500 dark:text-gray-400">None</p>}
-                        </div>
-                         <div className="p-4 border rounded-md dark:border-gray-700">
-                             <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Handling Notes</h4>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{shipment.notes || 'No special handling notes.'}</p>
-                        </div>
+
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Tracking History</h3>
+                    <div className="border-l-2 border-[#00529b] dark:border-[#e4b74e] pl-6 space-y-8">
+                        {shipment.milestones.map((m, i) => (
+                            <div key={i} className="relative">
+                                <div className="absolute -left-[34px] top-1 h-4 w-4 bg-[#b58e31] rounded-full border-4 border-white dark:border-[#2c333c]"></div>
+                                <p className="font-semibold text-gray-800 dark:text-gray-200">{m.status}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">{m.location}</p>
+                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{m.date} at {m.time}</p>
+                                {m.notes && <p className="text-sm italic text-orange-600 dark:text-orange-400 mt-2">Note: {m.notes}</p>}
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </DashboardModule>
-        </div>
+                <div className="space-y-6">
+                    <div className="p-4 border rounded-md dark:border-gray-700">
+                         <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Associated Invoices</h4>
+                         {shipment.associatedInvoiceIds.length > 0 ? (
+                             <ul className="text-sm list-disc pl-5">
+                                {shipment.associatedInvoiceIds.map(id => <li key={id}><a href={`#invoices`} onClick={onClose} className="text-[#00529b] dark:text-[#e4b74e] underline">{id}</a></li>)}
+                             </ul>
+                         ) : <p className="text-sm text-gray-500 dark:text-gray-400">None</p>}
+                    </div>
+                     <div className="p-4 border rounded-md dark:border-gray-700">
+                         <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Handling Notes</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{shipment.notes || 'No special handling notes.'}</p>
+                    </div>
+                </div>
+            </div>
+        </DashboardModal>
     );
 };
 
@@ -1299,15 +1611,20 @@ const DashboardOverview: React.FC<{onNavClick: (viewId: string) => void}> = ({on
                 </ul>
             </DashboardModule>
             <DashboardModule>
-                <DashboardModuleHeader title="Recent Notifications">
-                     <Button outline className="!text-xs !py-1 !px-3" onClick={() => onNavClick('notifications')}>View All</Button>
+                <DashboardModuleHeader title="Recent Transactions">
+                    <Button outline className="!text-xs !py-1 !px-3" onClick={() => onNavClick('wallet')}>View All</Button>
                 </DashboardModuleHeader>
-                <ul className="space-y-4">
-                    {CLIENT_NOTIFICATIONS_DATA.slice(0, 3).map((n, i) => (
-                         <li key={i} className={`p-3 rounded-md ${n.status === 'Unread' ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
-                             <p className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{n.subject}</p>
-                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{n.snippet}</p>
-                         </li>
+                 <ul className="space-y-3">
+                    {WALLET_TRANSACTIONS_DATA.slice(0, 3).map((t, i) => (
+                        <li key={i} className="flex justify-between items-center text-sm border-b dark:border-gray-700 pb-2 last:border-none">
+                            <div>
+                                <p className="font-semibold text-gray-800 dark:text-gray-200">{t.description}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{t.date}</p>
+                            </div>
+                            <p className={`font-semibold ${t.type === 'Credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                {t.gbp ? `£${t.gbp}` : `₦${t.ngn}`}
+                            </p>
+                        </li>
                     ))}
                 </ul>
             </DashboardModule>
@@ -1352,14 +1669,38 @@ const NotificationsView: React.FC<{ setAlertMessage: (msg: string) => void }> = 
     );
 };
 
-const ProfileSettingsView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setAlertMessage }) => {
+const ProfileSettingsView: React.FC<{ setAlertMessage: (msg: string) => void; profileImage: string | null; onImageUpdate: (dataUrl: string) => void; }> = ({ setAlertMessage, profileImage, onImageUpdate }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const handleSave = (e: React.FormEvent, message: string) => {
         e.preventDefault();
         setAlertMessage(message);
     };
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                onImageUpdate(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     return (
         <div className="space-y-6">
+             <DashboardModule>
+                <DashboardModuleHeader title="Profile Picture" />
+                <div className="flex items-center gap-6">
+                    <img src={profileImage || 'https://i.pravatar.cc/80?u=client'} alt="Profile" className="w-20 h-20 rounded-full object-cover bg-gray-200" />
+                    <div>
+                        <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" id="profile-image-upload" />
+                        <Button primary onClick={() => fileInputRef.current?.click()}>Upload New Photo</Button>
+                        <p className="text-xs text-gray-500 mt-2">Recommended: Square image, PNG or JPG.</p>
+                    </div>
+                </div>
+            </DashboardModule>
             <DashboardModule>
                 <DashboardModuleHeader title="Personal Information" />
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={e => handleSave(e, 'Personal information updated!')}>
@@ -1382,6 +1723,46 @@ const ProfileSettingsView: React.FC<{ setAlertMessage: (msg: string) => void }> 
     );
 };
 
+const AddressModal: React.FC<{ isOpen: boolean; onClose: () => void; onSave: (address: Address) => void; address: Partial<Address> | null }> = ({ isOpen, onClose, onSave, address }) => {
+    const [formData, setFormData] = useState<Partial<Address>>({});
+
+    useEffect(() => {
+        setFormData(address || {});
+    }, [address]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSave(formData as Address);
+    };
+
+    return (
+        <DashboardModal isOpen={isOpen} onClose={onClose} title={address?.id ? "Edit Address" : "Add New Address"}>
+            <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><AuthLabel htmlFor="addr_label" required>Label</AuthLabel><AuthInput id="addr_label" name="label" value={formData.label || ''} onChange={handleChange} required /></div>
+                    <div><AuthLabel htmlFor="addr_name" required>Contact Name</AuthLabel><AuthInput id="addr_name" name="name" value={formData.name || ''} onChange={handleChange} required /></div>
+                    <div className="md:col-span-2"><AuthLabel htmlFor="addr_street" required>Street Address</AuthLabel><AuthInput id="addr_street" name="street" value={formData.street || ''} onChange={handleChange} required /></div>
+                    <div><AuthLabel htmlFor="addr_city" required>City</AuthLabel><AuthInput id="addr_city" name="city" value={formData.city || ''} onChange={handleChange} required /></div>
+                    <div><AuthLabel htmlFor="addr_country" required>Country</AuthLabel><AuthInput id="addr_country" name="country" value={formData.country || ''} onChange={handleChange} required /></div>
+                    <div><AuthLabel htmlFor="addr_phone">Phone</AuthLabel><AuthInput id="addr_phone" name="phone" value={formData.phone || ''} onChange={handleChange} /></div>
+                    <div className="md:col-span-2 flex flex-col gap-2 mt-2">
+                        <label className="flex items-center"><input type="checkbox" name="isDefaultShipping" checked={formData.isDefaultShipping || false} onChange={handleChange} className="mr-2 h-4 w-4" /> Set as default shipping address</label>
+                        <label className="flex items-center"><input type="checkbox" name="isDefaultBilling" checked={formData.isDefaultBilling || false} onChange={handleChange} className="mr-2 h-4 w-4" /> Set as default billing address</label>
+                    </div>
+                </div>
+                <div className="mt-6 pt-6 border-t dark:border-gray-600 flex justify-end gap-4">
+                    <Button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 border-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-500">Cancel</Button>
+                    <Button type="submit" primary>Save Address</Button>
+                </div>
+            </form>
+        </DashboardModal>
+    );
+};
 
 export const ClientDashboardPage: React.FC = () => {
     const navigate = useNavigate();
@@ -1390,6 +1771,36 @@ export const ClientDashboardPage: React.FC = () => {
     const [activeView, setActiveView] = useState('dashboard');
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const [viewingShipmentId, setViewingShipmentId] = useState<string | null>(null);
+    const [clientProfileImage, setClientProfileImage] = useState<string | null>(() => localStorage.getItem('clientProfileImage'));
+    const [addresses, setAddresses] = useState<Address[]>(CLIENT_ADDRESSES_DATA);
+    const [isAddressModalOpen, setAddressModalOpen] = useState(false);
+    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+
+    const handleOpenAddressModal = (address: Address | null = null) => {
+        setEditingAddress(address);
+        setAddressModalOpen(true);
+    };
+
+    const handleSaveAddress = (addressToSave: Address) => {
+        if (editingAddress) {
+            setAddresses(addresses.map(a => a.id === addressToSave.id ? addressToSave : a));
+            setAlertMessage("Address updated successfully!");
+        } else {
+            const newAddress = { ...addressToSave, id: Date.now().toString() };
+            setAddresses([...addresses, newAddress]);
+            setAlertMessage("New address added!");
+        }
+        setAddressModalOpen(false);
+        setEditingAddress(null);
+    };
+
+    const handleProfileImageUpdate = (imageAsDataUrl: string) => {
+        localStorage.setItem('clientProfileImage', imageAsDataUrl);
+        setClientProfileImage(imageAsDataUrl);
+        setAlertMessage("Profile image updated!");
+    };
+
 
     useEffect(() => {
         const hash = location.hash.replace('#', '');
@@ -1434,16 +1845,15 @@ export const ClientDashboardPage: React.FC = () => {
     ];
     
     const renderView = () => {
-        const [view, subView] = activeView.split('/');
-        switch(view) {
+        switch(activeView) {
             case 'shipments': 
-                return subView ? <ShipmentDetailView shipmentId={subView} onBack={() => handleNavClick('shipments')} /> : <ShipmentsView onShipmentSelect={(id) => handleNavClick(`shipments/${id}`)} setAlertMessage={setAlertMessage} />;
+                return <ShipmentsView onShipmentSelect={(id) => setViewingShipmentId(id)} setAlertMessage={setAlertMessage} />;
             case 'pre-alerts': return <PreAlertsView setAlertMessage={setAlertMessage} />;
             case 'invoices': return <InvoicesView setAlertMessage={setAlertMessage}/>;
             case 'wallet': return <WalletView setAlertMessage={setAlertMessage}/>;
-            case 'addresses': return <AddressBookView />;
+            case 'addresses': return <AddressBookView addresses={addresses} onEdit={handleOpenAddressModal} onAdd={() => handleOpenAddressModal()} />;
             case 'notifications': return <NotificationsView setAlertMessage={setAlertMessage} />;
-            case 'settings': return <ProfileSettingsView setAlertMessage={setAlertMessage} />;
+            case 'settings': return <ProfileSettingsView setAlertMessage={setAlertMessage} profileImage={clientProfileImage} onImageUpdate={handleProfileImageUpdate} />;
             case 'dashboard':
             default: return <DashboardOverview onNavClick={handleNavClick} />;
         }
@@ -1479,6 +1889,8 @@ export const ClientDashboardPage: React.FC = () => {
                     {alertMessage}
                 </div>
             )}
+            <ShipmentDetailModal shipmentId={viewingShipmentId} onClose={() => setViewingShipmentId(null)} />
+            <AddressModal isOpen={isAddressModalOpen} onClose={() => setAddressModalOpen(false)} address={editingAddress} onSave={handleSaveAddress} />
             <div className="flex min-h-screen bg-gray-100 dark:bg-[#1f2937]">
                 {isSidebarOpen && <div className="fixed inset-0 bg-black/50 z-10 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
                 <Sidebar />
@@ -1495,7 +1907,7 @@ export const ClientDashboardPage: React.FC = () => {
                                 <div className="w-full h-full bg-slate-300 dark:bg-slate-600 rounded-full peer-checked:bg-[#e4b74e]"></div>
                                 <div className="absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full transition-transform duration-300 peer-checked:translate-x-5"></div>
                             </label>
-                            <img src="https://i.pravatar.cc/40" alt="avatar" className="w-8 h-8 rounded-full" />
+                            <img src={clientProfileImage || "https://i.pravatar.cc/40"} alt="avatar" className="w-8 h-8 rounded-full object-cover bg-gray-200" />
                         </div>
                      </header>
                      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">

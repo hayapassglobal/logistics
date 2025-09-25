@@ -108,6 +108,7 @@ export const HEADER_MENU_ITEMS: MenuItem[] = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
+  { label: "Rates Calculator", href: "/rates" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];

@@ -45,6 +45,13 @@ export interface FaqItemData {
   answer: React.ReactNode;
 }
 
+// --- NEW TYPE FOR RATES CALCULATOR ---
+export interface RateResult {
+    serviceName: string;
+    estimatedCost: string;
+    estimatedTime: string;
+}
+
 // --- NEW TYPES FOR CLIENT DASHBOARD ---
 
 export interface ShipmentMilestone {
