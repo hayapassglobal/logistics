@@ -32,6 +32,7 @@ export interface Milestone {
 }
 
 export interface TrackingData {
+  id: string; // Add ID to tracking data for better keying
   status: string;
   badge: string;
   origin: string;
@@ -52,6 +53,22 @@ export interface RateResult {
     estimatedTime: string;
 }
 
+// --- NEW TYPE FOR QUOTE REQUEST FORM ---
+export interface QuoteFormData {
+    origin: string;
+    destination: string;
+    serviceType: string;
+    weight: string;
+    length: string;
+    width: string;
+    height: string;
+    deliveryDate?: string;
+    specialRequirements: string;
+    name: string;
+    email: string;
+    phone: string;
+}
+
 // --- NEW TYPES FOR CLIENT DASHBOARD ---
 
 export interface ShipmentMilestone {
@@ -67,7 +84,7 @@ export interface ClientShipment {
   date: string;
   origin: string;
   destination: string;
-  status: 'In Transit' | 'Customs Hold' | 'Delivered';
+  status: 'In Transit' | 'Customs Hold' | 'Delivered' | 'Cancelled';
   estDelivery: string;
 }
 
@@ -126,10 +143,50 @@ export interface ClientNotification {
     status: 'Unread' | 'Read';
 }
 
-export interface TeamMember {
+// Replaced TeamMember with a more generic User type for both dashboards
+export interface User {
     id: string;
     name: string;
     email: string;
-    role: 'Admin' | 'Member';
-    status: 'Active' | 'Pending';
+    role: 'Admin' | 'Member' | 'Finance' | 'Warehouse' | 'Super Admin';
+    status: 'Active' | 'Pending' | 'Deactivated';
+    accountType: 'Client' | 'Admin';
+    company?: string;
+    lastLogin: string;
+}
+
+
+// --- NEW TYPES FOR 100% COMPLETE DASHBOARD ---
+export interface AnalyticsDataPoint {
+    name: string;
+    value: number;
+}
+
+export interface ApiToken {
+    id: string;
+    name: string;
+    token: string;
+    created: string;
+    lastUsed: string;
+}
+
+export interface Webhook {
+    id: string;
+    url: string;
+    events: string[];
+    status: 'Active' | 'Inactive';
+}
+
+export interface Referral {
+    date: string;
+    email: string;
+    status: 'Pending' | 'Completed';
+    reward: string;
+}
+
+export interface LoyaltyTier {
+    name: 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
+    currentSpend: number;
+    nextTierSpend: number;
+    benefits: string[];
 }

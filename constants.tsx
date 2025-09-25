@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, TeamMember } from './types';
+import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier } from './types';
 import { Link } from 'react-router-dom';
 
 // --- ICONS (Moved from components.tsx to break circular dependency) ---
@@ -10,8 +10,9 @@ export const IconWrapper: React.FC<{ children: React.ReactNode; className?: stri
 );
 
 // Individual Icon Components
-export const IconTruck: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+// FIX: Update IconTruck component to accept a className prop to fix a type error in pages.tsx.
+export const IconTruck: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className ?? "w-full h-full"}><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
 );
 export const IconGlobe: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
@@ -20,7 +21,7 @@ export const IconHeadset: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
 );
 export const IconShieldCheck: React.FC = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 15 22 5"></polyline></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
 );
 export const IconPackage: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
@@ -184,7 +185,7 @@ export const TESTIMONIALS: Testimonial[] = [
   { text: "As an individual shipper, I was impressed by their professionalism and the ease of tracking my package. It arrived safely and on time.", author: "Chioma Okoro", company: "Lagos, Nigeria" },
 ];
 
-export const MOCK_TRACKING_DATA: { [key: string]: TrackingData } = {
+export const MOCK_TRACKING_DATA: { [key: string]: Omit<TrackingData, 'id'> } = {
   "HGLUK123": { status: "In Transit", badge: "bg-[#17a2b8] text-white", origin: "London, UK", destination: "Lagos, NG", estDelivery: Date.now() + 3 * 86400000,
       milestones: [
           { date: Date.now() - 1 * 86400000, status: "Departed Origin Facility", location: "London Heathrow" },
@@ -195,6 +196,9 @@ export const MOCK_TRACKING_DATA: { [key: string]: TrackingData } = {
           { date: Date.now() - 2 * 86400000, status: "Out for Delivery", location: "Abuja Delivery Hub" },
           { date: Date.now() - 3 * 86400000, status: "Arrived at Destination Hub", location: "Abuja" }] }
 };
+
+export const ALL_SHIPMENTS_MOCK_DATA: TrackingData[] = Object.entries(MOCK_TRACKING_DATA).map(([id, data]) => ({ id, ...data }));
+
 
 export const FAQ_DATA: FaqItemData[] = [
     {
@@ -315,8 +319,85 @@ export const CLIENT_NOTIFICATIONS_DATA: ClientNotification[] = [
     { date: '28 Oct 2025', subject: 'Invoice INV-CLIENT1-015 Issued', snippet: 'A new invoice for your recent shipment...', status: 'Read' },
 ];
 
-export const CLIENT_TEAM_MEMBERS_DATA: TeamMember[] = [
-    { id: '1', name: 'Client Example Name', email: 'client@example.com', role: 'Admin', status: 'Active' },
-    { id: '2', name: 'Team Member One', email: 'member1@example.com', role: 'Member', status: 'Active' },
-    { id: '3', name: 'Pending Invite', email: 'new.hire@example.com', role: 'Member', status: 'Pending' },
+export const CLIENT_TEAM_MEMBERS_DATA: User[] = [
+    { id: '1', name: 'Client Example Name', email: 'client@example.com', role: 'Admin', status: 'Active', accountType: 'Client', lastLogin: '04 Nov 2025' },
+    { id: '2', name: 'Finance Manager', email: 'finance@example.com', role: 'Finance', status: 'Active', accountType: 'Client', lastLogin: '03 Nov 2025' },
+    { id: '3', name: 'Warehouse Staff', email: 'warehouse.staff@example.com', role: 'Warehouse', status: 'Active', accountType: 'Client', lastLogin: '04 Nov 2025' },
+    { id: '4', name: 'New Hire Invite', email: 'new.hire@example.com', role: 'Member', status: 'Pending', accountType: 'Client', lastLogin: 'Never' },
 ];
+
+
+// --- MOCK DATA FOR ADMIN DASHBOARD ---
+export const ALL_USERS_DATA: User[] = [
+    { id: '1', name: 'Bola Adeyemi', email: 'bola@nijabiz.com', role: 'Admin', status: 'Active', accountType: 'Client', company: 'NijaBiz Connect', lastLogin: '04 Nov 2025' },
+    { id: '2', name: 'John Smith', email: 'john@ukexporters.co.uk', role: 'Admin', status: 'Active', accountType: 'Client', company: 'UK Exporters Ltd.', lastLogin: '03 Nov 2025' },
+    { id: '3', name: 'Chioma Okoro', email: 'chioma.o@email.com', role: 'Admin', status: 'Active', accountType: 'Client', company: 'Individual', lastLogin: '01 Nov 2025' },
+    { id: '4', name: 'Admin User', email: 'admin@hayapass.com', role: 'Super Admin', status: 'Active', accountType: 'Admin', company: 'Hayapass', lastLogin: '04 Nov 2025' },
+    { id: '5', name: 'Deactivated Client', email: 'old@client.com', role: 'Admin', status: 'Deactivated', accountType: 'Client', company: 'Old Company', lastLogin: '15 Jun 2025' },
+];
+
+export const ADMIN_SHIPMENTS_DATA: (DetailedClientShipment & { clientName: string })[] = [
+    { ...CLIENT_SHIPMENT_DETAILS_DATA['HGLUK12301'], clientName: 'Bola Adeyemi' },
+    { ...CLIENT_SHIPMENT_DETAILS_DATA['HGLNG45602'], clientName: 'John Smith' },
+    { ...CLIENT_SHIPMENT_DETAILS_DATA['HGLUK78903'], clientName: 'Chioma Okoro' },
+    { id: 'HGLUK99904', date: '02 Nov 2025', origin: 'Glasgow, UK', destination: 'Port Harcourt, NG', status: 'In Transit', estDelivery: '10 Nov 2025', weight: '25kg', dimensions: '50x50x50 cm', service: 'Sea Freight', notes: '', associatedInvoiceIds: ['INV-ADMIN-001'], milestones: [ { date: '03 Nov 2025', time: '11:00', status: 'Processed at HGL Facility', location: 'Glasgow Hub, UK' }, { date: '02 Nov 2025', time: '16:30', status: 'Shipment Information Received', location: 'Glasgow, UK' }], clientName: 'UK Exporters Ltd.' }
+];
+
+export const ADMIN_ANALYTICS_DATA = {
+    totalRevenue: 250600,
+    totalShipments: 1240,
+    newClients: 35,
+    pendingIssues: 3,
+    revenueByService: [
+        { name: 'Air Freight', value: 120000 },
+        { name: 'Sea Freight', value: 85000 },
+        { name: 'Domestic', value: 35600 },
+        { name: 'Customs', value: 10000 },
+    ]
+};
+
+
+
+// --- MOCK DATA FOR 100% COMPLETE DASHBOARD ---
+
+export const ANALYTICS_DATA: { monthlySpend: AnalyticsDataPoint[], topRoutes: (AnalyticsDataPoint & { shipments: number })[] } = {
+    monthlySpend: [
+        { name: 'May', value: 3400 },
+        { name: 'Jun', value: 4500 },
+        { name: 'Jul', value: 3900 },
+        { name: 'Aug', value: 5200 },
+        { name: 'Sep', value: 4800 },
+        { name: 'Oct', value: 6100 },
+    ],
+    topRoutes: [
+        { name: 'UK -> NG', value: 18500, shipments: 152 },
+        { name: 'NG -> UK', value: 9200, shipments: 88 },
+        { name: 'UK -> US', value: 4500, shipments: 45 },
+    ]
+};
+
+export const API_TOKENS_DATA: ApiToken[] = [
+    { id: '1', name: 'Shopify Integration Key', token: 'hp_live_sk_****...**_a1b2', created: '15 Aug 2025', lastUsed: '03 Nov 2025' },
+    { id: '2', name: 'Warehouse System Key', token: 'hp_live_sk_****...**_c3d4', created: '01 Jul 2025', lastUsed: '02 Nov 2025' },
+];
+
+export const WEBHOOKS_DATA: Webhook[] = [
+    { id: '1', url: 'https://api.example.com/webhooks/hayapass', events: ['shipment.created', 'shipment.updated'], status: 'Active' }
+];
+
+export const REFERRAL_DATA: Referral[] = [
+    { date: '10 Oct 2025', email: 'friend1@example.com', status: 'Completed', reward: '£10.00' },
+    { date: '25 Sep 2025', email: 'colleague@example.com', status: 'Completed', reward: '£10.00' },
+    { date: '15 Sep 2025', email: 'contact@example.com', status: 'Pending', reward: '£10.00' },
+];
+
+export const LOYALTY_DATA: LoyaltyTier = {
+    name: 'Silver',
+    currentSpend: 4850,
+    nextTierSpend: 10000,
+    benefits: [
+        '5% Discount on all Air Freight',
+        'Priority Support',
+        'Dedicated Account Manager',
+    ]
+};

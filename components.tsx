@@ -293,7 +293,8 @@ export const TrackingForm: React.FC = () => {
         setTimeout(() => {
             const data = MOCK_TRACKING_DATA[trackingNumber.toUpperCase()];
             if (data) {
-                setResult(data);
+                // FIX: Add the tracking ID to the result object to match the TrackingData type.
+                setResult({ ...data, id: trackingNumber.toUpperCase() });
             } else {
                 setError("Shipment not found. Please verify the number and try again.");
             }
