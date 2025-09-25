@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { SITE_CONFIG, HEADER_MENU_ITEMS, HERO_SLIDES } from './constants';
+import { SITE_CONFIG, HEADER_MENU_ITEMS, HERO_SLIDES, ICON_MAP, IconPackage, IconShieldCheck } from './constants';
 import type { Service, Feature, Testimonial, TrackingData, FaqItemData } from './types';
 import { MOCK_TRACKING_DATA } from './constants';
 import { IconFacebook, IconTwitterX, IconInstagram, IconLinkedIn, IconWhatsapp, IconWrapper } from './constants';
@@ -126,6 +126,7 @@ export const Footer: React.FC = () => {
                         <ul className="space-y-3 text-sm">
                             <li><Link to="/privacy-policy" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Privacy Policy</Link></li>
                             <li><Link to="/terms" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Terms & Conditions</Link></li>
+                            <li><Link to="/admin-login" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Admin Login</Link></li>
                         </ul>
                     </div>
                 </div>
@@ -233,7 +234,7 @@ export const HeroSlider: React.FC = () => {
 export const ServiceCard: React.FC<{ service: Service }> = ({ service }) => (
     <div className="bg-white p-8 sm:p-10 rounded-lg shadow-lg text-left transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl flex flex-col">
         <div className="w-16 h-16 mb-6 text-[#00529b] bg-[#f0e1b0] rounded-full flex items-center justify-center">
-            <IconWrapper className="w-8 h-8">{service.icon}</IconWrapper>
+            <IconWrapper className="w-8 h-8">{ICON_MAP[service.icon] || <IconPackage />}</IconWrapper>
         </div>
         <h3 className="text-xl font-bold mb-3 text-gray-800">{service.title}</h3>
         <p className="text-base text-gray-600 flex-grow mb-6">{service.description}</p>
@@ -245,7 +246,7 @@ export const ServiceCard: React.FC<{ service: Service }> = ({ service }) => (
 export const FeatureItem: React.FC<{ feature: Feature }> = ({ feature }) => (
     <div className="flex items-start gap-5 p-4 text-left">
         <div className="w-10 h-10 text-[#b58e31] flex-shrink-0 mt-1">
-            <IconWrapper className="w-full h-full">{feature.icon}</IconWrapper>
+            <IconWrapper className="w-full h-full">{ICON_MAP[feature.icon] || <IconShieldCheck />}</IconWrapper>
         </div>
         <div>
             <h4 className="text-lg font-bold mb-1 text-gray-800">{feature.title}</h4>

@@ -7,14 +7,14 @@ export interface MenuItem {
 }
 
 export interface Service {
-  icon: React.ReactNode;
+  icon: string;
   title: string;
   description: string;
   link: string;
 }
 
 export interface Feature {
-  icon: React.ReactNode;
+  icon: string;
   title: string;
   description: string;
 }
@@ -24,6 +24,19 @@ export interface Testimonial {
   author: string;
   company: string;
 }
+
+// --- NEW TYPE FOR HERO SLIDER ---
+export interface HeroSlide {
+  image: string;
+  headline: string;
+  tagline: string;
+  buttons: {
+    text: string;
+    href: string;
+    primary: boolean;
+  }[];
+}
+
 
 export interface Milestone {
   date: number;
@@ -189,4 +202,16 @@ export interface LoyaltyTier {
     currentSpend: number;
     nextTierSpend: number;
     benefits: string[];
+}
+
+export interface WalletRequest {
+    id: string;
+    clientId: string;
+    clientName: string;
+    date: string;
+    type: 'Top-up' | 'Withdrawal';
+    amount: number;
+    currency: 'GBP' | 'NGN';
+    status: 'Pending' | 'Approved' | 'Declined';
+    method: string;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier } from './types';
+import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier, HeroSlide, WalletRequest } from './types';
 import { Link } from 'react-router-dom';
 
 // --- ICONS (Moved from components.tsx to break circular dependency) ---
@@ -82,7 +82,21 @@ export const IconShare: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg"
 export const IconGraphUpArrow: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path fillRule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/></svg>;
 export const IconCodeSlash: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path d="M10.478 1.647a.5.5 0 1 0-.956.294l-4 13a.5.5 0 0 0 .956.294zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0m6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0"/></svg>;
 export const IconPersonCircle: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/><path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/></svg>;
+export const IconFileText: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path d="M5 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2-2H4a2 2 0 0 1-2-2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1z"/></svg>;
+export const IconHelpCircle: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/></svg>;
+export const IconSend: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/></svg>;
 
+export const ICON_MAP: { [key: string]: React.ReactNode } = {
+    'truck': <IconTruck />,
+    'globe': <IconGlobe />,
+    'headset': <IconHeadset />,
+    'shield': <IconShieldCheck />,
+    'package': <IconPackage />,
+    'warehouse': <IconWarehouse />,
+    'customs': <IconCustoms />,
+    'clock': <IconClock />,
+    'person': <IconPersonCircle />,
+};
 
 export const SITE_CONFIG = {
   brandName: "HAYAPASS GLOBAL LOGISTICS",
@@ -108,13 +122,11 @@ export const HEADER_MENU_ITEMS: MenuItem[] = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
-  { label: "Personal Shopper", href: "/personal-shopper" },
-  { label: "Rates Calculator", href: "/rates" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];
 
-export const HERO_SLIDES = [
+export const HERO_SLIDES: HeroSlide[] = [
   {
     image: "https://images.unsplash.com/photo-1587671391393-39789696380a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
     headline: "Bridging Distances, Delivering Futures.",
@@ -160,24 +172,25 @@ export const HERO_SLIDES = [
 ];
 
 export const CORE_SERVICES: Service[] = [
-  { icon: <IconTruck />, title: "UK & Nigeria Domestic", description: "Swift, secure parcel and freight delivery across the United Kingdom and throughout Nigeria's major cities and regions.", link: "/services/domestic" },
-  { icon: <IconGlobe />, title: "International Freight", description: "Expert air and sea freight solutions connecting the UK, Nigeria, and global markets with efficiency and competitive rates.", link: "/services/international" },
-  { icon: <IconWarehouse />, title: "Warehousing & Fulfilment", description: "Secure storage, inventory management, and order fulfilment services in our modern facilities in the UK and Nigeria.", link: "/services/warehousing" },
-  { icon: <IconCustoms />, title: "Customs Clearance", description: "Hassle-free customs brokerage for imports and exports, ensuring compliance and timely release of your goods.", link: "/services/customs" },
+  { icon: 'truck', title: "UK & Nigeria Domestic", description: "Swift, secure parcel and freight delivery across the United Kingdom and throughout Nigeria's major cities and regions.", link: "/services/domestic" },
+  { icon: 'globe', title: "International Freight", description: "Expert air and sea freight solutions connecting the UK, Nigeria, and global markets with efficiency and competitive rates.", link: "/services/international" },
+  { icon: 'warehouse', title: "Warehousing & Fulfilment", description: "Secure storage, inventory management, and order fulfilment services in our modern facilities in the UK and Nigeria.", link: "/services/warehousing" },
+  { icon: 'customs', title: "Customs Clearance", description: "Hassle-free customs brokerage for imports and exports, ensuring compliance and timely release of your goods.", link: "/services/customs" },
 ];
 
 export const ALL_SERVICES: Service[] = [
-    { icon: <IconTruck />, title: "UK Domestic Logistics", description: "Dedicated and comprehensive shipping services within the United Kingdom, from single parcels to full truckloads.", link: "/services/uk-domestic" },
+    { icon: 'truck', title: "UK Domestic Logistics", description: "Dedicated and comprehensive shipping services within the United Kingdom, from single parcels to full truckloads.", link: "/services/uk-domestic" },
     ...CORE_SERVICES,
-    { icon: <IconPackage />, title: "Specialized Cargo Handling", description: "From perishable goods to oversized project cargo and hazardous materials, we have the expertise to handle your specialized shipping requirements safely and efficiently.", link: "/services/specialized" },
-    { icon: <IconHeadset />, title: "Logistics Consultancy", description: "Optimize your supply chain with our expert consultancy services. We analyze your current processes and provide strategic recommendations for improved efficiency and cost savings.", link: "/services/consultancy" },
+    { icon: 'person', title: "Personal Shopper", description: "Your personal concierge for sourcing authentic Nigerian food items and goods, delivered directly to your doorstep worldwide.", link: "/personal-shopper" },
+    { icon: 'package', title: "Specialized Cargo Handling", description: "From perishable goods to oversized project cargo and hazardous materials, we have the expertise to handle your specialized shipping requirements safely and efficiently.", link: "/services/specialized" },
+    { icon: 'headset', title: "Logistics Consultancy", description: "Optimize your supply chain with our expert consultancy services. We analyze your current processes and provide strategic recommendations for improved efficiency and cost savings.", link: "/services/consultancy" },
 ];
 
 export const WHY_CHOOSE_US_FEATURES: Feature[] = [
-  { icon: <IconShieldCheck />, title: "Unwavering Reliability", description: "Count on us for secure, on-time delivery, backed by robust tracking and transparent communication." },
-  { icon: <IconClock />, title: "Speed & Precision", description: "Optimized routes, efficient processes, and cutting-edge technology ensure your shipments move swiftly." },
-  { icon: <IconGlobe />, title: "Global Network, Local Expertise", description: "Extensive international partnerships combined with deep local knowledge in the UK and Nigeria." },
-  { icon: <IconHeadset />, title: "Client-Centric Approach", description: "Your needs are our priority. Dedicated support and tailored solutions for a personalized experience." },
+  { icon: 'shield', title: "Unwavering Reliability", description: "Count on us for secure, on-time delivery, backed by robust tracking and transparent communication." },
+  { icon: 'clock', title: "Speed & Precision", description: "Optimized routes, efficient processes, and cutting-edge technology ensure your shipments move swiftly." },
+  { icon: 'globe', title: "Global Network, Local Expertise", description: "Extensive international partnerships combined with deep local knowledge in the UK and Nigeria." },
+  { icon: 'headset', title: "Client-Centric Approach", description: "Your needs are our priority. Dedicated support and tailored solutions for a personalized experience." },
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -343,6 +356,14 @@ export const ADMIN_SHIPMENTS_DATA: (DetailedClientShipment & { clientName: strin
     { ...CLIENT_SHIPMENT_DETAILS_DATA['HGLUK78903'], clientName: 'Chioma Okoro' },
     { id: 'HGLUK99904', date: '02 Nov 2025', origin: 'Glasgow, UK', destination: 'Port Harcourt, NG', status: 'In Transit', estDelivery: '10 Nov 2025', weight: '25kg', dimensions: '50x50x50 cm', service: 'Sea Freight', notes: '', associatedInvoiceIds: ['INV-ADMIN-001'], milestones: [ { date: '03 Nov 2025', time: '11:00', status: 'Processed at HGL Facility', location: 'Glasgow Hub, UK' }, { date: '02 Nov 2025', time: '16:30', status: 'Shipment Information Received', location: 'Glasgow, UK' }], clientName: 'UK Exporters Ltd.' }
 ];
+
+export const ADMIN_WALLET_REQUESTS_DATA: WalletRequest[] = [
+    { id: 'WR-001', clientId: '1', clientName: 'Bola Adeyemi', date: '04 Nov 2025', type: 'Top-up', amount: 100, currency: 'GBP', status: 'Pending', method: 'Bank Transfer Ref: BA-TOPUP' },
+    { id: 'WR-002', clientId: '2', clientName: 'John Smith', date: '03 Nov 2025', type: 'Withdrawal', amount: 50, currency: 'GBP', status: 'Pending', method: 'UK Bank: 01-02-03 12345678' },
+    { id: 'WR-003', clientId: '3', clientName: 'Chioma Okoro', date: '02 Nov 2025', type: 'Top-up', amount: 25000, currency: 'NGN', status: 'Approved', method: 'Paystack' },
+    { id: 'WR-004', clientId: '1', clientName: 'Bola Adeyemi', date: '01 Nov 2025', type: 'Withdrawal', amount: 20, currency: 'GBP', status: 'Declined', method: 'UK Bank: 04-05-06 87654321' },
+];
+
 
 export const ADMIN_ANALYTICS_DATA = {
     totalRevenue: 250600,

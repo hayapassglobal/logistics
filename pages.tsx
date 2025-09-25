@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button } from './components';
-import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, API_TOKENS_DATA, WEBHOOKS_DATA, REFERRAL_DATA, LOYALTY_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA } from './constants';
-import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, IconShieldCheck } from './constants';
+import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, API_TOKENS_DATA, WEBHOOKS_DATA, REFERRAL_DATA, LOYALTY_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, HERO_SLIDES, ADMIN_WALLET_REQUESTS_DATA, ICON_MAP } from './constants';
+import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, IconShieldCheck, IconFileText, IconHelpCircle, IconGlobe, IconWarehouse, IconCustoms, IconPackage, IconSend } from './constants';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier, QuoteFormData, TrackingData } from './types';
+import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier, QuoteFormData, TrackingData, Service, FaqItemData, HeroSlide, Feature, Testimonial, ShipmentMilestone, WalletRequest } from './types';
 
 
 export const HomePage: React.FC = () => (
@@ -771,17 +771,23 @@ export const ClientAuthPage: React.FC = () => {
 };
 
 // --- DASHBOARD HELPER COMPONENTS ---
-const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode }> = ({ isOpen, onClose, title, children }) => {
+const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode, size?: 'md' | 'lg' | 'xl' }> = ({ isOpen, onClose, title, children, size = 'md' }) => {
     if (!isOpen) return null;
+    
+    const sizeClasses = {
+        md: 'max-w-md',
+        lg: 'max-w-2xl',
+        xl: 'max-w-4xl',
+    };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center" onClick={onClose}>
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center border-b pb-3 mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4" onClick={onClose}>
+            <div className={`bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]} max-h-[90vh] flex flex-col`} onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-center border-b p-4 flex-shrink-0">
                     <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
                 </div>
-                <div>{children}</div>
+                <div className="p-6 overflow-y-auto">{children}</div>
             </div>
         </div>
     );
@@ -791,10 +797,16 @@ interface DashboardCardProps {
     children: React.ReactNode;
     className?: string;
     title?: string;
+    actions?: React.ReactNode;
 }
-const DashboardCard: React.FC<DashboardCardProps> = ({ children, className, title }) => (
+const DashboardCard: React.FC<DashboardCardProps> = ({ children, className, title, actions }) => (
     <div className={`bg-white rounded-lg shadow p-6 ${className}`}>
-        {title && <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-3">{title}</h3>}
+        {title && (
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+                 <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+                 {actions && <div>{actions}</div>}
+            </div>
+        )}
         {children}
     </div>
 );
@@ -829,21 +841,7 @@ const SimpleBarChart: React.FC<{ data: AnalyticsDataPoint[], label: string }> = 
     );
 };
 
-const getStatusClass = (status: ClientShipment['status'] | ClientPreAlert['status'] | ClientInvoice['status'] | User['status']) => {
-    switch (status) {
-        case 'In Transit': return 'bg-blue-100 text-blue-800';
-        case 'Customs Hold': return 'bg-yellow-100 text-yellow-800';
-        case 'Delivered': return 'bg-green-100 text-green-800';
-        case 'Pending Arrival': return 'bg-gray-100 text-gray-800';
-        case 'Arrived at HGL': return 'bg-indigo-100 text-indigo-800';
-        case 'Unpaid': return 'bg-red-100 text-red-800';
-        case 'Paid': return 'bg-green-100 text-green-800';
-        case 'Active': return 'bg-green-100 text-green-800';
-        case 'Pending': return 'bg-yellow-100 text-yellow-800';
-        case 'Deactivated': return 'bg-gray-100 text-gray-800';
-        default: return 'bg-gray-100 text-gray-800';
-    }
-};
+const formFieldClasses = "w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]";
 
 // --- DASHBOARD VIEW COMPONENTS ---
 
@@ -860,6 +858,23 @@ const DashboardOverviewView: React.FC = () => {
     const activeShipments = CLIENT_SHIPMENTS_DATA.filter(s => s.status !== 'Delivered').length;
     const pendingPreAlerts = CLIENT_PREALERTS_DATA.filter(p => p.status === 'Pending Arrival').length;
     const unpaidInvoices = CLIENT_INVOICES_DATA.filter(i => i.status === 'Unpaid').length;
+
+    const getStatusClass = (status: ClientShipment['status'] | ClientPreAlert['status'] | ClientInvoice['status'] | User['status']) => {
+        switch (status) {
+            case 'In Transit': return 'bg-blue-100 text-blue-800';
+            case 'Customs Hold': return 'bg-yellow-100 text-yellow-800';
+            case 'Delivered': return 'bg-green-100 text-green-800';
+            case 'Pending Arrival': return 'bg-gray-100 text-gray-800';
+            case 'Arrived at HGL': return 'bg-indigo-100 text-indigo-800';
+            case 'Unpaid': return 'bg-red-100 text-red-800';
+            case 'Paid': return 'bg-green-100 text-green-800';
+            case 'Active': return 'bg-green-100 text-green-800';
+            case 'Pending': return 'bg-yellow-100 text-yellow-800';
+            case 'Deactivated': return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
 
     return (
         <div className="space-y-6">
@@ -903,6 +918,23 @@ const DashboardOverviewView: React.FC = () => {
 const ShipmentsView: React.FC = () => {
     const [selectedShipment, setSelectedShipment] = useState<DetailedClientShipment | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+
+    const getStatusClass = (status: ClientShipment['status'] | ClientPreAlert['status'] | ClientInvoice['status'] | User['status']) => {
+        switch (status) {
+            case 'In Transit': return 'bg-blue-100 text-blue-800';
+            case 'Customs Hold': return 'bg-yellow-100 text-yellow-800';
+            case 'Delivered': return 'bg-green-100 text-green-800';
+            case 'Pending Arrival': return 'bg-gray-100 text-gray-800';
+            case 'Arrived at HGL': return 'bg-indigo-100 text-indigo-800';
+            case 'Unpaid': return 'bg-red-100 text-red-800';
+            case 'Paid': return 'bg-green-100 text-green-800';
+            case 'Active': return 'bg-green-100 text-green-800';
+            case 'Pending': return 'bg-yellow-100 text-yellow-800';
+            case 'Deactivated': return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
 
     const filteredShipments = useMemo(() => {
         if (!searchTerm) return CLIENT_SHIPMENTS_DATA;
@@ -1007,7 +1039,24 @@ const ShipmentsView: React.FC = () => {
     );
 };
 
-const PreAlertsView: React.FC = () => (
+const PreAlertsView: React.FC = () => {
+    const getStatusClass = (status: ClientShipment['status'] | ClientPreAlert['status'] | ClientInvoice['status'] | User['status']) => {
+        switch (status) {
+            case 'In Transit': return 'bg-blue-100 text-blue-800';
+            case 'Customs Hold': return 'bg-yellow-100 text-yellow-800';
+            case 'Delivered': return 'bg-green-100 text-green-800';
+            case 'Pending Arrival': return 'bg-gray-100 text-gray-800';
+            case 'Arrived at HGL': return 'bg-indigo-100 text-indigo-800';
+            case 'Unpaid': return 'bg-red-100 text-red-800';
+            case 'Paid': return 'bg-green-100 text-green-800';
+            case 'Active': return 'bg-green-100 text-green-800';
+            case 'Pending': return 'bg-yellow-100 text-yellow-800';
+            case 'Deactivated': return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    return(
     <DashboardCard title="Pre-Alerts">
         <div className="flex justify-end mb-4">
             <Button primary>+ Add New Pre-Alert</Button>
@@ -1040,8 +1089,25 @@ const PreAlertsView: React.FC = () => (
         </div>
     </DashboardCard>
 );
+}
 
-const InvoicesView: React.FC = () => (
+const InvoicesView: React.FC = () => {
+    const getStatusClass = (status: ClientShipment['status'] | ClientPreAlert['status'] | ClientInvoice['status'] | User['status']) => {
+        switch (status) {
+            case 'In Transit': return 'bg-blue-100 text-blue-800';
+            case 'Customs Hold': return 'bg-yellow-100 text-yellow-800';
+            case 'Delivered': return 'bg-green-100 text-green-800';
+            case 'Pending Arrival': return 'bg-gray-100 text-gray-800';
+            case 'Arrived at HGL': return 'bg-indigo-100 text-indigo-800';
+            case 'Unpaid': return 'bg-red-100 text-red-800';
+            case 'Paid': return 'bg-green-100 text-green-800';
+            case 'Active': return 'bg-green-100 text-green-800';
+            case 'Pending': return 'bg-yellow-100 text-yellow-800';
+            case 'Deactivated': return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+    return (
      <DashboardCard title="Invoices">
          <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
@@ -1076,6 +1142,7 @@ const InvoicesView: React.FC = () => (
         </div>
     </DashboardCard>
 );
+};
 
 const WalletView: React.FC = () => {
     const walletBalance = useMemo(() => {
@@ -1363,6 +1430,22 @@ const TeamManagementView: React.FC = () => {
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [inviteEmail, setInviteEmail] = useState('');
     const [inviteRole, setInviteRole] = useState<User['role']>('Member');
+        const getStatusClass = (status: ClientShipment['status'] | ClientPreAlert['status'] | ClientInvoice['status'] | User['status']) => {
+        switch (status) {
+            case 'In Transit': return 'bg-blue-100 text-blue-800';
+            case 'Customs Hold': return 'bg-yellow-100 text-yellow-800';
+            case 'Delivered': return 'bg-green-100 text-green-800';
+            case 'Pending Arrival': return 'bg-gray-100 text-gray-800';
+            case 'Arrived at HGL': return 'bg-indigo-100 text-indigo-800';
+            case 'Unpaid': return 'bg-red-100 text-red-800';
+            case 'Paid': return 'bg-green-100 text-green-800';
+            case 'Active': return 'bg-green-100 text-green-800';
+            case 'Pending': return 'bg-yellow-100 text-yellow-800';
+            case 'Deactivated': return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
 
     const handleRoleChange = (userId: string, newRole: User['role']) => {
         if (editingUser?.id === userId) {
@@ -1733,41 +1816,110 @@ export const ClientDashboardPage: React.FC = () => {
 
 // --- NEW ADMIN DASHBOARD PAGE & VIEWS ---
 
+type AllStatusTypes = ClientShipment['status'] | ClientPreAlert['status'] | ClientInvoice['status'] | User['status'] | WalletRequest['status'];
+const getStatusClass = (status: AllStatusTypes) => {
+    switch (status) {
+        case 'In Transit': return 'bg-blue-100 text-blue-800';
+        case 'Customs Hold': return 'bg-yellow-100 text-yellow-800';
+        case 'Delivered': return 'bg-green-100 text-green-800';
+        case 'Cancelled': return 'bg-red-100 text-red-800';
+        case 'Pending Arrival': return 'bg-gray-100 text-gray-800';
+        case 'Arrived at HGL': return 'bg-indigo-100 text-indigo-800';
+        case 'Unpaid': return 'bg-red-100 text-red-800';
+        case 'Paid': return 'bg-green-100 text-green-800';
+        case 'Active': return 'bg-green-100 text-green-800';
+        case 'Approved': return 'bg-green-100 text-green-800';
+        case 'Pending': return 'bg-yellow-100 text-yellow-800';
+        case 'Deactivated': return 'bg-gray-100 text-gray-800';
+        case 'Declined': return 'bg-red-100 text-red-800';
+        default: return 'bg-gray-100 text-gray-800';
+    }
+};
+
 const AdminDashboardOverviewView: React.FC = () => (
     <div className="space-y-6">
         <h2 className="text-2xl font-semibold text-gray-700">System Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard title="Total Revenue (YTD)" value={`£${ADMIN_ANALYTICS_DATA.totalRevenue.toLocaleString()}`} icon={<IconGraphUpArrow />} />
             <StatCard title="Total Shipments" value={ADMIN_ANALYTICS_DATA.totalShipments.toLocaleString()} icon={<IconBoxSeam />} />
+            {/* FIX: Corrected typo from `ADMIN_ANALYTICS_DATA.new` to `ADMIN_ANALYTICS_DATA.newClients` to match the data structure. */}
             <StatCard title="New Clients (Month)" value={String(ADMIN_ANALYTICS_DATA.newClients)} icon={<IconUserPlus />} />
-            <StatCard title="Pending Issues" value={String(ADMIN_ANALYTICS_DATA.pendingIssues)} icon={<IconBell />} />
+            <StatCard title="Pending Issues" value={String(ADMIN_ANALYTICS_DATA.pendingIssues)} icon={<IconHelpCircle />} />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <DashboardCard title="Revenue by Service" className="lg:col-span-3">
-                <SimpleBarChart data={ADMIN_ANALYTICS_DATA.revenueByService} label="Revenue" />
+        <DashboardCard title="Revenue by Service (YTD)">
+            <SimpleBarChart data={ADMIN_ANALYTICS_DATA.revenueByService} label="Revenue" />
+        </DashboardCard>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <DashboardCard title="Recent Wallet Requests">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <tbody>
+                            {ADMIN_WALLET_REQUESTS_DATA.slice(0, 3).map(req => (
+                                <tr key={req.id} className="border-b last:border-0 hover:bg-gray-50">
+                                    <td className="p-3 font-medium text-gray-800">{req.clientName}</td>
+                                    <td className="p-3 text-gray-600">{req.type} - {req.amount} {req.currency}</td>
+                                    <td className="p-3 text-right">
+                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(req.status)}`}>{req.status}</span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </DashboardCard>
-            <DashboardCard title="Recent Activity" className="lg:col-span-2">
-                <p className="text-center text-gray-500 py-8">Activity feed coming soon.</p>
+            <DashboardCard title="Recent Shipments">
+                <div className="overflow-x-auto">
+                     <table className="w-full text-sm">
+                        <tbody>
+                            {ADMIN_SHIPMENTS_DATA.slice(0, 3).map(shipment => (
+                                <tr key={shipment.id} className="border-b last:border-0 hover:bg-gray-50">
+                                    <td className="p-3 font-medium text-gray-800">{shipment.id}</td>
+                                    <td className="p-3 text-gray-600">{shipment.clientName}</td>
+                                    <td className="p-3 text-right">
+                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(shipment.status)}`}>{shipment.status}</span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </DashboardCard>
         </div>
     </div>
 );
 
-const AdminShipmentManagementView: React.FC = () => {
-    const [shipments, setShipments] = useState(ADMIN_SHIPMENTS_DATA);
-    
-    const handleStatusChange = (shipmentId: string, newStatus: ClientShipment['status']) => {
-        setShipments(prev => prev.map(s => s.id === shipmentId ? {...s, status: newStatus} : s));
-    };
+const AdminManageShipmentsView: React.FC = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const filteredShipments = useMemo(() => {
+        if (!searchTerm) return ADMIN_SHIPMENTS_DATA;
+        const lowercasedFilter = searchTerm.toLowerCase();
+        return ADMIN_SHIPMENTS_DATA.filter(s =>
+            s.id.toLowerCase().includes(lowercasedFilter) ||
+            s.clientName.toLowerCase().includes(lowercasedFilter) ||
+            s.origin.toLowerCase().includes(lowercasedFilter) ||
+            s.destination.toLowerCase().includes(lowercasedFilter)
+        );
+    }, [searchTerm]);
 
     return (
-        <DashboardCard title="Shipment Management">
-            <div className="mb-4">
-                {/* Filters would go here */}
+        <DashboardCard title="All Shipments">
+             <div className="mb-4">
+                <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <IconSearch />
+                    </span>
+                    <input
+                        type="text"
+                        placeholder="Search by ID, client, origin, destination..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full max-w-lg py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]"
+                    />
+                </div>
             </div>
-            <div className="overflow-x-auto">
+             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                     <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                    <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                         <tr>
                             <th className="px-4 py-3">Tracking ID</th>
                             <th className="px-4 py-3">Client</th>
@@ -1777,65 +1929,13 @@ const AdminShipmentManagementView: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {shipments.map(s => (
+                        {filteredShipments.map(s => (
                             <tr key={s.id} className="border-b hover:bg-gray-50">
                                 <td className="px-4 py-3 font-medium">{s.id}</td>
                                 <td className="px-4 py-3">{s.clientName}</td>
                                 <td className="px-4 py-3">{s.origin} &rarr; {s.destination}</td>
                                 <td className="px-4 py-3">
-                                    <select value={s.status} onChange={(e) => handleStatusChange(s.id, e.target.value as ClientShipment['status'])} className="text-xs p-1 border rounded">
-                                        <option>In Transit</option>
-                                        <option>Customs Hold</option>
-                                        <option>Delivered</option>
-                                        <option>Cancelled</option>
-                                    </select>
-                                </td>
-                                <td className="px-4 py-3">
-                                    <button className="font-medium text-[#00529b] hover:underline">Details</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </DashboardCard>
-    );
-}
-
-const AdminUserManagementView: React.FC = () => {
-    const [users, setUsers] = useState(ALL_USERS_DATA);
-
-    const handleStatusChange = (userId: string, newStatus: User['status']) => {
-        setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: newStatus } : u));
-    };
-
-    return (
-         <DashboardCard title="User Management">
-             <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                     <thead className="text-xs text-gray-500 uppercase bg-gray-50">
-                        <tr>
-                            <th className="px-4 py-3">Name</th>
-                            <th className="px-4 py-3">Company</th>
-                            <th className="px-4 py-3">Email</th>
-                            <th className="px-4 py-3">Type</th>
-                            <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map(u => (
-                            <tr key={u.id} className="border-b hover:bg-gray-50">
-                                <td className="px-4 py-3 font-medium">{u.name}</td>
-                                <td className="px-4 py-3">{u.company}</td>
-                                <td className="px-4 py-3">{u.email}</td>
-                                <td className="px-4 py-3">{u.accountType}</td>
-                                <td className="px-4 py-3">
-                                    <select value={u.status} onChange={(e) => handleStatusChange(u.id, e.target.value as User['status'])} className="text-xs p-1 border rounded">
-                                        <option>Active</option>
-                                        <option>Pending</option>
-                                        <option>Deactivated</option>
-                                    </select>
+                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(s.status)}`}>{s.status}</span>
                                 </td>
                                 <td className="px-4 py-3">
                                     <button className="font-medium text-[#00529b] hover:underline">Manage</button>
@@ -1846,81 +1946,168 @@ const AdminUserManagementView: React.FC = () => {
                 </table>
             </div>
         </DashboardCard>
-    )
-}
+    );
+};
 
-const AdminServiceManagementView: React.FC = () => (
-    <DashboardCard title="Service Management">
-         <div className="overflow-x-auto">
-             <table className="w-full text-sm text-left">
-                 <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+const AdminManageUsersView: React.FC = () => (
+    <DashboardCard title="All Users (Clients & Admins)">
+        <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+                <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                     <tr>
-                        <th className="px-4 py-3">Service Title</th>
-                        <th className="px-4 py-3">Description Snippet</th>
+                        <th className="px-4 py-3">Name</th>
+                        <th className="px-4 py-3">Company</th>
+                        <th className="px-4 py-3">Account Type</th>
+                        <th className="px-4 py-3">Status</th>
                         <th className="px-4 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {ALL_SERVICES.map(service => (
-                        <tr key={service.title} className="border-b hover:bg-gray-50">
-                            <td className="px-4 py-3 font-medium">{service.title}</td>
-                            <td className="px-4 py-3">{service.description.substring(0, 100)}...</td>
+                    {ALL_USERS_DATA.map(user => (
+                        <tr key={user.id} className="border-b hover:bg-gray-50">
+                            <td className="px-4 py-3 font-medium">{user.name}</td>
+                            <td className="px-4 py-3">{user.company}</td>
+                            <td className="px-4 py-3">{user.accountType}</td>
                             <td className="px-4 py-3">
-                                <button className="font-medium text-[#00529b] hover:underline">Edit</button>
+                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(user.status)}`}>{user.status}</span>
+                            </td>
+                            <td className="px-4 py-3">
+                                <button className="font-medium text-[#00529b] hover:underline">Edit User</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
-             </table>
-         </div>
+            </table>
+        </div>
     </DashboardCard>
 );
 
+const AdminWalletRequestsView: React.FC = () => (
+    <DashboardCard title="Wallet Top-up & Withdrawal Requests">
+         <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+                <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                    <tr>
+                        <th className="px-4 py-3">Client</th>
+                        <th className="px-4 py-3">Type</th>
+                        <th className="px-4 py-3 text-right">Amount</th>
+                        <th className="px-4 py-3">Method</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {ADMIN_WALLET_REQUESTS_DATA.map(req => (
+                        <tr key={req.id} className="border-b hover:bg-gray-50">
+                            <td className="px-4 py-3 font-medium">{req.clientName}</td>
+                            <td className="px-4 py-3">{req.type}</td>
+                            <td className="px-4 py-3 text-right font-semibold">{req.amount.toLocaleString()} {req.currency}</td>
+                            <td className="px-4 py-3 text-xs">{req.method}</td>
+                            <td className="px-4 py-3">
+                                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(req.status)}`}>{req.status}</span>
+                            </td>
+                            <td className="px-4 py-3 text-center space-x-2">
+                                {req.status === 'Pending' && (
+                                    <>
+                                        <button className="font-medium text-green-600 hover:underline text-xs">Approve</button>
+                                        <button className="font-medium text-red-600 hover:underline text-xs">Decline</button>
+                                    </>
+                                )}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </DashboardCard>
+);
+
+const AdminReportsView: React.FC = () => (
+    <div className="space-y-6">
+        <DashboardCard title="Key Metrics">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                <div>
+                    <p className="text-sm text-gray-500">Revenue (YTD)</p>
+                    <p className="text-2xl font-bold">£{ADMIN_ANALYTICS_DATA.totalRevenue.toLocaleString()}</p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-500">Shipments (YTD)</p>
+                    <p className="text-2xl font-bold">{ADMIN_ANALYTICS_DATA.totalShipments.toLocaleString()}</p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-500">New Clients (MTD)</p>
+                    <p className="text-2xl font-bold">{ADMIN_ANALYTICS_DATA.newClients}</p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-500">Pending Issues</p>
+                    <p className="text-2xl font-bold">{ADMIN_ANALYTICS_DATA.pendingIssues}</p>
+                </div>
+            </div>
+        </DashboardCard>
+        <DashboardCard title="Revenue Breakdown">
+             <SimpleBarChart data={ADMIN_ANALYTICS_DATA.revenueByService} label="Revenue" />
+        </DashboardCard>
+    </div>
+);
+
+const AdminSettingsView: React.FC = () => (
+    <DashboardCard title="System Settings">
+        <p>Placeholder for global system settings, such as shipping rates, API integrations, etc.</p>
+    </DashboardCard>
+);
+
+{/* FIX: Export the AdminDashboardPage component so it can be imported and used in App.tsx. */}
 export const AdminDashboardPage: React.FC = () => {
     const [currentView, setCurrentView] = useState('dashboard');
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
     const sidebarItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: <IconGraphUpArrow /> },
-        { id: 'shipments', label: 'Shipments', icon: <IconListTask /> },
-        { id: 'users', label: 'Users', icon: <IconUserPlus /> },
-        { id: 'services', label: 'Services', icon: <IconPencilSquare /> },
-        // Future items can be added here
+        { id: 'dashboard', label: 'Dashboard', icon: <IconDashboard /> },
+        { id: 'manage-shipments', label: 'Manage Shipments', icon: <IconBoxSeam /> },
+        { id: 'manage-users', label: 'Manage Users', icon: <IconUserPlus /> },
+        { id: 'wallet-requests', label: 'Wallet Requests', icon: <IconWallet2 /> },
+        { id: 'reports', label: 'Reports', icon: <IconFileEarmarkSpreadsheet /> },
+        { id: 'settings-divider', label: 'divider' },
+        { id: 'settings', label: 'Settings', icon: <IconSettings /> },
     ];
 
     const renderView = () => {
         switch(currentView) {
             case 'dashboard': return <AdminDashboardOverviewView />;
-            case 'shipments': return <AdminShipmentManagementView />;
-            case 'users': return <AdminUserManagementView />;
-            case 'services': return <AdminServiceManagementView />;
+            case 'manage-shipments': return <AdminManageShipmentsView />;
+            case 'manage-users': return <AdminManageUsersView />;
+            case 'wallet-requests': return <AdminWalletRequestsView />;
+            case 'reports': return <AdminReportsView />;
+            case 'settings': return <AdminSettingsView />;
             default: return <AdminDashboardOverviewView />;
         }
     };
-
-    const handleLogout = () => {
+    
+     const handleLogout = () => {
         // Placeholder for logout logic
         navigate('/admin-login');
     }
 
     const PageTitle: {[key: string]: string} = {
         dashboard: "Admin Dashboard",
-        shipments: "Shipment Management",
-        users: "User Management",
-        services: "Service Management",
-    };
+        'manage-shipments': "Manage Shipments",
+        'manage-users': "Manage Users",
+        'wallet-requests': "Wallet Requests",
+        reports: "Reports & Analytics",
+        settings: "System Settings",
+    }
 
     return (
-        <div className="flex h-screen bg-gray-100 font-sans">
-            {/* Sidebar */}
+         <div className="flex h-screen bg-gray-100 font-sans">
             <aside className={`absolute lg:relative z-20 flex-shrink-0 w-64 h-full bg-white border-r transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
                 <div className="flex items-center justify-center h-20 border-b">
                      <Link to="/"><img src={SITE_CONFIG.logoUrl} alt="Logo" className="h-10"/></Link>
                 </div>
-                <nav className="mt-6">
+                 <nav className="mt-6">
                     <ul>
                         {sidebarItems.map(item => (
+                            item.label === 'divider' ? <hr key={item.id} className="my-4" /> :
                             <li key={item.id} className="relative px-6 py-3">
                                 <button onClick={() => { setCurrentView(item.id); setSidebarOpen(false); }} className={`inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 ${currentView === item.id ? 'text-gray-800' : 'text-gray-500'}`}>
                                      {currentView === item.id && <span className="absolute inset-y-0 left-0 w-1 bg-[#b58e31] rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>}
@@ -1933,14 +2120,13 @@ export const AdminDashboardPage: React.FC = () => {
                 </nav>
             </aside>
             <div className="flex flex-col flex-1 w-full">
-                {/* Header */}
                  <header className="z-10 py-4 bg-white shadow-md">
                     <div className="container flex items-center justify-between h-full px-6 mx-auto text-[#00529b]">
-                        <button className="p-1 mr-5 -ml-1 rounded-md lg:hidden focus:outline-none" onClick={() => setSidebarOpen(!isSidebarOpen)} aria-label="Menu" aria-expanded={isSidebarOpen}>
-                             <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
+                        <button className="p-1 mr-5 -ml-1 rounded-md lg:hidden focus:outline-none focus:shadow-outline-purple" onClick={() => setSidebarOpen(!isSidebarOpen)} aria-label="Menu">
+                            <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
                         </button>
-                        <div className="flex justify-center flex-1 lg:mr-32">
-                             <h1 className="text-2xl font-semibold text-gray-700">{PageTitle[currentView] || "Admin Dashboard"}</h1>
+                         <div className="flex justify-center flex-1 lg:mr-32">
+                             <h1 className="text-2xl font-semibold text-gray-700">{PageTitle[currentView] || "Dashboard"}</h1>
                         </div>
                         <ul className="flex items-center flex-shrink-0 space-x-6">
                             <li className="relative">
@@ -1949,9 +2135,7 @@ export const AdminDashboardPage: React.FC = () => {
                         </ul>
                     </div>
                 </header>
-
-                {/* Main Content */}
-                <main className="h-full overflow-y-auto">
+                 <main className="h-full overflow-y-auto">
                     <div className="container px-6 py-8 mx-auto grid">
                         {renderView()}
                     </div>
