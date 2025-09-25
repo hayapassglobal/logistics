@@ -71,50 +71,13 @@ export const AboutPage: React.FC = () => (
 );
 
 export const ServicesOverviewPage: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const filteredServices = useMemo(() => {
-        if (!searchTerm.trim()) {
-            return ALL_SERVICES;
-        }
-        const lowercasedFilter = searchTerm.toLowerCase();
-        return ALL_SERVICES.filter(service =>
-            service.title.toLowerCase().includes(lowercasedFilter) ||
-            service.description.toLowerCase().includes(lowercasedFilter)
-        );
-    }, [searchTerm]);
-
     return (
         <>
             <PageHeader title="Our Services" subtitle="A complete suite of logistics solutions designed to meet your every need." />
             <div className="w-[90%] max-w-7xl mx-auto px-4 py-16">
-                <div className="mb-12 max-w-2xl mx-auto">
-                    <div className="relative">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                           <IconWrapper><IconSearch/></IconWrapper>
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Search for a service (e.g., 'air freight', 'warehousing')"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full py-3 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]"
-                        />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {ALL_SERVICES.map(service => <ServiceCard key={service.title} service={service} />)}
                 </div>
-
-                {filteredServices.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredServices.map(service => <ServiceCard key={service.title} service={service} />)}
-                    </div>
-                ) : (
-                    <div className="text-center py-16">
-                        <h3 className="text-2xl font-semibold text-gray-700">No Services Found</h3>
-                        <p className="text-gray-500 mt-2">
-                            We couldn't find any services matching "{searchTerm}". Please try a different search term.
-                        </p>
-                    </div>
-                )}
             </div>
         </>
     );
@@ -129,6 +92,25 @@ const ServiceDetailPage: React.FC<{title: string; description: string; content: 
         </div>
     </>
 );
+
+export const ServiceUKDomesticPage: React.FC = () => <ServiceDetailPage title="UK Domestic Logistics" description="Specialized, reliable, and efficient shipping solutions across the United Kingdom." content={
+    <>
+        <h3>Your Partner for UK-Wide Distribution</h3>
+        <p>Hayapass offers a complete range of domestic logistics services tailored for the UK market. Whether you're an e-commerce business reaching customers nationwide or a company managing a complex B2B supply chain, we have the infrastructure and expertise to support you.</p>
+        
+        <h4>Key UK Services:</h4>
+        <ul>
+            <li><strong>Next-Day Parcel Delivery:</strong> Our core service, ensuring your parcels reach their destination anywhere in the UK by the next working day.</li>
+            <li><strong>Economy Services:</strong> A cost-effective solution for less urgent shipments, typically delivered within 2-3 working days.</li>
+            <li><strong>Pallet & Freight Services:</strong> We handle everything from single pallets to full truckloads (FTL) and less-than-truckloads (LTL), with options for oversized and heavy goods.</li>
+            <li><strong>Same-Day & Timed Delivery:</strong> For your most critical shipments, we offer dedicated same-day courier services and specific timed delivery slots.</li>
+            <li><strong>Specialized Handling:</strong> Secure and compliant transport for high-value, fragile, or restricted items within the UK.</li>
+        </ul>
+        
+        <h4>Why Choose Us for UK Logistics?</h4>
+        <p>Our deep network of local hubs and couriers, combined with advanced tracking technology, provides unparalleled reliability and visibility. We offer flexible solutions that scale with your business needs, ensuring your goods are always in safe hands and delivered on schedule.</p>
+    </>
+} />;
 
 export const ServiceDomesticPage: React.FC = () => <ServiceDetailPage title="UK & Nigeria Domestic Shipping" description="Fast, reliable, and secure delivery services within the UK and across Nigeria." content={
     <>
@@ -234,6 +216,97 @@ export const ServiceConsultancyPage: React.FC = () => <ServiceDetailPage title="
         <p>Our goal is to provide you with a strategic framework to reduce costs, enhance visibility, improve delivery times, and increase overall supply chain resilience.</p>
     </>
 } />;
+
+export const PersonalShopperPage: React.FC = () => {
+    const [formData, setFormData] = useState({
+        name: '', email: '', phone: '', country: '', address: '', list: '', instructions: ''
+    });
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log("Personal Shopper Request:", formData);
+        setSubmitted(true);
+        window.scrollTo(0, 0);
+    };
+    
+    const formFieldClasses = "w-full p-2 border border-gray-300 rounded-md bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31]";
+
+
+    if (submitted) {
+        return (
+            <>
+                <PageHeader title="Request Received!" subtitle="Thank you for your Personal Shopper request." />
+                <div className="w-[90%] max-w-4xl mx-auto px-4 py-16">
+                    <ContentBlock className="text-center">
+                        <h2 className="text-2xl font-bold mb-4">We've received your shopping list!</h2>
+                        <p className="text-gray-600 mb-6">A member of our personal shopper team will review your request and contact you shortly via WhatsApp or email to confirm details and provide a quote. A confirmation has been sent to <strong>{formData.email}</strong>.</p>
+                        <Button asLink to="/" primary>Back to Homepage</Button>
+                    </ContentBlock>
+                </div>
+            </>
+        )
+    }
+
+    return (
+        <>
+            <PageHeader
+                title="Personal Shopper Service"
+                subtitle="Craving authentic Nigerian food items? We shop, package, and ship them directly to you, anywhere in the world."
+            />
+            <div className="w-[90%] max-w-7xl mx-auto px-4 py-16">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div className="prose max-w-none">
+                        <h3>Authentic Nigerian Flavours, Delivered Globally</h3>
+                        <p>Looking for fresh, top-quality Nigerian food items delivered straight to your doorstep? Whether you're in Nigeria or abroad, we are your trusted source for the authentic tastes of home. We shop for the best, so you don't have to.</p>
+                        
+                        <h4>What We Can Source For You</h4>
+                        <p>We specialize in sourcing a wide variety of high-quality Nigerian foodstuffs, including:</p>
+                        <ul className="list-disc pl-5 grid grid-cols-2 gap-x-4">
+                            <li>Goat meat</li>
+                            <li>Dry fish</li>
+                            <li>Big dry crayfish (panla)</li>
+                            <li>Stockfish (okporoko)</li>
+                            <li>Egusi (ground)</li>
+                            <li>Ogbono (ground)</li>
+                            <li>Baskets of small crayfish</li>
+                            <li>Big fresh snails</li>
+                        </ul>
+
+                        <h4>Our Process: Simple & Secure</h4>
+                        <p>We handle everything with the utmost care to ensure your food arrives fresh and in perfect condition.</p>
+                        <ol>
+                            <li><strong>You Order:</strong> Fill out the form with your shopping list and any special preparation instructions.</li>
+                            <li><strong>We Shop:</strong> Our team sources the freshest, highest-quality items from trusted local markets.</li>
+                            <li><strong>We Package & Ship:</strong> Your order is meticulously prepared (e.g., washed, oven-dried), professionally sealed to prevent leaks, and packaged for international shipping. We then ship it directly to you via our reliable logistics network.</li>
+                        </ol>
+
+                        <p>Enjoy premium service and the authentic taste of Nigeria, no matter where you are. Place your order today!</p>
+                    </div>
+                    
+                    <ContentBlock>
+                        <h3 className="text-2xl font-bold mb-6">Place Your Shopping Request</h3>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} required className={formFieldClasses} />
+                            <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required className={formFieldClasses} />
+                            <input type="tel" name="phone" placeholder="WhatsApp Phone Number (e.g. +44...)" value={formData.phone} onChange={handleChange} required className={formFieldClasses} />
+                            <input type="text" name="country" placeholder="Delivery Country" value={formData.country} onChange={handleChange} required className={formFieldClasses} />
+                            <textarea name="address" placeholder="Full Delivery Address" value={formData.address} onChange={handleChange} required rows={3} className={formFieldClasses} />
+                            <textarea name="list" placeholder="Your Shopping List & Quantities (e.g., 2kg Goat meat, 1 paint bucket Egusi)" value={formData.list} onChange={handleChange} required rows={5} className={formFieldClasses} />
+                            <textarea name="instructions" placeholder="Special Instructions (e.g., Snails should be washed, oven-dried & sealed)" value={formData.instructions} onChange={handleChange} rows={3} className={formFieldClasses} />
+                            <Button type="submit" primary className="w-full">Submit Request</Button>
+                        </form>
+                    </ContentBlock>
+                </div>
+            </div>
+        </>
+    );
+};
+
 
 export const TrackingPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -1627,7 +1700,7 @@ export const ClientDashboardPage: React.FC = () => {
                 {/* Header */}
                  <header className="z-10 py-4 bg-white shadow-md">
                     <div className="container flex items-center justify-between h-full px-6 mx-auto text-[#00529b]">
-                        <button className="p-1 mr-5 -ml-1 rounded-md lg:hidden focus:outline-none focus:shadow-outline-purple" onClick={() => setSidebarOpen(!isSidebarOpen)} aria-label="Menu">
+                        <button className="p-1 mr-5 -ml-1 rounded-md lg:hidden focus:outline-none focus:shadow-outline-purple" onClick={() => setSidebarOpen(!isSidebarOpen)} aria-label="Menu" aria-expanded={isSidebarOpen}>
                             <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
                         </button>
                         <div className="flex justify-center flex-1 lg:mr-32">
@@ -1863,7 +1936,7 @@ export const AdminDashboardPage: React.FC = () => {
                 {/* Header */}
                  <header className="z-10 py-4 bg-white shadow-md">
                     <div className="container flex items-center justify-between h-full px-6 mx-auto text-[#00529b]">
-                        <button className="p-1 mr-5 -ml-1 rounded-md lg:hidden focus:outline-none" onClick={() => setSidebarOpen(!isSidebarOpen)} aria-label="Menu">
+                        <button className="p-1 mr-5 -ml-1 rounded-md lg:hidden focus:outline-none" onClick={() => setSidebarOpen(!isSidebarOpen)} aria-label="Menu" aria-expanded={isSidebarOpen}>
                              <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
                         </button>
                         <div className="flex justify-center flex-1 lg:mr-32">

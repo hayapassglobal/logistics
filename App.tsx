@@ -1,8 +1,7 @@
-
 import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { Header, Footer } from './components';
-import { HomePage, AboutPage, ServicesOverviewPage, ServiceDomesticPage, ServiceInternationalPage, ServiceWarehousingPage, ServiceCustomsPage, ServiceSpecializedPage, ServiceConsultancyPage, TrackingPage, QuoteRequestPage, FaqPage, ContactPage, PrivacyPolicyPage, TermsPage, AdminLoginPage, ClientAuthPage, ClientDashboardPage, RatesCalculatorPage, AdminDashboardPage } from './pages';
+import { HomePage, AboutPage, ServicesOverviewPage, ServiceDomesticPage, ServiceInternationalPage, ServiceWarehousingPage, ServiceCustomsPage, ServiceSpecializedPage, ServiceConsultancyPage, TrackingPage, QuoteRequestPage, FaqPage, ContactPage, PrivacyPolicyPage, TermsPage, AdminLoginPage, ClientAuthPage, ClientDashboardPage, RatesCalculatorPage, AdminDashboardPage, ServiceUKDomesticPage, PersonalShopperPage } from './pages';
 
 // Helper component to scroll to top on page change
 const ScrollToTop = (): null => {
@@ -36,11 +35,13 @@ const App: React.FC = () => {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesOverviewPage />} />
           <Route path="/services/domestic" element={<ServiceDomesticPage />} />
+          <Route path="/services/uk-domestic" element={<ServiceUKDomesticPage />} />
           <Route path="/services/international" element={<ServiceInternationalPage />} />
           <Route path="/services/warehousing" element={<ServiceWarehousingPage />} />
           <Route path="/services/customs" element={<ServiceCustomsPage />} />
           <Route path="/services/specialized" element={<ServiceSpecializedPage />} />
           <Route path="/services/consultancy" element={<ServiceConsultancyPage />} />
+          <Route path="/personal-shopper" element={<PersonalShopperPage />} />
           <Route path="/tracking" element={<TrackingPage />} />
           <Route path="/rates" element={<RatesCalculatorPage />} />
           <Route path="/quote" element={<QuoteRequestPage />} />

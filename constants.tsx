@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier } from './types';
 import { Link } from 'react-router-dom';
@@ -95,7 +94,7 @@ export const SITE_CONFIG = {
     phoneNG: "+234 801 234 5678",
     addressUK: "Unit 15, Park Royal Industrial Estate, London, NW10 7WP, UK",
     addressNG: "Plot 7B, Acme Road, Ogba Industrial Estate, Ikeja, Lagos, Nigeria",
-    whatsapp: "+447700900000",
+    whatsapp: "+447724061019",
   },
   social: {
     facebook: "https://facebook.com/hayapasslogistics",
@@ -109,6 +108,7 @@ export const HEADER_MENU_ITEMS: MenuItem[] = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
+  { label: "Personal Shopper", href: "/personal-shopper" },
   { label: "Rates Calculator", href: "/rates" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
@@ -167,6 +167,7 @@ export const CORE_SERVICES: Service[] = [
 ];
 
 export const ALL_SERVICES: Service[] = [
+    { icon: <IconTruck />, title: "UK Domestic Logistics", description: "Dedicated and comprehensive shipping services within the United Kingdom, from single parcels to full truckloads.", link: "/services/uk-domestic" },
     ...CORE_SERVICES,
     { icon: <IconPackage />, title: "Specialized Cargo Handling", description: "From perishable goods to oversized project cargo and hazardous materials, we have the expertise to handle your specialized shipping requirements safely and efficiently.", link: "/services/specialized" },
     { icon: <IconHeadset />, title: "Logistics Consultancy", description: "Optimize your supply chain with our expert consultancy services. We analyze your current processes and provide strategic recommendations for improved efficiency and cost savings.", link: "/services/consultancy" },
