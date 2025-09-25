@@ -125,3 +125,11 @@ export interface ClientNotification {
     snippet: string;
     status: 'Unread' | 'Read';
 }
+
+export interface TeamMember {
+    id: string;
+    name: string;
+    email: string;
+    role: 'Admin' | 'Member';
+    status: 'Active' | 'Pending';
+}

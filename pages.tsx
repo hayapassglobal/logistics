@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button } from './components';
-import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA } from './constants';
+import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, CLIENT_TEAM_MEMBERS_DATA } from './constants';
 import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck } from './constants';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult } from './types';
+import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, TeamMember } from './types';
 
 
 export const HomePage: React.FC = () => (
@@ -1120,6 +1120,8 @@ const DashboardStatusBadge: React.FC<{ status: string }> = ({ status }) => {
         'paid': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
         'unread': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 font-bold',
         'read': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+        'active': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
+        'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
     };
     const badgeClass = statusMap[status.toLowerCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
     return <span className={`inline-block px-2.5 py-1 text-xs font-semibold rounded-full capitalize ${badgeClass}`}>{status}</span>;
@@ -1764,10 +1766,82 @@ const AddressModal: React.FC<{ isOpen: boolean; onClose: () => void; onSave: (ad
     );
 };
 
+
+const InviteUserModal: React.FC<{ isOpen: boolean, onClose: () => void, onInvite: (msg: string) => void }> = ({ isOpen, onClose, onInvite }) => {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const email = formData.get('email');
+        onInvite(`Invitation sent to ${email} (simulated).`);
+        onClose();
+    };
+    return (
+        <DashboardModal isOpen={isOpen} onClose={onClose} title="Invite New Team Member">
+            <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="md:col-span-2"><AuthLabel htmlFor="invite_email" required>Email Address</AuthLabel><AuthInput type="email" id="invite_email" name="email" required /></div>
+                    <div>
+                        <AuthLabel htmlFor="invite_role" required>Role</AuthLabel>
+                        <AuthSelect id="invite_role" name="role" required>
+                            <option value="Member">Member</option>
+                            <option value="Admin">Admin</option>
+                        </AuthSelect>
+                    </div>
+                </div>
+                <div className="mt-6 pt-6 border-t dark:border-gray-600 flex justify-end gap-4">
+                    <Button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 border-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-500">Cancel</Button>
+                    <Button type="submit" primary>Send Invitation</Button>
+                </div>
+            </form>
+        </DashboardModal>
+    );
+};
+
+const TeamManagementView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setAlertMessage }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    return (
+        <>
+        <InviteUserModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onInvite={setAlertMessage} />
+        <DashboardModule>
+            <DashboardModuleHeader title="Team Management">
+                <Button primary onClick={() => setIsModalOpen(true)}>Invite New User</Button>
+            </DashboardModuleHeader>
+            <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                        <tr>
+                            <th scope="col" className="px-6 py-3">Name</th>
+                            <th scope="col" className="px-6 py-3">Email</th>
+                            <th scope="col" className="px-6 py-3">Role</th>
+                            <th scope="col" className="px-6 py-3">Status</th>
+                            <th scope="col" className="px-6 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {CLIENT_TEAM_MEMBERS_DATA.map(m => (
+                            <tr key={m.id} className="bg-white dark:bg-[#2c333c] border-b dark:border-gray-700">
+                                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{m.name}</td>
+                                <td className="px-6 py-4">{m.email}</td>
+                                <td className="px-6 py-4">{m.role}</td>
+                                <td className="px-6 py-4"><DashboardStatusBadge status={m.status} /></td>
+                                <td className="px-6 py-4 text-right">
+                                    <Button outline className="!text-xs !py-1 !px-3">Edit</Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </DashboardModule>
+        </>
+    );
+};
+
 export const ClientDashboardPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+    const [accountType, setAccountType] = useState<'individual' | 'business'>('business');
     const [activeView, setActiveView] = useState('dashboard');
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
@@ -1840,6 +1914,7 @@ export const ClientDashboardPage: React.FC = () => {
         { id: 'invoices', title: 'Invoices', icon: <IconReceipt /> },
         { id: 'wallet', title: 'Wallet', icon: <IconWallet2 /> },
         { id: 'addresses', title: 'Address Book', icon: <IconGeoAlt /> },
+        ...(accountType === 'business' ? [{ id: 'team', title: 'Team Management', icon: <IconUserPlus /> }] : []),
         { id: 'notifications', title: 'Notifications', icon: <IconBell /> },
         { id: 'settings', title: 'Profile Settings', icon: <IconPerson /> },
     ];
@@ -1852,6 +1927,7 @@ export const ClientDashboardPage: React.FC = () => {
             case 'invoices': return <InvoicesView setAlertMessage={setAlertMessage}/>;
             case 'wallet': return <WalletView setAlertMessage={setAlertMessage}/>;
             case 'addresses': return <AddressBookView addresses={addresses} onEdit={handleOpenAddressModal} onAdd={() => handleOpenAddressModal()} />;
+            case 'team': return accountType === 'business' ? <TeamManagementView setAlertMessage={setAlertMessage} /> : <DashboardOverview onNavClick={handleNavClick} />;
             case 'notifications': return <NotificationsView setAlertMessage={setAlertMessage} />;
             case 'settings': return <ProfileSettingsView setAlertMessage={setAlertMessage} profileImage={clientProfileImage} onImageUpdate={handleProfileImageUpdate} />;
             case 'dashboard':
@@ -1901,7 +1977,15 @@ export const ClientDashboardPage: React.FC = () => {
                         </button>
                         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 hidden lg:block">Client Dashboard</h2>
                         <div className="flex items-center gap-4">
-                            <span className="text-gray-600 dark:text-gray-400 text-sm hidden sm:block">Welcome, Client!</span>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 hidden sm:flex items-center gap-2">
+                                <span>Individual</span>
+                                 <label htmlFor="account-type-toggle" className="relative inline-block w-9 h-5 rounded-full cursor-pointer">
+                                    <input type="checkbox" id="account-type-toggle" className="sr-only peer" checked={accountType === 'business'} onChange={() => setAccountType(p => p === 'individual' ? 'business' : 'individual')} />
+                                    <div className="w-full h-full bg-slate-300 dark:bg-slate-600 rounded-full peer-checked:bg-green-500"></div>
+                                    <div className="absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full transition-transform duration-300 peer-checked:translate-x-4"></div>
+                                </label>
+                                 <span>Business</span>
+                            </div>
                              <label htmlFor="theme-toggle-client-dash" className="relative inline-block w-10 h-5 rounded-full cursor-pointer">
                                 <input type="checkbox" id="theme-toggle-client-dash" className="sr-only peer" checked={isDarkMode} onChange={() => setIsDarkMode(!isDarkMode)} />
                                 <div className="w-full h-full bg-slate-300 dark:bg-slate-600 rounded-full peer-checked:bg-[#e4b74e]"></div>
