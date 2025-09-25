@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button } from './components';
 import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA } from './constants';
@@ -804,16 +803,21 @@ export const ClientAuthPage: React.FC = () => {
 
 // --- NEW CLIENT DASHBOARD & COMPONENTS ---
 
-const DashboardModal: React.FC<{ isOpen: boolean, onClose: () => void, title: string, children: React.ReactNode }> = ({ isOpen, onClose, title, children }) => {
+const DashboardModal: React.FC<{ isOpen: boolean, onClose: () => void, title: string, children: React.ReactNode, size?: 'md' | 'lg' | 'xl' }> = ({ isOpen, onClose, title, children, size = 'lg' }) => {
     if (!isOpen) return null;
+    const sizeMap = {
+        'md': 'max-w-md',
+        'lg': 'max-w-2xl',
+        'xl': 'max-w-4xl'
+    };
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4 animate-fade-in-fast" onClick={onClose}>
-            <div className="bg-white dark:bg-[#2c333c] rounded-lg shadow-xl w-full max-w-2xl border border-gray-300 dark:border-gray-600" onClick={e => e.stopPropagation()}>
+            <div className={`bg-white dark:bg-[#2c333c] rounded-lg shadow-xl w-full ${sizeMap[size]} border border-gray-300 dark:border-gray-600`} onClick={e => e.stopPropagation()}>
                 <div className="flex justify-between items-center p-4 border-b dark:border-gray-600">
                     <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{title}</h3>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">&times;</button>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white text-2xl leading-none">&times;</button>
                 </div>
-                <div className="p-6">{children}</div>
+                <div className="p-6 max-h-[80vh] overflow-y-auto">{children}</div>
             </div>
         </div>
     );
@@ -826,7 +830,7 @@ const DashboardModule: React.FC<{ children: React.ReactNode; className?: string 
 );
 
 const DashboardModuleHeader: React.FC<{ title: string, children?: React.ReactNode }> = ({ title, children }) => (
-    <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-600">
+    <div className="flex flex-wrap gap-4 justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-600">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{title}</h2>
         <div>{children}</div>
     </div>
@@ -841,44 +845,74 @@ const DashboardStatusBadge: React.FC<{ status: string }> = ({ status }) => {
         'arrived at hgl': 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300',
         'unpaid': 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
         'paid': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
+        'unread': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 font-bold',
+        'read': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
     };
     const badgeClass = statusMap[status.toLowerCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
     return <span className={`inline-block px-2.5 py-1 text-xs font-semibold rounded-full capitalize ${badgeClass}`}>{status}</span>;
 };
 
-const ShipmentsView: React.FC<{ onShipmentSelect: (id: string) => void }> = ({ onShipmentSelect }) => (
-    <DashboardModule>
-        <DashboardModuleHeader title="My Shipments">
-            <Button primary>New Shipment</Button>
-        </DashboardModuleHeader>
-        <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
-                    <tr>
-                        <th scope="col" className="px-6 py-3">ID</th>
-                        <th scope="col" className="px-6 py-3">Date</th>
-                        <th scope="col" className="px-6 py-3">Origin</th>
-                        <th scope="col" className="px-6 py-3">Destination</th>
-                        <th scope="col" className="px-6 py-3">Status</th>
-                        <th scope="col" className="px-6 py-3">Est. Delivery</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {CLIENT_SHIPMENTS_DATA.map(s => (
-                        <tr key={s.id} className="bg-white dark:bg-[#2c333c] border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer" onClick={() => onShipmentSelect(s.id)}>
-                            <td className="px-6 py-4 font-medium text-[#00529b] dark:text-[#e4b74e] underline">{s.id}</td>
-                            <td className="px-6 py-4">{s.date}</td>
-                            <td className="px-6 py-4">{s.origin}</td>
-                            <td className="px-6 py-4">{s.destination}</td>
-                            <td className="px-6 py-4"><DashboardStatusBadge status={s.status} /></td>
-                            <td className="px-6 py-4">{s.estDelivery}</td>
+const NewShipmentModal: React.FC<{ isOpen: boolean, onClose: () => void, onShipmentCreated: (msg: string) => void }> = ({ isOpen, onClose, onShipmentCreated }) => {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onShipmentCreated('New shipment has been successfully created (simulated)!');
+        onClose();
+    };
+    return (
+        <DashboardModal isOpen={isOpen} onClose={onClose} title="Create New Shipment">
+             <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><AuthLabel htmlFor="ship_origin" required>Origin Country</AuthLabel><AuthInput id="ship_origin" required /></div>
+                    <div><AuthLabel htmlFor="ship_dest" required>Destination Country</AuthLabel><AuthInput id="ship_dest" required /></div>
+                    <div className="md:col-span-2"><AuthLabel htmlFor="ship_desc" required>Description of Goods</AuthLabel><textarea id="ship_desc" rows={3} required className="w-full p-2.5 border rounded-md bg-gray-100 dark:bg-[#3a4149] text-slate-800 dark:text-slate-200 border-gray-300 dark:border-[#495057] focus:ring-2 focus:ring-[#b58e31]/50 focus:border-[#b58e31] transition" /></div>
+                </div>
+                <div className="mt-6 pt-6 border-t dark:border-gray-600 flex justify-end gap-4">
+                    <Button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 border-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-500">Cancel</Button>
+                    <Button type="submit" primary>Create Shipment</Button>
+                </div>
+            </form>
+        </DashboardModal>
+    );
+};
+
+const ShipmentsView: React.FC<{ onShipmentSelect: (id: string) => void, setAlertMessage: (msg: string) => void }> = ({ onShipmentSelect, setAlertMessage }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    return(
+    <>
+        <NewShipmentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onShipmentCreated={setAlertMessage} />
+        <DashboardModule>
+            <DashboardModuleHeader title="My Shipments">
+                <Button primary onClick={() => setIsModalOpen(true)}>New Shipment</Button>
+            </DashboardModuleHeader>
+            <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                        <tr>
+                            <th scope="col" className="px-6 py-3">ID</th>
+                            <th scope="col" className="px-6 py-3">Date</th>
+                            <th scope="col" className="px-6 py-3">Origin</th>
+                            <th scope="col" className="px-6 py-3">Destination</th>
+                            <th scope="col" className="px-6 py-3">Status</th>
+                            <th scope="col" className="px-6 py-3">Est. Delivery</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    </DashboardModule>
-);
+                    </thead>
+                    <tbody>
+                        {CLIENT_SHIPMENTS_DATA.map(s => (
+                            <tr key={s.id} className="bg-white dark:bg-[#2c333c] border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer" onClick={() => onShipmentSelect(s.id)}>
+                                <td className="px-6 py-4 font-medium text-[#00529b] dark:text-[#e4b74e] underline">{s.id}</td>
+                                <td className="px-6 py-4">{s.date}</td>
+                                <td className="px-6 py-4">{s.origin}</td>
+                                <td className="px-6 py-4">{s.destination}</td>
+                                <td className="px-6 py-4"><DashboardStatusBadge status={s.status} /></td>
+                                <td className="px-6 py-4">{s.estDelivery}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </DashboardModule>
+    </>
+)};
 
 const CreatePreAlertModal: React.FC<{ isOpen: boolean, onClose: () => void, onAlertCreated: (msg: string) => void }> = ({ isOpen, onClose, onAlertCreated }) => {
     const handleSubmit = (e: React.FormEvent) => {
@@ -1033,73 +1067,111 @@ const InvoicesView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ se
     );
 };
 
-const WalletView: React.FC = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 flex flex-col gap-6">
-            <DashboardModule>
-                 <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">GBP Wallet Balance</h3>
-                 <p className="text-3xl font-bold text-gray-900 dark:text-white">£ 75.50</p>
-            </DashboardModule>
-             <DashboardModule>
-                 <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">NGN Wallet Balance</h3>
-                 <p className="text-3xl font-bold text-gray-900 dark:text-white">₦ 15,000.00</p>
-            </DashboardModule>
-            <DashboardModule>
-                <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-4">Top Up Wallet</h3>
-                <div className="space-y-4">
-                    <Button primary className="w-full">Top Up Now</Button>
+const TopUpWalletModal: React.FC<{ isOpen: boolean, onClose: () => void, onTopUp: (msg: string) => void }> = ({ isOpen, onClose, onTopUp }) => {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const amount = formData.get('amount');
+        const currency = formData.get('currency');
+        onTopUp(`Successfully topped up ${currency} wallet with ${amount} (simulated)!`);
+        onClose();
+    };
+    return (
+        <DashboardModal isOpen={isOpen} onClose={onClose} title="Top Up Wallet">
+            <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-2">For Nigeria:</p>
-                        <div className="flex justify-center items-center gap-3 grayscale opacity-60">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Paystack_Logo.png" alt="Paystack" className="h-4"/>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Flutterwave_Logo.png" alt="Flutterwave" className="h-5"/>
-                        </div>
+                        <AuthLabel htmlFor="topup_amount" required>Amount</AuthLabel>
+                        <AuthInput type="number" id="topup_amount" name="amount" step="0.01" min="1" required />
                     </div>
-                     <div>
-                        <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-2">For Rest of World:</p>
-                         <div className="flex justify-center items-center gap-4 grayscale opacity-60">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5"/>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" className="h-5"/>
-                        </div>
+                    <div>
+                        <AuthLabel htmlFor="topup_currency" required>Currency</AuthLabel>
+                        <AuthSelect id="topup_currency" name="currency" required><option value="GBP">GBP (£)</option><option value="NGN">NGN (₦)</option></AuthSelect>
                     </div>
                 </div>
-            </DashboardModule>
-        </div>
-        <div className="lg:col-span-2">
-             <DashboardModule>
-                <DashboardModuleHeader title="Transaction History" />
-                <div className="overflow-x-auto">
-                     <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
-                            <tr>
-                                <th scope="col" className="px-6 py-3">Date</th>
-                                <th scope="col" className="px-6 py-3">Description</th>
-                                <th scope="col" className="px-6 py-3 text-right">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {WALLET_TRANSACTIONS_DATA.map((t, idx) => (
-                                 <tr key={idx} className="bg-white dark:bg-[#2c333c] border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <td className="px-6 py-4">{t.date}</td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{t.description}</td>
-                                    <td className={`px-6 py-4 text-right font-semibold flex items-center justify-end gap-2 ${t.type === 'Credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                       {t.type === 'Credit' ? <IconWrapper className="w-4 h-4"><IconArrowDownCircle /></IconWrapper> : <IconWrapper className="w-4 h-4"><IconArrowUpCircle /></IconWrapper>}
-                                       <span>{t.gbp ? `£${t.gbp.replace(/[+-]/g, '')}` : `₦${t.ngn?.replace(/[+-]/g, '')}`}</span>
-                                    </td>
+                 <p className="text-center text-sm text-gray-500 my-6">You will be redirected to our payment provider to complete the transaction.</p>
+                <div className="mt-6 pt-6 border-t dark:border-gray-600 flex justify-end gap-4">
+                    <Button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 border-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-500">Cancel</Button>
+                    <Button type="submit" primary>Proceed to Payment</Button>
+                </div>
+            </form>
+        </DashboardModal>
+    );
+};
+
+
+const WalletView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setAlertMessage }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    return(
+    <>
+        <TopUpWalletModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onTopUp={setAlertMessage} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1 flex flex-col gap-6">
+                <DashboardModule>
+                     <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">GBP Wallet Balance</h3>
+                     <p className="text-3xl font-bold text-gray-900 dark:text-white">£ 75.50</p>
+                </DashboardModule>
+                 <DashboardModule>
+                     <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">NGN Wallet Balance</h3>
+                     <p className="text-3xl font-bold text-gray-900 dark:text-white">₦ 15,000.00</p>
+                </DashboardModule>
+                <DashboardModule>
+                    <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-4">Top Up Wallet</h3>
+                    <div className="space-y-4">
+                        <Button primary className="w-full" onClick={() => setIsModalOpen(true)}>Top Up Now</Button>
+                        <div>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-2">For Nigeria:</p>
+                            <div className="flex justify-center items-center gap-3 grayscale opacity-60">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Paystack_Logo.png" alt="Paystack" className="h-4"/>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Flutterwave_Logo.png" alt="Flutterwave" className="h-5"/>
+                            </div>
+                        </div>
+                         <div>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-2">For Rest of World:</p>
+                             <div className="flex justify-center items-center gap-4 grayscale opacity-60">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5"/>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" className="h-5"/>
+                            </div>
+                        </div>
+                    </div>
+                </DashboardModule>
+            </div>
+            <div className="lg:col-span-2">
+                 <DashboardModule>
+                    <DashboardModuleHeader title="Transaction History" />
+                    <div className="overflow-x-auto">
+                         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3">Date</th>
+                                    <th scope="col" className="px-6 py-3">Description</th>
+                                    <th scope="col" className="px-6 py-3 text-right">Amount</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </DashboardModule>
+                            </thead>
+                            <tbody>
+                                {WALLET_TRANSACTIONS_DATA.map((t, idx) => (
+                                     <tr key={idx} className="bg-white dark:bg-[#2c333c] border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <td className="px-6 py-4">{t.date}</td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{t.description}</td>
+                                        <td className={`px-6 py-4 text-right font-semibold flex items-center justify-end gap-2 ${t.type === 'Credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                           {t.type === 'Credit' ? <IconWrapper className="w-4 h-4"><IconArrowDownCircle /></IconWrapper> : <IconWrapper className="w-4 h-4"><IconArrowUpCircle /></IconWrapper>}
+                                           <span>{t.gbp ? `£${t.gbp.replace(/[+-]/g, '')}` : `₦${t.ngn?.replace(/[+-]/g, '')}`}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </DashboardModule>
+            </div>
         </div>
-    </div>
-);
+    </>
+)};
 
 const AddressBookView: React.FC = () => (
     <DashboardModule>
         <DashboardModuleHeader title="Address Book">
-            <Button primary>Add New Address</Button>
+            <Button primary onClick={() => alert("Open 'Add Address' modal.")}>Add New Address</Button>
         </DashboardModuleHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {CLIENT_ADDRESSES_DATA.map(a => (
@@ -1107,8 +1179,8 @@ const AddressBookView: React.FC = () => (
                     <div className="flex justify-between items-start mb-2">
                         <h4 className="font-bold text-gray-800 dark:text-gray-200">{a.label}</h4>
                         <div className="flex gap-2">
-                           <Button outline className="!text-xs !py-1 !px-2">Edit</Button>
-                           <Button secondary className="!text-xs !py-1 !px-2 !bg-red-600 !border-red-600 hover:!bg-red-700">Delete</Button>
+                           <Button outline className="!text-xs !py-1 !px-2" onClick={() => alert(`Editing address: ${a.label}`)}>Edit</Button>
+                           <Button secondary className="!text-xs !py-1 !px-2 !bg-red-600 !border-red-600 hover:!bg-red-700" onClick={() => confirm(`Are you sure you want to delete the address '${a.label}'?`)}>Delete</Button>
                         </div>
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -1190,6 +1262,126 @@ const ShipmentDetailView: React.FC<{ shipmentId: string; onBack: () => void }> =
     );
 };
 
+const StatCard: React.FC<{title: string, value: string, icon: React.ReactNode}> = ({ title, value, icon }) => (
+    <DashboardModule className="flex items-center gap-4">
+        <div className="w-12 h-12 flex-shrink-0 rounded-full bg-[#b58e31]/20 dark:bg-[#e4b74e]/20 text-[#b58e31] dark:text-[#e4b74e] flex items-center justify-center">
+            <IconWrapper className="w-6 h-6">{icon}</IconWrapper>
+        </div>
+        <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
+            <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
+        </div>
+    </DashboardModule>
+);
+
+const DashboardOverview: React.FC<{onNavClick: (viewId: string) => void}> = ({onNavClick}) => (
+    <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <StatCard title="In Transit" value={CLIENT_SHIPMENTS_DATA.filter(s => s.status === 'In Transit').length.toString()} icon={<IconTruck />} />
+            <StatCard title="Unpaid Invoices" value={CLIENT_INVOICES_DATA.filter(i => i.status === 'Unpaid').length.toString()} icon={<IconReceipt />} />
+            <StatCard title="Unread Notifications" value={CLIENT_NOTIFICATIONS_DATA.filter(n => n.status === 'Unread').length.toString()} icon={<IconBell />} />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <DashboardModule>
+                <DashboardModuleHeader title="Recent Shipments">
+                    <Button outline className="!text-xs !py-1 !px-3" onClick={() => onNavClick('shipments')}>View All</Button>
+                </DashboardModuleHeader>
+                <ul className="space-y-4">
+                    {CLIENT_SHIPMENTS_DATA.slice(0, 3).map(s => (
+                        <li key={s.id} className="flex justify-between items-center text-sm">
+                            <div>
+                                <p className="font-semibold text-gray-800 dark:text-gray-200">{s.id}</p>
+                                <p className="text-gray-500 dark:text-gray-400">{s.origin} &rarr; {s.destination}</p>
+                            </div>
+                            <DashboardStatusBadge status={s.status} />
+                        </li>
+                    ))}
+                </ul>
+            </DashboardModule>
+            <DashboardModule>
+                <DashboardModuleHeader title="Recent Notifications">
+                     <Button outline className="!text-xs !py-1 !px-3" onClick={() => onNavClick('notifications')}>View All</Button>
+                </DashboardModuleHeader>
+                <ul className="space-y-4">
+                    {CLIENT_NOTIFICATIONS_DATA.slice(0, 3).map((n, i) => (
+                         <li key={i} className={`p-3 rounded-md ${n.status === 'Unread' ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
+                             <p className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{n.subject}</p>
+                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{n.snippet}</p>
+                         </li>
+                    ))}
+                </ul>
+            </DashboardModule>
+        </div>
+    </div>
+);
+
+const NotificationsView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setAlertMessage }) => {
+    const [notifications, setNotifications] = useState(CLIENT_NOTIFICATIONS_DATA);
+
+    const handleMarkAsRead = (index: number) => {
+        setNotifications(prev => prev.map((n, i) => i === index ? { ...n, status: 'Read' } : n));
+    };
+
+    const handleDelete = (index: number) => {
+        setNotifications(prev => prev.filter((_, i) => i !== index));
+        setAlertMessage("Notification deleted.");
+    };
+
+    return (
+        <DashboardModule>
+            <DashboardModuleHeader title="Notifications" />
+            <ul className="space-y-4">
+                {notifications.map((n, i) => (
+                    <li key={i} className={`p-4 border rounded-lg flex items-start gap-4 transition-colors ${n.status === 'Unread' ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : 'dark:border-gray-700'}`}>
+                        <div className="flex-grow">
+                            <div className="flex justify-between items-center mb-1">
+                                <p className="font-semibold text-gray-800 dark:text-gray-200">{n.subject}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{n.date}</p>
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{n.snippet}</p>
+                            <div className="flex gap-2">
+                                {n.status === 'Unread' && <Button outline onClick={() => handleMarkAsRead(i)} className="!text-xs !py-1 !px-3">Mark as Read</Button>}
+                                <Button secondary onClick={() => handleDelete(i)} className="!text-xs !py-1 !px-3 !bg-red-600 !border-red-600 hover:!bg-red-700">Delete</Button>
+                            </div>
+                        </div>
+                    </li>
+                ))}
+                {notifications.length === 0 && <p className="text-center text-gray-500 dark:text-gray-400 py-8">You have no notifications.</p>}
+            </ul>
+        </DashboardModule>
+    );
+};
+
+const ProfileSettingsView: React.FC<{ setAlertMessage: (msg: string) => void }> = ({ setAlertMessage }) => {
+    const handleSave = (e: React.FormEvent, message: string) => {
+        e.preventDefault();
+        setAlertMessage(message);
+    };
+
+    return (
+        <div className="space-y-6">
+            <DashboardModule>
+                <DashboardModuleHeader title="Personal Information" />
+                <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={e => handleSave(e, 'Personal information updated!')}>
+                    <div><AuthLabel htmlFor="profile_name">Full Name</AuthLabel><AuthInput id="profile_name" defaultValue="Client Example Name" /></div>
+                    <div><AuthLabel htmlFor="profile_email">Email Address</AuthLabel><AuthInput id="profile_email" type="email" defaultValue="client@example.com" /></div>
+                    <div><AuthLabel htmlFor="profile_phone">Phone Number</AuthLabel><AuthInput id="profile_phone" type="tel" defaultValue="+44 7012345678" /></div>
+                    <div className="md:col-span-2 text-right"><Button primary type="submit">Save Changes</Button></div>
+                </form>
+            </DashboardModule>
+            <DashboardModule>
+                <DashboardModuleHeader title="Change Password" />
+                 <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={e => handleSave(e, 'Password updated successfully!')}>
+                    <div className="md:col-span-2"><AuthLabel htmlFor="profile_pass_current">Current Password</AuthLabel><AuthInput id="profile_pass_current" type="password" /></div>
+                    <div><AuthLabel htmlFor="profile_pass_new">New Password</AuthLabel><AuthInput id="profile_pass_new" type="password" /></div>
+                    <div><AuthLabel htmlFor="profile_pass_confirm">Confirm New Password</AuthLabel><AuthInput id="profile_pass_confirm" type="password" /></div>
+                    <div className="md:col-span-2 text-right"><Button primary type="submit">Update Password</Button></div>
+                </form>
+            </DashboardModule>
+        </div>
+    );
+};
+
 
 export const ClientDashboardPage: React.FC = () => {
     const navigate = useNavigate();
@@ -1202,6 +1394,7 @@ export const ClientDashboardPage: React.FC = () => {
     useEffect(() => {
         const hash = location.hash.replace('#', '');
         if (hash) setActiveView(hash);
+        else setActiveView('dashboard');
     }, [location]);
 
     useEffect(() => {
@@ -1244,13 +1437,15 @@ export const ClientDashboardPage: React.FC = () => {
         const [view, subView] = activeView.split('/');
         switch(view) {
             case 'shipments': 
-                return subView ? <ShipmentDetailView shipmentId={subView} onBack={() => handleNavClick('shipments')} /> : <ShipmentsView onShipmentSelect={(id) => handleNavClick(`shipments/${id}`)} />;
+                return subView ? <ShipmentDetailView shipmentId={subView} onBack={() => handleNavClick('shipments')} /> : <ShipmentsView onShipmentSelect={(id) => handleNavClick(`shipments/${id}`)} setAlertMessage={setAlertMessage} />;
             case 'pre-alerts': return <PreAlertsView setAlertMessage={setAlertMessage} />;
             case 'invoices': return <InvoicesView setAlertMessage={setAlertMessage}/>;
-            case 'wallet': return <WalletView />;
+            case 'wallet': return <WalletView setAlertMessage={setAlertMessage}/>;
             case 'addresses': return <AddressBookView />;
+            case 'notifications': return <NotificationsView setAlertMessage={setAlertMessage} />;
+            case 'settings': return <ProfileSettingsView setAlertMessage={setAlertMessage} />;
             case 'dashboard':
-            default: return <div><h1 className="text-2xl font-bold text-gray-800 dark:text-white">Dashboard Overview</h1><p className="text-gray-600 dark:text-gray-400">Welcome back!</p></div>;
+            default: return <DashboardOverview onNavClick={handleNavClick} />;
         }
     };
 
@@ -1272,7 +1467,7 @@ export const ClientDashboardPage: React.FC = () => {
                 </ul>
             </nav>
             <div className="p-4 border-t border-white/20">
-                <Link to="/login" className="w-full flex items-center gap-3 text-left py-2.5 px-4 rounded-md text-sm font-medium transition-colors hover:bg-white/10">Logout</Link>
+                <button onClick={() => navigate('/login')} className="w-full flex items-center gap-3 text-left py-2.5 px-4 rounded-md text-sm font-medium transition-colors hover:bg-white/10">Logout</button>
             </div>
         </aside>
     );
@@ -1285,6 +1480,7 @@ export const ClientDashboardPage: React.FC = () => {
                 </div>
             )}
             <div className="flex min-h-screen bg-gray-100 dark:bg-[#1f2937]">
+                {isSidebarOpen && <div className="fixed inset-0 bg-black/50 z-10 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
                 <Sidebar />
                 <div className="flex-1 flex flex-col">
                      <header className="h-16 bg-white dark:bg-[#2c333c] shadow-md flex items-center justify-between px-6 border-b border-gray-200 dark:border-gray-600 sticky top-0 z-10">
