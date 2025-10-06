@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button, AdminButton } from './components';
-import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, MANAGEABLE_PAGES_CONTENT } from './constants';
+import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, MANAGEABLE_PAGES_CONTENT, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, LOYALTY_DATA, REFERRAL_DATA, API_TOKENS_DATA, WEBHOOKS_DATA } from './constants';
 import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, IconShieldCheck, IconFileText, IconHelpCircle, IconGlobe, IconWarehouse, IconCustoms, IconPackage, IconSend, ICON_MAP } from './constants';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, FaqItemData, WalletRequest } from './types';
@@ -860,7 +861,9 @@ export const ClientAuthPage: React.FC = () => {
 
     const handleLoginSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        navigate('/dashboard');
+        // Determine user type based on email for demo
+        const userType = formData.loginEmail?.includes('business') ? 'business' : 'individual';
+        navigate('/dashboard', { state: { accountType: userType } });
     };
     
     const handleRegistrationSubmit = (e: React.FormEvent) => {
@@ -983,12 +986,13 @@ export const ClientAuthPage: React.FC = () => {
                         </div>
                         <FormInput name="2faCode" label="Verification Code" value={formData['2faCode'] || ''} onChange={handleInputChange} placeholder="Enter 6-digit code" required />
                          <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                           <Button onClick={() => navigate('/dashboard')} primary className="w-full">Verify & Finish</Button>
-                           <Button onClick={() => navigate('/dashboard')} secondary className="w-full">Skip for Now</Button>
+                           <Button onClick={() => navigate('/dashboard', { state: { accountType } })} primary className="w-full">Verify & Finish</Button>
+                           <Button onClick={() => navigate('/dashboard', { state: { accountType } })} secondary className="w-full">Skip for Now</Button>
                         </div>
                     </div>
                 );
             default:
+                setRegistrationStep(0);
                 return null;
         }
     };
@@ -998,7 +1002,7 @@ export const ClientAuthPage: React.FC = () => {
             case 'login':
                 return (
                     <form onSubmit={handleLoginSubmit} className="space-y-4">
-                        <FormInput name="loginEmail" label="Email Address" type="email" value={formData.loginEmail || ''} onChange={handleInputChange} required />
+                        <FormInput name="loginEmail" label="Email Address" type="email" value={formData.loginEmail || ''} onChange={handleInputChange} required placeholder="user@example.com or user@business.com"/>
                         <FormInput name="loginPassword" label="Password" type="password" value={formData.loginPassword || ''} onChange={handleInputChange} required />
                         <div className="text-sm text-right">
                             <button type="button" onClick={() => setAuthMode('forgotPassword')} className="font-medium text-[#00529b] hover:text-[#b58e31]">Forgot your password?</button>
@@ -1079,6 +1083,8 @@ export const ClientAuthPage: React.FC = () => {
     );
 };
 
+// --- START: CLIENT DASHBOARD VIEWS ---
+
 const DashboardCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; footer?: string; }> = ({ title, value, icon, footer }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex items-start justify-between">
@@ -1094,7 +1100,7 @@ const DashboardCard: React.FC<{ title: string; value: string | number; icon: Rea
     </div>
 );
 
-const ClientDashboardOverviewView: React.FC = () => (
+const ClientDashboardOverviewView: React.FC<{ accountType: 'individual' | 'business' }> = ({ accountType }) => (
     <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <DashboardCard title="Active Shipments" value={CLIENT_SHIPMENTS_DATA.filter(s => s.status !== 'Delivered').length} icon={<IconBoxSeam />} footer="+1 this week" />
@@ -1102,43 +1108,52 @@ const ClientDashboardOverviewView: React.FC = () => (
             <DashboardCard title="Wallet (NGN)" value={`₦${WALLET_TRANSACTIONS_DATA.reduce((acc, t) => acc + (parseFloat(t.ngn || '0')), 0).toLocaleString()}`} icon={<IconWallet2 />} footer="Last transaction: 28 Oct" />
             <DashboardCard title="Pending Pre-Alerts" value={CLIENT_PREALERTS_DATA.filter(p => p.status === 'Pending Arrival').length} icon={<IconBell />} footer="1 arrived today" />
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Shipments</h3>
-            <div className="overflow-x-auto">
-                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tracking ID</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Origin</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {CLIENT_SHIPMENTS_DATA.slice(0, 3).map(shipment => (
-                            <tr key={shipment.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#00529b]">{shipment.id}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shipment.origin}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shipment.destination}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{shipment.status}</span>
-                                </td>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Shipments</h3>
+                <div className="overflow-x-auto">
+                     <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tracking ID</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {CLIENT_SHIPMENTS_DATA.slice(0, 3).map(shipment => (
+                                <tr key={shipment.id}>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#00529b]">{shipment.id}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shipment.destination}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{shipment.status}</span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                 <div className="grid grid-cols-2 gap-4">
+                     <Link to="/dashboard#shipments" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconTruck/></IconWrapper><span className="text-sm font-medium">New Shipment</span></Link>
+                     <Link to="/dashboard#pre-alerts" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconBell/></IconWrapper><span className="text-sm font-medium">New Pre-Alert</span></Link>
+                     <Link to="/dashboard#wallet" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconWallet2/></IconWrapper><span className="text-sm font-medium">Top Up Wallet</span></Link>
+                     <Link to="/contact" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconHeadset/></IconWrapper><span className="text-sm font-medium">Contact Support</span></Link>
+                 </div>
             </div>
         </div>
     </div>
 );
 
 const ClientDashboardShipmentsView: React.FC = () => {
-    const [selectedShipment, setSelectedShipment] = useState<DetailedClientShipment | null>(null);
+    const [selectedShipment, setSelectedShipment] = useState<DetailedClientShipment | null>(CLIENT_SHIPMENT_DETAILS_DATA[CLIENT_SHIPMENTS_DATA[0].id]);
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">All Shipments</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-1">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-1 h-96 overflow-y-auto pr-2">
                     <ul className="space-y-2">
                         {CLIENT_SHIPMENTS_DATA.map(s => (
                              <li key={s.id} onClick={() => setSelectedShipment(CLIENT_SHIPMENT_DETAILS_DATA[s.id])}
@@ -1150,21 +1165,21 @@ const ClientDashboardShipmentsView: React.FC = () => {
                         ))}
                     </ul>
                 </div>
-                <div className="md:col-span-2">
+                <div className="lg:col-span-2">
                     {selectedShipment ? (
                         <div className="p-4 border rounded-lg h-full">
-                            <h4 className="text-xl font-bold mb-4">{selectedShipment.id}</h4>
+                            <h4 className="text-xl font-bold mb-4 text-gray-800">{selectedShipment.id}</h4>
                             <div className="grid grid-cols-2 gap-4 text-sm mb-6">
                                 <p><strong>Service:</strong> {selectedShipment.service}</p>
                                 <p><strong>Weight:</strong> {selectedShipment.weight}</p>
                                 <p><strong>Origin:</strong> {selectedShipment.origin}</p>
                                 <p><strong>Destination:</strong> {selectedShipment.destination}</p>
                             </div>
-                            <h5 className="font-semibold mb-2">Milestones</h5>
+                            <h5 className="font-semibold mb-2 text-gray-700">Milestones</h5>
                             <ul className="border-l-2 border-gray-200 pl-4 space-y-4">
                                 {selectedShipment.milestones.map((m, i) => (
                                      <li key={i} className="relative">
-                                         <div className="absolute -left-5 top-1 w-2 h-2 bg-gray-400 rounded-full"></div>
+                                         <div className={`absolute -left-[21px] top-1 w-2.5 h-2.5 ${i===0 ? 'bg-[#00529b]' : 'bg-gray-400'} rounded-full ring-4 ring-white`}></div>
                                         <p className="font-medium text-gray-800">{m.status} - {m.location}</p>
                                         <p className="text-xs text-gray-500">{m.date} @ {m.time}</p>
                                         {m.notes && <p className="text-xs text-red-500 mt-1">{m.notes}</p>}
@@ -1287,46 +1302,293 @@ const ClientDashboardWalletView: React.FC = () => (
     </div>
 );
 
-const ClientDashboardAccountView: React.FC = () => (
+const ClientDashboardAddressesView: React.FC = () => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Account Settings</h3>
-        <p>Manage your profile, addresses, and security settings.</p>
+        <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-semibold text-gray-800">Address Book</h3>
+            <Button primary><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconPlus/></IconWrapper>Add New Address</Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {CLIENT_ADDRESSES_DATA.map(addr => (
+                <div key={addr.id} className="p-4 border rounded-lg relative">
+                    <div className="absolute top-2 right-2 flex gap-2">
+                        {addr.isDefaultShipping && <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Shipping</span>}
+                        {addr.isDefaultBilling && <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Billing</span>}
+                    </div>
+                    <p className="font-bold text-gray-800">{addr.label}</p>
+                    <p className="text-sm text-gray-600">{addr.name}</p>
+                    <p className="text-sm text-gray-600">{addr.street}</p>
+                    <p className="text-sm text-gray-600">{addr.country}</p>
+                    <p className="text-sm text-gray-600">{addr.phone}</p>
+                    <div className="mt-4 pt-4 border-t flex gap-2 text-sm">
+                        <button className="text-[#00529b] hover:underline font-medium">Edit</button>
+                        <button className="text-red-600 hover:underline font-medium">Delete</button>
+                    </div>
+                </div>
+            ))}
+        </div>
     </div>
 );
 
+const ClientDashboardAccountView: React.FC<{accountType: 'individual' | 'business'}> = ({accountType}) => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h3>
+            <form className="space-y-4">
+                {accountType === 'business' ? (
+                     <>
+                        <FormInput name="companyName" label="Company Name" value="NijaBiz Connect" onChange={() => {}} />
+                        <FormInput name="contactName" label="Contact Name" value="Bola Adeyemi" onChange={() => {}} />
+                     </>
+                ) : (
+                    <FormInput name="fullName" label="Full Name" value="Chioma Okoro" onChange={() => {}} />
+                )}
+                 <FormInput name="email" label="Email Address" type="email" value="bola@nijabiz.com" onChange={() => {}} />
+                 <FormInput name="phone" label="Phone Number" type="tel" value="+234 801 234 5678" onChange={() => {}} />
+                 <div className="pt-2"><Button primary>Save Changes</Button></div>
+            </form>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+             <h3 className="text-lg font-semibold text-gray-800 mb-4">Security</h3>
+             <form className="space-y-4">
+                <FormInput name="currentPassword" label="Current Password" type="password" value="" onChange={() => {}} />
+                <FormInput name="newPassword" label="New Password" type="password" value="" onChange={() => {}} />
+                 <div className="pt-2"><Button secondary>Change Password</Button></div>
+             </form>
+        </div>
+    </div>
+);
+
+const IconPlus: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/></svg>;
+
+// --- START: BUSINESS-ONLY DASHBOARD VIEWS ---
+
+const ClientDashboardTeamView: React.FC = () => (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Team Management</h3>
+            <Button primary><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconUserPlus/></IconWrapper>Invite Member</Button>
+        </div>
+        <div className="overflow-x-auto">
+             <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {CLIENT_TEAM_MEMBERS_DATA.map(user => (
+                        <tr key={user.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{user.name} <span className="block text-gray-500">{user.email}</span></td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{user.role}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{user.status}</td>
+                             <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                <button className="text-[#00529b] hover:underline">Edit</button>
+                                {user.status === 'Pending' && <button className="text-green-600 hover:underline">Resend Invite</button>}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+const ClientDashboardReportsView: React.FC = () => (
+    <div className="space-y-8">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Monthly Spend (Last 6 Months)</h3>
+            <div className="h-64 flex items-end gap-4 border-l border-b p-4">
+                {ANALYTICS_DATA.monthlySpend.map(item => (
+                    <div key={item.name} className="flex-1 flex flex-col items-center justify-end">
+                        <div className="w-full bg-[#00529b] hover:bg-[#b58e31] transition-colors rounded-t-md" style={{height: `${(item.value / 7000) * 100}%`}} title={`£${item.value}`}></div>
+                        <span className="text-xs mt-1">{item.name}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+             <h3 className="text-lg font-semibold text-gray-800 mb-4">Top Routes by Spend</h3>
+             <ul className="space-y-3">
+                 {ANALYTICS_DATA.topRoutes.map(route => (
+                     <li key={route.name}>
+                        <div className="flex justify-between text-sm mb-1">
+                            <span>{route.name} ({route.shipments} shipments)</span>
+                            <span className="font-medium">£{route.value.toLocaleString()}</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div className="bg-[#b58e31] h-2.5 rounded-full" style={{width: `${(route.value / 20000) * 100}%`}}></div>
+                        </div>
+                     </li>
+                 ))}
+             </ul>
+        </div>
+    </div>
+);
+
+const ClientDashboardLoyaltyView: React.FC = () => (
+     <div className="bg-white p-6 rounded-lg shadow-sm">
+         <h3 className="text-lg font-semibold text-gray-800 mb-4">Loyalty & Rewards Program</h3>
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center bg-gradient-to-r from-[#00529b] to-[#003e76] p-8 rounded-lg text-white">
+            <div className="text-center">
+                <p className="text-sm uppercase tracking-widest text-yellow-300">Current Tier</p>
+                <p className="text-4xl font-bold">{LOYALTY_DATA.name}</p>
+            </div>
+            <div className="md:col-span-2">
+                <p className="text-sm">Current Spend: £{LOYALTY_DATA.currentSpend.toLocaleString()} / £{LOYALTY_DATA.nextTierSpend.toLocaleString()}</p>
+                 <div className="w-full bg-white/30 rounded-full h-4 mt-2">
+                    <div className="bg-yellow-400 h-4 rounded-full" style={{width: `${(LOYALTY_DATA.currentSpend / LOYALTY_DATA.nextTierSpend) * 100}%`}}></div>
+                </div>
+                <p className="text-xs mt-2 text-white/80">You're £{(LOYALTY_DATA.nextTierSpend - LOYALTY_DATA.currentSpend).toLocaleString()} away from the next tier!</p>
+            </div>
+         </div>
+         <div className="mt-8">
+             <h4 className="font-semibold text-gray-700 mb-3">Your {LOYALTY_DATA.name} Tier Benefits:</h4>
+             <ul className="list-disc pl-5 space-y-2 text-gray-600">
+                {LOYALTY_DATA.benefits.map((benefit, i) => <li key={i}>{benefit}</li>)}
+             </ul>
+         </div>
+     </div>
+);
+
+const ClientDashboardDeveloperView: React.FC = () => (
+    <div className="space-y-8">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">API Keys</h3>
+                <Button primary>Generate New Key</Button>
+            </div>
+            {API_TOKENS_DATA.map(token => (
+                <div key={token.id} className="font-mono text-sm p-3 bg-gray-50 rounded-md flex justify-between items-center mb-2">
+                    <div>
+                        <p className="font-medium text-gray-800">{token.name}</p>
+                        <p className="text-gray-500">{token.token}</p>
+                    </div>
+                    <button className="text-red-600 hover:underline">Revoke</button>
+                </div>
+            ))}
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Webhooks</h3>
+                <Button primary>Create Webhook</Button>
+            </div>
+            {WEBHOOKS_DATA.map(hook => (
+                 <div key={hook.id} className="font-mono text-sm p-3 bg-gray-50 rounded-md mb-2">
+                     <p className="font-medium text-gray-800">{hook.url}</p>
+                     <p className="text-xs text-gray-500">Events: {hook.events.join(', ')}</p>
+                 </div>
+            ))}
+        </div>
+    </div>
+);
+
+// --- START: INDIVIDUAL-ONLY DASHBOARD VIEWS ---
+
+const ClientDashboardReferralView: React.FC = () => (
+     <div className="bg-white p-6 rounded-lg shadow-sm">
+         <h3 className="text-lg font-semibold text-gray-800 mb-4">Refer a Friend</h3>
+         <p className="text-gray-600 mb-6">Refer a friend to Hayapass and you'll both get £10 credit when they complete their first shipment!</p>
+         
+         <div className="mb-8">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Your Unique Referral Link</label>
+            <div className="flex gap-2">
+                <input type="text" readOnly value="https://hayapass.com/register?ref=CLIENT123" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 font-mono text-sm" />
+                <Button secondary onClick={() => navigator.clipboard.writeText("https://hayapass.com/register?ref=CLIENT123")}>Copy</Button>
+            </div>
+         </div>
+
+         <h4 className="font-semibold text-gray-700 mb-3">Referrals</h4>
+          <div className="overflow-x-auto">
+             <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referred Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reward</th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {REFERRAL_DATA.map((ref, i) => (
+                        <tr key={i}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{ref.date}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{ref.email}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{ref.status}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{ref.status === 'Completed' ? ref.reward : '-'}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+     </div>
+);
+
+// --- MAIN CLIENT DASHBOARD COMPONENT ---
+
 export const ClientDashboardPage: React.FC = () => {
     const location = useLocation();
+    const passedState = location.state as { accountType?: 'individual' | 'business' };
+    
+    // Default to 'business' for showcasing more features, but allow login to set it.
+    const [accountType, setAccountType] = useState<'individual' | 'business'>(passedState?.accountType || 'business');
     const [activeView, setActiveView] = useState('Overview');
     
     useEffect(() => {
-        const hash = location.hash.replace('#', '');
+        const hash = location.hash.replace('#', '').replace('-', ' ');
         if (hash) {
-            const viewName = hash.charAt(0).toUpperCase() + hash.slice(1);
+            const viewName = hash.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
             setActiveView(viewName);
         } else {
             setActiveView('Overview');
         }
     }, [location]);
 
-    const menuItems = [
+    const individualMenuItems = [
         { name: 'Overview', icon: <IconDashboard /> },
         { name: 'Shipments', icon: <IconBoxSeam /> },
         { name: 'Pre-Alerts', icon: <IconBell /> },
         { name: 'Invoices', icon: <IconReceipt /> },
         { name: 'Wallet', icon: <IconWallet2 /> },
         { name: 'Addresses', icon: <IconGeoAlt /> },
+        { name: 'Refer a Friend', icon: <IconShare /> },
         { name: 'Account', icon: <IconPerson /> },
     ];
     
+    const businessMenuItems = [
+        { name: 'Overview', icon: <IconDashboard /> },
+        { name: 'Shipments', icon: <IconBoxSeam /> },
+        { name: 'Pre-Alerts', icon: <IconBell /> },
+        { name: 'Invoices', icon: <IconReceipt /> },
+        { name: 'Wallet', icon: <IconWallet2 /> },
+        { name: 'Addresses', icon: <IconGeoAlt /> },
+        { name: 'Team Management', icon: <IconUserPlus /> },
+        { name: 'Reports', icon: <IconGraphUpArrow /> },
+        { name: 'Loyalty', icon: <IconShieldCheck /> },
+        { name: 'Developer', icon: <IconCodeSlash /> },
+        { name: 'Account', icon: <IconPerson /> },
+    ];
+    
+    const menuItems = accountType === 'individual' ? individualMenuItems : businessMenuItems;
+    
     const renderView = () => {
         switch (activeView) {
-            case 'Overview': return <ClientDashboardOverviewView />;
+            case 'Overview': return <ClientDashboardOverviewView accountType={accountType} />;
             case 'Shipments': return <ClientDashboardShipmentsView />;
-            case 'Pre-Alerts': return <ClientDashboardPreAlertsView />;
+            case 'Pre Alerts': return <ClientDashboardPreAlertsView />;
             case 'Invoices': return <ClientDashboardInvoicesView />;
             case 'Wallet': return <ClientDashboardWalletView />;
-            case 'Account': return <ClientDashboardAccountView />;
-            default: return <ClientDashboardOverviewView />;
+            case 'Addresses': return <ClientDashboardAddressesView />;
+            case 'Account': return <ClientDashboardAccountView accountType={accountType} />;
+            case 'Refer a Friend': return accountType === 'individual' ? <ClientDashboardReferralView /> : null;
+            case 'Team Management': return accountType === 'business' ? <ClientDashboardTeamView /> : null;
+            case 'Reports': return accountType === 'business' ? <ClientDashboardReportsView /> : null;
+            case 'Loyalty': return accountType === 'business' ? <ClientDashboardLoyaltyView /> : null;
+            case 'Developer': return accountType === 'business' ? <ClientDashboardDeveloperView /> : null;
+            default: return <ClientDashboardOverviewView accountType={accountType} />;
         }
     };
 
@@ -1334,14 +1596,14 @@ export const ClientDashboardPage: React.FC = () => {
         <div className="min-h-screen bg-gray-100 flex">
             <aside className="w-64 bg-slate-800 text-white flex flex-col">
                  <div className="h-16 flex items-center justify-center border-b border-slate-700">
-                    <img src={SITE_CONFIG.logoUrl} alt="Logo" className="h-10"/>
+                    <Link to="/"><img src={SITE_CONFIG.logoUrl} alt="Logo" className="h-10"/></Link>
                 </div>
                 <nav className="flex-grow py-4">
                     <ul>
                         {menuItems.map(item => (
                              <li key={item.name}>
-                                <Link to={`/dashboard#${item.name.toLowerCase()}`}
-                                      className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${activeView === item.name ? 'bg-slate-900 text-[#f0e1b0]' : 'hover:bg-slate-700'}`}>
+                                <Link to={`/dashboard#${item.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
+                                      className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${activeView.replace(/ /g, '') === item.name.replace(/ /g, '') ? 'bg-slate-900 text-[#f0e1b0]' : 'hover:bg-slate-700'}`}>
                                     <IconWrapper className="w-5 h-5">{item.icon}</IconWrapper>
                                     <span>{item.name}</span>
                                 </Link>
@@ -1355,17 +1617,25 @@ export const ClientDashboardPage: React.FC = () => {
                 <header className="h-16 bg-white border-b flex items-center justify-between px-6">
                     <h1 className="text-xl font-bold text-gray-800">{activeView}</h1>
                     <div className="flex items-center gap-4">
-                        <p className="text-sm">Welcome, Client!</p>
+                        {/* Demo Account Type Switcher */}
+                        <div className="flex items-center gap-2 text-sm bg-gray-100 p-1 rounded-md">
+                            <button onClick={() => setAccountType('individual')} className={`px-2 py-1 rounded ${accountType === 'individual' ? 'bg-white shadow-sm' : ''}`}>Individual</button>
+                            <button onClick={() => setAccountType('business')} className={`px-2 py-1 rounded ${accountType === 'business' ? 'bg-white shadow-sm' : ''}`}>Business</button>
+                        </div>
+                        <p className="text-sm hidden md:block">Welcome, Client!</p>
                         <Link to="/" className="text-sm text-[#00529b] hover:underline">Logout</Link>
                     </div>
                 </header>
-                <main className="flex-grow p-6">
+                <main className="flex-grow p-6 overflow-y-auto">
                     {renderView()}
                 </main>
             </div>
         </div>
     );
 };
+
+
+// --- ADMIN DASHBOARD VIEWS ---
 
 const AdminDashboardOverviewView: React.FC = () => (
     <div className="space-y-8">
