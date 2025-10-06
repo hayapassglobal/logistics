@@ -240,11 +240,14 @@ export const TrackingPage: React.FC = () => {
         let sortableItems = [...filteredData];
         if (sortConfig !== null) {
             sortableItems.sort((a, b) => {
-                if (a[sortConfig.key] < b[sortConfig.key]) {
+                const valA = a[sortConfig.key];
+                const valB = b[sortConfig.key];
+
+                if (valA < valB) {
                     return sortConfig.direction === 'ascending' ? -1 : 1;
                 }
-                if (a[sortConfig.key] > b[sortConfig.key]) {
-                    return sortConfig.direction === 'ascending' ? 1 : 1;
+                if (valA > valB) {
+                    return sortConfig.direction === 'ascending' ? 1 : -1;
                 }
                 return 0;
             });
@@ -661,57 +664,420 @@ export const AdminLoginPage: React.FC = () => {
     );
 };
 
-export const ClientAuthPage: React.FC = () => {
-    const [isLogin, setIsLogin] = useState(true);
-    const navigate = useNavigate();
+// --- START: AUTHENTICATION COMPONENTS ---
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        navigate('/dashboard');
-    }
+const ProgressStepper: React.FC<{ steps: string[]; currentStep: number }> = ({ steps, currentStep }) => (
+    <nav aria-label="Progress" className="my-8">
+        <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
+            {steps.map((step, stepIdx) => (
+                <li key={step} className="md:flex-1">
+                    {stepIdx <= currentStep ? (
+                        <div className="group flex flex-col border-l-4 border-[#00529b] py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span className="text-sm font-medium text-[#00529b]">{`Step ${stepIdx + 1}`}</span>
+                            <span className="text-sm font-medium">{step}</span>
+                        </div>
+                    ) : (
+                        <div className="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span className="text-sm font-medium text-gray-500">{`Step ${stepIdx + 1}`}</span>
+                            <span className="text-sm font-medium">{step}</span>
+                        </div>
+                    )}
+                </li>
+            ))}
+        </ol>
+    </nav>
+);
+
+const PasswordStrengthMeter: React.FC<{ password?: string }> = ({ password = '' }) => {
+    const checkPasswordStrength = (pass: string) => {
+        let score = 0;
+        if (!pass) return 0;
+        if (pass.length > 7) score++;
+        if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) score++;
+        if (/[0-9]/.test(pass)) score++;
+        if (/[^a-zA-Z0-9]/.test(pass)) score++;
+        return score;
+    };
+
+    const strength = checkPasswordStrength(password);
+    const strengthLabels = ['Weak', 'Weak', 'Okay', 'Good', 'Strong'];
+    const strengthColors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-lime-500', 'bg-green-500'];
 
     return (
-         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4" style={{ background: "url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2070') center/cover" }}>
-            <div className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-8">
-                <div className="text-center mb-8">
-                     <img src={SITE_CONFIG.logoUrl} alt="Logo" className="mx-auto h-12 mb-4"/>
-                    <h1 className="text-2xl font-bold text-gray-800">{isLogin ? 'Welcome Back!' : 'Create Your Account'}</h1>
-                </div>
+        <div>
+            <div className="flex gap-1 mt-1">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className={`h-1 flex-1 rounded-full ${strength > i ? strengthColors[strength] : 'bg-gray-200'}`}></div>
+                ))}
+            </div>
+            {password.length > 0 && <p className={`text-xs mt-1 font-medium ${strengthColors[strength].replace('bg-', 'text-')}`}>{strengthLabels[strength]}</p>}
+        </div>
+    );
+};
 
-                <div className="mb-6 flex justify-center border border-gray-300 rounded-lg p-1 bg-gray-200">
-                    <button onClick={() => setIsLogin(true)} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${isLogin ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Login</button>
-                    <button onClick={() => setIsLogin(false)} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${!isLogin ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Register</button>
+const EnhancedFileUpload: React.FC<{ label: string; id: string; required?: boolean; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; file: File | null; onRemove: () => void; description: string }> = ({ label, id, required, onChange, file, onRemove, description }) => {
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (file && file.type.startsWith('image/')) {
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+            return () => URL.revokeObjectURL(url);
+        }
+        setPreviewUrl(null);
+    }, [file]);
+    
+    return (
+    <div>
+        <label className="block text-sm font-medium text-gray-700">{label}</label>
+        {file ? (
+            <div className="mt-1 p-2 border border-gray-300 rounded-md flex items-center justify-between bg-gray-50">
+                <div className="flex items-center gap-3 overflow-hidden">
+                    {previewUrl ? (
+                         <img src={previewUrl} alt="Preview" className="h-12 w-12 object-cover rounded-md flex-shrink-0" />
+                    ) : (
+                        <IconWrapper className="h-10 w-10 text-gray-400 flex-shrink-0"><IconFileText/></IconWrapper>
+                    )}
+                    <span className="text-sm text-gray-800 truncate">{file.name}</span>
+                </div>
+                <button type="button" onClick={onRemove} className="text-sm text-red-600 hover:text-red-800 font-medium flex-shrink-0 ml-2">Remove</button>
+            </div>
+        ) : (
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div className="space-y-1 text-center">
+                    <IconWrapper className="mx-auto h-12 w-12 text-gray-400"><IconUpload/></IconWrapper>
+                    <div className="flex text-sm text-gray-600">
+                        <label htmlFor={id} className="relative cursor-pointer bg-white rounded-md font-medium text-[#00529b] hover:text-[#b58e31] focus-within:outline-none">
+                            <span>Upload a file</span>
+                            <input id={id} name={id} type="file" className="sr-only" required={required} onChange={onChange} accept=".pdf,.png,.jpg,.jpeg" />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">{description}</p>
+                </div>
+            </div>
+        )}
+    </div>
+    );
+};
+
+const FormInput: React.FC<{ name: string, label: string, type?: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, error?: string, required?: boolean, placeholder?: string }> = ({ name, label, type = 'text', value, onChange, error, required, placeholder }) => (
+    <div>
+        <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
+        <input type={type} name={name} id={name} value={value} onChange={onChange} required={required} placeholder={placeholder} className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm ${error ? 'border-red-500' : 'border-gray-300'}`} />
+        {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    </div>
+);
+
+const SocialButton: React.FC<{ provider: 'Google' | 'Facebook'; onClick: () => void; }> = ({ provider, onClick }) => {
+    const icons: { [key: string]: React.ReactNode } = {
+        Google: <svg className="w-5 h-5" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35 11.1h-9.35v2.9h5.5c-.3 1.6-1.5 3.2-3.2 3.2-2.3 0-4.2-1.9-4.2-4.2s1.9-4.2 4.2-4.2c1.1 0 2.1.4 2.8 1.2l2.2-2.2c-1.6-1.5-3.7-2.4-6-2.4-4.8 0-8.7 3.9-8.7 8.7s3.9 8.7 8.7 8.7c5.1 0 8.4-3.5 8.4-8.5 0-.5-.1-1-.2-1.5z"></path></svg>,
+        Facebook: <svg className="w-5 h-5" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm3.62 10.5h-2.12v7h-3v-7h-2v-2.5h2V9.05c0-1.65 1-2.55 3-2.55h1.5v2.5h-1c-.5 0-1 .25-1 .75v1.45h2.12l-.25 2.5z"></path></svg>,
+    }
+    return (
+        <button type="button" onClick={onClick} className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+            <span className="sr-only">Sign in with {provider}</span>
+            {icons[provider]}
+        </button>
+    );
+};
+
+export const ClientAuthPage: React.FC = () => {
+    const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgotPassword' | 'resetPassword'>('login');
+    const [registrationStep, setRegistrationStep] = useState(0);
+    const [accountType, setAccountType] = useState<'individual' | 'business' | null>(null);
+    const [files, setFiles] = useState<{ [key: string]: File | null }>({});
+    const [formData, setFormData] = useState<any>({});
+    const [errors, setErrors] = useState<any>({});
+    const [termsAccepted, setTermsAccepted] = useState(false);
+    const [forgotPasswordEmailSent, setForgotPasswordEmailSent] = useState(false);
+    const navigate = useNavigate();
+
+    const registrationSteps = ['Account Type', 'Your Details', 'Verification', 'Verify Email', 'Complete'];
+    
+    useEffect(() => {
+        if (authMode === 'register' && (registrationStep < 0 || registrationStep >= registrationSteps.length)) {
+            setRegistrationStep(0);
+        }
+    }, [registrationStep, authMode]);
+
+    useEffect(() => {
+        try {
+            const savedProgress = localStorage.getItem('registrationProgress');
+            if (savedProgress) {
+                if (window.confirm('You have saved registration progress. Would you like to continue?')) {
+                    const { step, type, data } = JSON.parse(savedProgress);
+                    setRegistrationStep(step);
+                    setAccountType(type);
+                    setFormData(data);
+                    setAuthMode('register');
+                } else {
+                    localStorage.removeItem('registrationProgress');
+                }
+            }
+        } catch (error) {
+            console.error("Could not load saved progress:", error);
+            localStorage.removeItem('registrationProgress');
+        }
+    }, []);
+
+    const saveProgress = () => {
+        const progress = {
+            step: registrationStep,
+            type: accountType,
+            data: formData,
+        };
+        localStorage.setItem('registrationProgress', JSON.stringify(progress));
+        alert('Progress saved!');
+    };
+
+    const validateField = (name: string, value: string) => {
+        let errorMsg = '';
+        if ((name === 'confirmPassword' || name === 'resetConfirmPassword') && value !== formData[name.replace('Confirm', '')]) {
+            errorMsg = 'Passwords do not match.';
+        }
+        if (name === 'email' && value && !/\S+@\S+\.\S+/.test(value)) {
+            errorMsg = 'Please enter a valid email address.';
+        }
+        setErrors((prev: any) => ({ ...prev, [name]: errorMsg }));
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev: any) => ({ ...prev, [name]: value }));
+        validateField(name, value);
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setFiles(prev => ({ ...prev, [e.target.name]: e.target.files![0] }));
+        }
+    };
+    
+    const handleRemoveFile = (fileName: string) => {
+        setFiles(prev => ({ ...prev, [fileName]: null }));
+    };
+
+    const handleLoginSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        navigate('/dashboard');
+    };
+    
+    const handleRegistrationSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setRegistrationStep(3); // Move to email verification
+    };
+    
+    const handleForgotPasswordSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setForgotPasswordEmailSent(true);
+    };
+    
+    const handleResetPasswordSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        alert("Password has been reset successfully!");
+        setAuthMode('login');
+    };
+
+    const handleSocialLogin = (provider: string) => {
+        alert(`${provider} login requires backend integration.`);
+    };
+
+    const renderRegistrationForm = () => {
+        const commonFields = (
+            <>
+                <FormInput name="email" label="Contact Email Address" type="email" value={formData.email || ''} onChange={handleInputChange} error={errors.email} required />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" value={formData.password || ''} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm" />
+                    <PasswordStrengthMeter password={formData.password} />
+                </div>
+                <FormInput name="confirmPassword" label="Confirm Password" type="password" value={formData.confirmPassword || ''} onChange={handleInputChange} error={errors.confirmPassword} required />
+            </>
+        );
+
+        switch (registrationStep) {
+            case 0:
+                return (
+                    <div>
+                        <h2 className="text-xl font-semibold mb-6 text-center">Choose Your Account Type</h2>
+                        <div className="space-y-4">
+                            <button onClick={() => { setAccountType('individual'); setRegistrationStep(1); }} className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#b58e31]"><h3 className="font-bold text-[#00529b]">Individual Client</h3><p className="text-sm text-gray-600">For personal shipments and individual use.</p></button>
+                            <button onClick={() => { setAccountType('business'); setRegistrationStep(1); }} className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#b58e31]"><h3 className="font-bold text-[#00529b]">Business Client</h3><p className="text-sm text-gray-600">For companies, SMEs, and corporate logistics.</p></button>
+                        </div>
+                    </div>
+                );
+            case 1:
+                return (
+                    <form onSubmit={(e) => { e.preventDefault(); setRegistrationStep(2); }} className="space-y-4">
+                        <h2 className="text-xl font-semibold mb-4 text-center">{accountType === 'individual' ? 'Individual' : 'Business'} Account Details</h2>
+                        {accountType === 'individual' ? (
+                            <>
+                                <FormInput name="fullName" label="Full Legal Name" placeholder="As on your ID" value={formData.fullName || ''} onChange={handleInputChange} required />
+                                {commonFields}
+                                <FormInput name="phone" label="Mobile Phone Number" type="tel" value={formData.phone || ''} onChange={handleInputChange} required />
+                                <div><label className="block text-sm font-medium text-gray-700">Residential Address</label><textarea name="address" value={formData.address || ''} onChange={handleInputChange} required rows={3} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm"></textarea></div>
+                            </>
+                        ) : (
+                             <>
+                                <fieldset className="border p-4 rounded-md space-y-4"><legend className="text-sm font-medium px-1">Company Details</legend>
+                                    <FormInput name="companyName" label="Full Legal Company Name" value={formData.companyName || ''} onChange={handleInputChange} required />
+                                    <FormInput name="tradingName" label="Company Trading Name (if different)" value={formData.tradingName || ''} onChange={handleInputChange} />
+                                     <div><label className="block text-sm font-medium text-gray-700">Full Registered Business Address</label><textarea name="companyAddress" value={formData.companyAddress || ''} onChange={handleInputChange} required rows={3} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea></div>
+                                     <FormInput name="companyWebsite" label="Company Website" type="url" value={formData.companyWebsite || ''} onChange={handleInputChange} />
+                                     <FormInput name="registrationNumber" label="Company Registration Number" value={formData.registrationNumber || ''} onChange={handleInputChange} required />
+                                     <FormInput name="taxNumber" label="VAT / Tax ID Number" value={formData.taxNumber || ''} onChange={handleInputChange} required />
+                                </fieldset>
+                                <fieldset className="border p-4 rounded-md space-y-4"><legend className="text-sm font-medium px-1">Primary Contact Details</legend>
+                                    <FormInput name="contactName" label="Full Name" value={formData.contactName || ''} onChange={handleInputChange} required />
+                                    <FormInput name="jobTitle" label="Job Title" value={formData.jobTitle || ''} onChange={handleInputChange} required />
+                                    <FormInput name="workPhone" label="Direct Phone Number" type="tel" value={formData.workPhone || ''} onChange={handleInputChange} required />
+                                    {commonFields}
+                                </fieldset>
+                            </>
+                        )}
+                        <div className="flex justify-between items-center pt-4">
+                            <button type="button" onClick={saveProgress} className="text-sm font-medium text-gray-600 hover:text-[#00529b]">Save & Continue Later</button>
+                            <Button type="submit" primary>Next: Upload Documents</Button>
+                        </div>
+                    </form>
+                );
+            case 2:
+                return (
+                    <form onSubmit={handleRegistrationSubmit} className="space-y-6">
+                        <h2 className="text-xl font-semibold text-center">Verification Documents</h2>
+                        {accountType === 'individual' ? <EnhancedFileUpload id="proofOfId" label="Proof of Identity" description="Passport, Driver's License, or National ID" required file={files.proofOfId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfId')} /> : null}
+                        {accountType === 'business' ? (
+                             <>
+                                <EnhancedFileUpload id="proofOfReg" label="Proof of Business Registration" description="Certificate of Incorporation" required file={files.proofOfReg || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfReg')} />
+                                <EnhancedFileUpload id="proofOfAddr" label="Proof of Business Address" description="Recent utility bill or bank statement" required file={files.proofOfAddr || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfAddr')} />
+                                <EnhancedFileUpload id="proofOfDirectorId" label="Proof of ID for Director/Primary Contact" description="Passport or Driver's License" required file={files.proofOfDirectorId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfDirectorId')} />
+                             </>
+                         )}
+                        <div className="flex items-start"><input id="terms" name="terms" type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="h-4 w-4 text-[#00529b] focus:ring-[#b58e31] border-gray-300 rounded mt-1" /><label htmlFor="terms" className="ml-2 block text-sm text-gray-900">I agree to the <Link to="/terms" target="_blank" className="font-medium text-[#00529b] hover:underline">Terms & Conditions</Link> and <Link to="/privacy-policy" target="_blank" className="font-medium text-[#00529b] hover:underline">Privacy Policy</Link>.</label></div>
+                        <div className="flex justify-between items-center pt-4">
+                           <button type="button" onClick={() => setRegistrationStep(1)} className="text-sm font-medium text-gray-600 hover:text-[#00529b]">Back to details</button>
+                           <Button type="submit" primary disabled={!termsAccepted}>Create Account</Button>
+                       </div>
+                   </form>
+                );
+            case 3: // Email Verification
+                 return (
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4">Please Verify Your Email</h2>
+                        <p className="text-gray-700 mb-6">We've sent a verification link to <strong>{formData.email}</strong>. Please check your inbox and click the link to activate your account.</p>
+                        <p className="text-sm text-gray-500 mb-6">Didn't receive the email? Check your spam folder or...</p>
+                        <div className="space-y-3">
+                           <Button onClick={() => alert('Verification email resent!')} primary className="w-full">Resend Verification Email</Button>
+                           <Button onClick={() => { localStorage.removeItem('registrationProgress'); setRegistrationStep(4); }} secondary className="w-full">Continue (Simulate Verification)</Button>
+                        </div>
+                    </div>
+                );
+            case 4: // Success / 2FA
+                return (
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Set Up Two-Factor Authentication</h2>
+                        <p className="text-gray-600 mb-6">Scan this QR code with your authenticator app.</p>
+                        <div className="flex justify-center my-4">
+                           <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=otpauth://totp/Hayapass:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Hayapass" alt="QR Code Placeholder" />
+                        </div>
+                        <FormInput name="2faCode" label="Verification Code" value={formData['2faCode'] || ''} onChange={handleInputChange} placeholder="Enter 6-digit code" required />
+                         <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                           <Button onClick={() => navigate('/dashboard')} primary className="w-full">Verify & Finish</Button>
+                           <Button onClick={() => navigate('/dashboard')} secondary className="w-full">Skip for Now</Button>
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
+    const renderMainContent = () => {
+        switch(authMode) {
+            case 'login':
+                return (
+                    <form onSubmit={handleLoginSubmit} className="space-y-4">
+                        <FormInput name="loginEmail" label="Email Address" type="email" value={formData.loginEmail || ''} onChange={handleInputChange} required />
+                        <FormInput name="loginPassword" label="Password" type="password" value={formData.loginPassword || ''} onChange={handleInputChange} required />
+                        <div className="text-sm text-right">
+                            <button type="button" onClick={() => setAuthMode('forgotPassword')} className="font-medium text-[#00529b] hover:text-[#b58e31]">Forgot your password?</button>
+                        </div>
+                        <div><Button type="submit" primary className="w-full justify-center py-3">Sign In</Button></div>
+                    </form>
+                );
+            case 'register':
+                return renderRegistrationForm();
+            case 'forgotPassword':
+                if (forgotPasswordEmailSent) {
+                    return (
+                        <div className="text-center">
+                             <h2 className="text-xl font-semibold text-gray-800 mb-4">Check Your Email</h2>
+                             <p className="text-gray-600">If an account with that email exists, we have sent a password reset link to it.</p>
+                             <button onClick={() => setAuthMode('resetPassword')} className="text-sm text-gray-500 mt-4 underline">Simulate clicking email link</button>
+                        </div>
+                    );
+                }
+                return (
+                    <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
+                        <h2 className="text-xl font-semibold text-center">Reset Password</h2>
+                        <FormInput name="forgotEmail" label="Enter your account's email" type="email" value={formData.forgotEmail || ''} onChange={handleInputChange} required />
+                        <div><Button type="submit" primary className="w-full justify-center py-2">Send Reset Link</Button></div>
+                        <div className="text-center"><button type="button" onClick={() => setAuthMode('login')} className="font-medium text-sm text-[#00529b] hover:text-[#b58e31]">Back to Login</button></div>
+                    </form>
+                );
+            case 'resetPassword':
+                return (
+                     <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+                        <h2 className="text-xl font-semibold text-center">Set New Password</h2>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">New Password</label>
+                            <input type="password" name="resetPassword" value={formData.resetPassword || ''} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+                            <PasswordStrengthMeter password={formData.resetPassword} />
+                        </div>
+                        <FormInput name="resetConfirmPassword" label="Confirm New Password" type="password" value={formData.resetConfirmPassword || ''} onChange={handleInputChange} error={errors.resetConfirmPassword} required />
+                        <div><Button type="submit" primary className="w-full justify-center py-2">Set New Password</Button></div>
+                    </form>
+                );
+        }
+    };
+    
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4" style={{ background: "url('https://images.unsplash.com/photo-1587671391393-39789696380a?q=80&w=2070&auto=format&fit=crop') center/cover" }}>
+            <div className="w-full max-w-lg bg-white/95 backdrop-blur-sm rounded-lg shadow-xl p-6 sm:p-8 transition-all duration-500">
+                <div className="text-center mb-6">
+                     <Link to="/"><img src={SITE_CONFIG.logoUrl} alt="Logo" className="mx-auto h-12 mb-4"/></Link>
                 </div>
                 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {!isLogin && (
-                        <div>
-                             <label className="block text-sm font-medium text-gray-700">Full Name</label>
-                             <input type="text" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"/>
+                {authMode !== 'forgotPassword' && authMode !== 'resetPassword' && (
+                    <>
+                        <div className="mb-6 flex justify-center border border-gray-300 rounded-lg p-1 bg-gray-200">
+                            <button onClick={() => setAuthMode('login')} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'login' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Login</button>
+                            <button onClick={() => { setAuthMode('register'); setRegistrationStep(0); setAccountType(null); }} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'register' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Register</button>
                         </div>
-                    )}
-                     <div>
-                         <label className="block text-sm font-medium text-gray-700">Email Address</label>
-                         <input type="email" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"/>
+                        {authMode === 'register' && registrationStep < registrationSteps.length -1 && <ProgressStepper steps={registrationSteps} currentStep={registrationStep} />}
+                    </>
+                )}
+                
+                {renderMainContent()}
+
+                { (authMode === 'login' || (authMode === 'register' && registrationStep === 1)) && (
+                    <>
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-300" /></div>
+                        <div className="relative flex justify-center text-sm"><span className="px-2 bg-white text-gray-500">Or continue with</span></div>
                     </div>
-                    <div>
-                         <label className="block text-sm font-medium text-gray-700">Password</label>
-                         <input type="password" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"/>
+                     <div className="flex gap-4">
+                        <SocialButton provider="Google" onClick={() => handleSocialLogin('Google')} />
+                        <SocialButton provider="Facebook" onClick={() => handleSocialLogin('Facebook')} />
                     </div>
-                     {!isLogin && (
-                        <div>
-                             <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                             <input type="password" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"/>
-                        </div>
-                    )}
-                    <div>
-                        <Button type="submit" primary className="w-full justify-center py-3">{isLogin ? 'Sign In' : 'Create Account'}</Button>
-                    </div>
-                </form>
+                    </>
+                )}
+
             </div>
         </div>
     );
-}
+};
 
 const DashboardCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; footer?: string; }> = ({ title, value, icon, footer }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
