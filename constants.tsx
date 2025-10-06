@@ -455,10 +455,12 @@ export const CLIENT_INVOICES_DATA: ClientInvoice[] = [
 ];
 
 export const WALLET_TRANSACTIONS_DATA: WalletTransaction[] = [
-    { date: '03 Nov 2025', description: 'Top Up via Stripe', gbp: '+ 50.00', type: 'Credit' },
-    { date: '02 Nov 2025', description: 'Invoice Payment INV-CLIENT1-015', gbp: '- 24.50', type: 'Debit' },
-    { date: '28 Oct 2025', description: 'Top Up via Paystack', ngn: '+ 25,000.00', type: 'Credit' },
-    { date: '25 Oct 2025', description: 'Shipping Fee HGLNG45602', ngn: '- 10,000.00', type: 'Debit' },
+    { date: '04 Nov 2025', description: 'Top Up via Bank Transfer', gbp: '+ 1500.00', type: 'Credit' },
+    { date: '03 Nov 2025', description: 'Payment for INV-BUSINESS-051', gbp: '- 450.50', type: 'Debit' },
+    { date: '01 Nov 2025', description: 'Top Up via Paystack', ngn: '+ 500000.00', type: 'Credit' },
+    { date: '29 Oct 2025', description: 'Customs Duty for HGLUK99904', ngn: '- 85000.00', type: 'Debit' },
+    { date: '28 Oct 2025', description: 'Top Up via Stripe', gbp: '+ 500.00', type: 'Credit' },
+    { date: '25 Oct 2025', description: 'Shipping Fee HGLNG45602', ngn: '- 10000.00', type: 'Debit' },
     { date: '20 Oct 2025', description: 'Welcome Bonus', gbp: '+ 10.00', type: 'Credit' },
 ];
 

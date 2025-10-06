@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button, AdminButton } from './components';
 import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, MANAGEABLE_PAGES_CONTENT, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, LOYALTY_DATA, REFERRAL_DATA, API_TOKENS_DATA, WEBHOOKS_DATA, SUPPORT_TICKETS_DATA } from './constants';
 import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, IconShieldCheck, IconFileText, IconHelpCircle, IconGlobe, IconWarehouse, IconCustoms, IconPackage, IconSend, ICON_MAP } from './constants';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, FaqItemData, WalletRequest, SupportTicket } from './types';
+import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, FaqItemData, WalletRequest, SupportTicket, ApiToken, Webhook } from './types';
 
 
 export const HomePage: React.FC = () => (
@@ -770,19 +769,6 @@ const FormInput: React.FC<{ name: string, label: string, type?: string, value: s
     </div>
 );
 
-const SocialButton: React.FC<{ provider: 'Google' | 'Facebook'; onClick: () => void; }> = ({ provider, onClick }) => {
-    const icons: { [key: string]: React.ReactNode } = {
-        Google: <svg className="w-5 h-5" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35 11.1h-9.35v2.9h5.5c-.3 1.6-1.5 3.2-3.2 3.2-2.3 0-4.2-1.9-4.2-4.2s1.9-4.2 4.2-4.2c1.1 0 2.1.4 2.8 1.2l2.2-2.2c-1.6-1.5-3.7-2.4-6-2.4-4.8 0-8.7 3.9-8.7 8.7s3.9 8.7 8.7 8.7c5.1 0 8.4-3.5 8.4-8.5 0-.5-.1-1-.2-1.5z"></path></svg>,
-        Facebook: <svg className="w-5 h-5" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm3.62 10.5h-2.12v7h-3v-7h-2v-2.5h2V9.05c0-1.65 1-2.55 3-2.55h1.5v2.5h-1c-.5 0-1 .25-1 .75v1.45h2.12l-.25 2.5z"></path></svg>,
-    }
-    return (
-        <button type="button" onClick={onClick} className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-            <span className="sr-only">Sign in with {provider}</span>
-            {icons[provider]}
-        </button>
-    );
-};
-
 export const ClientAuthPage: React.FC = () => {
     const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgotPassword' | 'resetPassword'>('login');
     const [registrationStep, setRegistrationStep] = useState(0);
@@ -882,10 +868,6 @@ export const ClientAuthPage: React.FC = () => {
         setAuthMode('login');
     };
 
-    const handleSocialLogin = (provider: string) => {
-        alert(`${provider} login requires backend integration.`);
-    };
-
     const renderRegistrationForm = () => {
         const commonFields = (
             <>
@@ -949,14 +931,15 @@ export const ClientAuthPage: React.FC = () => {
                 return (
                     <form onSubmit={handleRegistrationSubmit} className="space-y-6">
                         <h2 className="text-xl font-semibold text-center">Verification Documents</h2>
-                        {accountType === 'individual' ? <EnhancedFileUpload id="proofOfId" label="Proof of Identity" description="Passport, Driver's License, or National ID" required file={files.proofOfId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfId')} /> : null}
-                        {accountType === 'business' ? (
+                        {accountType === 'individual' ? (
+                            <EnhancedFileUpload id="proofOfId" label="Proof of Identity" description="Passport, Driver's License, or National ID" required file={files.proofOfId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfId')} />
+                        ) : accountType === 'business' ? (
                              <>
                                 <EnhancedFileUpload id="proofOfReg" label="Proof of Business Registration" description="Certificate of Incorporation" required file={files.proofOfReg || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfReg')} />
                                 <EnhancedFileUpload id="proofOfAddr" label="Proof of Business Address" description="Recent utility bill or bank statement" required file={files.proofOfAddr || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfAddr')} />
                                 <EnhancedFileUpload id="proofOfDirectorId" label="Proof of ID for Director/Primary Contact" description="Passport or Driver's License" required file={files.proofOfDirectorId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfDirectorId')} />
                              </>
-                         ) : null}
+                        ) : null}
                         <div className="flex items-start"><input id="terms" name="terms" type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="h-4 w-4 text-[#00529b] focus:ring-[#b58e31] border-gray-300 rounded mt-1" /><label htmlFor="terms" className="ml-2 block text-sm text-gray-900">I agree to the <Link to="/terms" target="_blank" className="font-medium text-[#00529b] hover:underline">Terms & Conditions</Link> and <Link to="/privacy-policy" target="_blank" className="font-medium text-[#00529b] hover:underline">Privacy Policy</Link>.</label></div>
                         <div className="flex justify-between items-center pt-4">
                            <button type="button" onClick={() => setRegistrationStep(1)} className="text-sm font-medium text-gray-600 hover:text-[#00529b]">Back to details</button>
@@ -1065,19 +1048,6 @@ export const ClientAuthPage: React.FC = () => {
                 
                 {renderMainContent()}
 
-                { (authMode === 'login' || (authMode === 'register' && registrationStep === 1)) && (
-                    <>
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-300" /></div>
-                        <div className="relative flex justify-center text-sm"><span className="px-2 bg-white text-gray-500">Or continue with</span></div>
-                    </div>
-                     <div className="flex gap-4">
-                        <SocialButton provider="Google" onClick={() => handleSocialLogin('Google')} />
-                        <SocialButton provider="Facebook" onClick={() => handleSocialLogin('Facebook')} />
-                    </div>
-                    </>
-                )}
-
             </div>
         </div>
     );
@@ -1111,7 +1081,7 @@ const EmptyState: React.FC<{ icon: React.ReactNode; title: string; description: 
     </div>
 );
 
-const ClientDashboardOverviewView: React.FC<{ accountType: 'individual' | 'business', isEmpty: boolean, onCreateShipment: () => void }> = ({ accountType, isEmpty, onCreateShipment }) => {
+const ClientDashboardOverviewView: React.FC<{ accountType: 'individual' | 'business', isEmpty: boolean, onCreateShipment: () => void, onNewPreAlert: () => void, onTopUp: () => void, onNewTicket: () => void }> = ({ accountType, isEmpty, onCreateShipment, onNewPreAlert, onTopUp, onNewTicket }) => {
     if (isEmpty) {
         return <EmptyState 
             icon={<IconDashboard />}
@@ -1159,9 +1129,9 @@ const ClientDashboardOverviewView: React.FC<{ accountType: 'individual' | 'busin
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <button onClick={onCreateShipment} className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconTruck /></IconWrapper><span className="text-sm font-medium">New Shipment</span></button>
-                        <Link to="/dashboard#pre-alerts" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconBell /></IconWrapper><span className="text-sm font-medium">New Pre-Alert</span></Link>
-                        <Link to="/dashboard#wallet" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconWallet2 /></IconWrapper><span className="text-sm font-medium">Top Up Wallet</span></Link>
-                        <Link to="/dashboard#help--support" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconHeadset /></IconWrapper><span className="text-sm font-medium">Contact Support</span></Link>
+                        <button onClick={onNewPreAlert} className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconBell /></IconWrapper><span className="text-sm font-medium">New Pre-Alert</span></button>
+                        <button onClick={onTopUp} className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconWallet2 /></IconWrapper><span className="text-sm font-medium">Top Up Wallet</span></button>
+                        <button onClick={onNewTicket} className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconHeadset /></IconWrapper><span className="text-sm font-medium">Contact Support</span></button>
                     </div>
                 </div>
             </div>
@@ -1229,20 +1199,20 @@ const ClientDashboardShipmentsView: React.FC<{isEmpty: boolean, onCreateShipment
     );
 };
 
-const ClientDashboardPreAlertsView: React.FC<{isEmpty: boolean}> = ({isEmpty}) => {
+const ClientDashboardPreAlertsView: React.FC<{isEmpty: boolean, onNewPreAlert: () => void}> = ({isEmpty, onNewPreAlert}) => {
      if (isEmpty) {
         return <EmptyState 
             icon={<IconBell />}
             title="No pre-alerts"
             description="Use a pre-alert to notify us of an incoming package from another retailer (like Amazon) to your Hayapass locker."
-            actionButton={<Button primary>Create a Pre-Alert</Button>}
+            actionButton={<Button primary onClick={onNewPreAlert}>Create a Pre-Alert</Button>}
         />
     }
     return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-gray-800">Pre-Alerts</h3>
-            <Button primary><IconWrapper className="w-4 h-4 inline-block mr-2"><IconUpload/></IconWrapper>New Pre-Alert</Button>
+            <Button primary onClick={onNewPreAlert}><IconWrapper className="w-4 h-4 inline-block mr-2"><IconUpload/></IconWrapper>New Pre-Alert</Button>
         </div>
         <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -1310,13 +1280,13 @@ const ClientDashboardInvoicesView: React.FC<{isEmpty: boolean}> = ({isEmpty}) =>
     </div>
 )};
 
-const ClientDashboardWalletView: React.FC<{isEmpty: boolean}> = ({isEmpty}) => {
+const ClientDashboardWalletView: React.FC<{isEmpty: boolean, onTopUp: () => void, onWithdraw: () => void}> = ({isEmpty, onTopUp, onWithdraw}) => {
      if (isEmpty) {
         return <EmptyState 
             icon={<IconWallet2 />}
             title="Your wallet is ready"
             description="Top up your wallet for faster payments and seamless transactions for all your logistics needs."
-            actionButton={<Button primary>Top Up Wallet</Button>}
+            actionButton={<Button primary onClick={onTopUp}>Top Up Wallet</Button>}
         />
     }
     return (
@@ -1335,8 +1305,8 @@ const ClientDashboardWalletView: React.FC<{isEmpty: boolean}> = ({isEmpty}) => {
              <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Transaction History</h3>
                 <div className="space-x-2">
-                    <Button secondary><IconWrapper className="w-4 h-4 inline-block mr-2"><IconArrowUpCircle/></IconWrapper>Top-up</Button>
-                    <Button outline><IconWrapper className="w-4 h-4 inline-block mr-2"><IconArrowDownCircle/></IconWrapper>Withdraw</Button>
+                    <Button secondary onClick={onTopUp}><IconWrapper className="w-4 h-4 inline-block mr-2"><IconArrowUpCircle/></IconWrapper>Top-up</Button>
+                    <Button outline onClick={onWithdraw}><IconWrapper className="w-4 h-4 inline-block mr-2"><IconArrowDownCircle/></IconWrapper>Withdraw</Button>
                 </div>
             </div>
              <table className="min-w-full divide-y divide-gray-200">
@@ -1363,11 +1333,11 @@ const ClientDashboardWalletView: React.FC<{isEmpty: boolean}> = ({isEmpty}) => {
     </div>
 )};
 
-const ClientDashboardAddressesView: React.FC = () => (
+const ClientDashboardAddressesView: React.FC<{onAddAddress: () => void}> = ({ onAddAddress }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-800">Address Book</h3>
-            <Button primary><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconPlus/></IconWrapper>Add New Address</Button>
+            <Button primary onClick={onAddAddress}><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconPlus/></IconWrapper>Add New Address</Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {CLIENT_ADDRESSES_DATA.map(addr => (
@@ -1424,11 +1394,11 @@ const IconPlus: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="
 
 // --- START: BUSINESS-ONLY DASHBOARD VIEWS ---
 
-const ClientDashboardTeamView: React.FC = () => (
+const ClientDashboardTeamView: React.FC<{onInviteMember: () => void}> = ({ onInviteMember }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-gray-800">Team Management</h3>
-            <Button primary><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconUserPlus/></IconWrapper>Invite Member</Button>
+            <Button primary onClick={onInviteMember}><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconUserPlus/></IconWrapper>Invite Member</Button>
         </div>
         <div className="overflow-x-auto">
              <table className="min-w-full divide-y divide-gray-200">
@@ -1515,29 +1485,29 @@ const ClientDashboardLoyaltyView: React.FC = () => (
      </div>
 );
 
-const ClientDashboardDeveloperView: React.FC = () => (
+const ClientDashboardDeveloperView: React.FC<{onGenerateKey: () => void; onCreateWebhook: () => void; apiTokens: ApiToken[]; onRevokeKey: (keyId: string) => void; webhooks: Webhook[]}> = ({ onGenerateKey, onCreateWebhook, apiTokens, onRevokeKey, webhooks }) => (
     <div className="space-y-8">
         <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">API Keys</h3>
-                <Button primary>Generate New Key</Button>
+                <Button primary onClick={onGenerateKey}>Generate New Key</Button>
             </div>
-            {API_TOKENS_DATA.map(token => (
+            {apiTokens.map(token => (
                 <div key={token.id} className="font-mono text-sm p-3 bg-gray-50 rounded-md flex justify-between items-center mb-2">
                     <div>
                         <p className="font-medium text-gray-800">{token.name}</p>
                         <p className="text-gray-500">{token.token}</p>
                     </div>
-                    <button className="text-red-600 hover:underline">Revoke</button>
+                    <button onClick={() => onRevokeKey(token.id)} className="text-red-600 hover:underline">Revoke</button>
                 </div>
             ))}
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Webhooks</h3>
-                <Button primary>Create Webhook</Button>
+                <Button primary onClick={onCreateWebhook}>Create Webhook</Button>
             </div>
-            {WEBHOOKS_DATA.map(hook => (
+            {webhooks.map(hook => (
                  <div key={hook.id} className="font-mono text-sm p-3 bg-gray-50 rounded-md mb-2">
                      <p className="font-medium text-gray-800">{hook.url}</p>
                      <p className="text-xs text-gray-500">Events: {hook.events.join(', ')}</p>
@@ -1608,10 +1578,44 @@ const CreateShipmentWizard: React.FC<{ isOpen: boolean; onClose: () => void }> =
 
     const renderStepContent = () => {
         switch (step) {
-            case 1: return <div><h3 className="text-lg font-medium mb-4">1. Addresses</h3><p>Origin and Destination form goes here...</p></div>;
-            case 2: return <div><h3 className="text-lg font-medium mb-4">2. Package Details</h3><p>Weight, dimensions, contents form goes here...</p></div>;
-            case 3: return <div><h3 className="text-lg font-medium mb-4">3. Select Service</h3><p>Service options with pricing go here...</p></div>;
-            case 4: return <div><h3 className="text-lg font-medium mb-4">4. Review & Confirm</h3><p>Summary of all details goes here...</p></div>;
+            case 1: return (
+                <div>
+                    <h3 className="text-lg font-medium mb-4">1. Addresses</h3>
+                    <div className="space-y-4">
+                        <fieldset><legend className="font-semibold mb-2">Origin</legend><textarea placeholder="Enter sender's full address..." rows={3} className="w-full p-2 border rounded-md"></textarea></fieldset>
+                        <fieldset><legend className="font-semibold mb-2">Destination</legend><textarea placeholder="Enter recipient's full address..." rows={3} className="w-full p-2 border rounded-md"></textarea></fieldset>
+                    </div>
+                </div>
+            );
+            case 2: return (
+                <div>
+                    <h3 className="text-lg font-medium mb-4">2. Package Details</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <input type="number" placeholder="Weight (kg)" className="w-full p-2 border rounded-md" />
+                        <input type="text" placeholder="Dimensions (LxWxH cm)" className="w-full p-2 border rounded-md" />
+                        <textarea placeholder="Describe contents..." rows={3} className="w-full p-2 border rounded-md col-span-2"></textarea>
+                    </div>
+                </div>
+            );
+            case 3: return (
+                <div>
+                    <h3 className="text-lg font-medium mb-4">3. Select Service</h3>
+                    <div className="space-y-3">
+                        {['Air Freight (Express)', 'Air Freight (Standard)', 'Sea Freight', 'Road Freight (Express)', 'Road Freight (Standard)'].map(service => (
+                            <label key={service} className="flex justify-between items-center p-3 border rounded-md cursor-pointer has-[:checked]:bg-blue-50 has-[:checked]:border-[#00529b]">
+                                <span>{service}</span><input type="radio" name="service" value={service} />
+                            </label>
+                        ))}
+                    </div>
+                </div>
+            );
+            case 4: return (
+                <div>
+                    <h3 className="text-lg font-medium mb-4">4. Review & Confirm</h3>
+                    <p>Summary of all details goes here...</p>
+                    <p className="mt-4 p-4 bg-gray-100 rounded-md font-bold text-lg text-center">Estimated Cost: £125.50</p>
+                </div>
+            );
             default: return null;
         }
     }
@@ -1621,12 +1625,11 @@ const CreateShipmentWizard: React.FC<{ isOpen: boolean; onClose: () => void }> =
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
                 <div className="flex justify-between items-center p-4 border-b">
                     <h2 className="text-xl font-semibold text-gray-800">Create New Shipment</h2>
-                    <button onClick={handleClose} className="text-gray-500 hover:text-gray-800">&times;</button>
+                    <button onClick={handleClose} className="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
                 </div>
                 <div className="flex-grow overflow-y-auto p-6">{renderStepContent()}</div>
-                <div className="flex justify-between p-4 border-t bg-gray-50">
-                    {step > 1 && <Button secondary onClick={prevStep}>Back</Button>}
-                    <div className="flex-grow" />
+                <div className="flex justify-between p-4 border-t bg-gray-50 rounded-b-lg">
+                    {step > 1 ? <Button secondary onClick={prevStep}>Back</Button> : <div />}
                     {step < 4 && <Button primary onClick={nextStep}>Next</Button>}
                     {step === 4 && <Button primary onClick={handleClose}>Confirm Shipment</Button>}
                 </div>
@@ -1634,6 +1637,21 @@ const CreateShipmentWizard: React.FC<{ isOpen: boolean; onClose: () => void }> =
         </div>
     );
 };
+
+const Modal: React.FC<{isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode}> = ({isOpen, onClose, title, children}) => {
+    if(!isOpen) return null;
+    return (
+         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in-fast">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+                <div className="flex justify-between items-center p-4 border-b">
+                    <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+                </div>
+                <div className="flex-grow overflow-y-auto p-6">{children}</div>
+            </div>
+        </div>
+    )
+}
 
 const NotificationPanel: React.FC<{ notifications: ClientNotification[]; onClose: () => void }> = ({ notifications, onClose }) => (
     <div className="absolute top-14 right-0 w-80 bg-white rounded-lg shadow-lg border z-50 animate-fade-in-fast">
@@ -1656,7 +1674,7 @@ const NotificationPanel: React.FC<{ notifications: ClientNotification[]; onClose
     </div>
 );
 
-const ClientDashboardHelpView: React.FC = () => {
+const ClientDashboardHelpView: React.FC<{onNewTicket: () => void}> = ({onNewTicket}) => {
     const [activeTab, setActiveTab] = useState<'faq' | 'tickets'>('faq');
     const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
 
@@ -1710,7 +1728,7 @@ const ClientDashboardHelpView: React.FC = () => {
                 <div>
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold text-gray-800">My Support Tickets</h3>
-                        <Button primary><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconFileText/></IconWrapper>Create New Ticket</Button>
+                        <Button primary onClick={onNewTicket}><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconFileText/></IconWrapper>Create New Ticket</Button>
                     </div>
                      <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
@@ -1746,19 +1764,94 @@ export const ClientDashboardPage: React.FC = () => {
     
     const [accountType, setAccountType] = useState<'individual' | 'business'>(passedState?.accountType || 'business');
     const [activeView, setActiveView] = useState('Overview');
+    
+    // Modal states
     const [isShipmentWizardOpen, setIsShipmentWizardOpen] = useState(false);
+    const [isPreAlertModalOpen, setIsPreAlertModalOpen] = useState(false);
+    const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
+    const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+    const [isNewTicketModalOpen, setIsNewTicketModalOpen] = useState(false);
+    const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
+    const [isInviteMemberModalOpen, setIsInviteMemberModalOpen] = useState(false);
+    const [isNewKeyModalOpen, setIsNewKeyModalOpen] = useState(false);
+    const [isNewWebhookModalOpen, setIsNewWebhookModalOpen] = useState(false);
+
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [isDataEmpty, setIsDataEmpty] = useState(false);
+    const [modalFormData, setModalFormData] = useState<any>({});
+    
+    // State for dynamic data
+    const [apiTokens, setApiTokens] = useState<ApiToken[]>(API_TOKENS_DATA);
+    const [webhooks, setWebhooks] = useState<Webhook[]>(WEBHOOKS_DATA);
     
     useEffect(() => {
-        const hash = location.hash.replace('#', '').replace(/-/g, ' ');
+        const hash = location.hash.replace('#', '');
         if (hash) {
-            const viewName = hash.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            const viewName = hash.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ').replace(/\s\s+/g, ' ');
             setActiveView(viewName);
         } else {
             setActiveView('Overview');
         }
     }, [location]);
+
+    const handleModalInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        const isCheckbox = type === 'checkbox';
+        const checkedValue = (e.target as HTMLInputElement).checked;
+
+        setModalFormData((prev: any) => ({
+            ...prev,
+            [name]: isCheckbox ? checkedValue : value,
+        }));
+    };
+
+    const closeModalAndResetForm = (closeFn: React.Dispatch<React.SetStateAction<boolean>>) => {
+        closeFn(false);
+        setModalFormData({});
+    };
+
+    const handleGenerateKeySubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const newKeyName = modalFormData.keyName;
+        if (!newKeyName) return;
+
+        const newKey: ApiToken = {
+            id: `key_${Date.now()}`,
+            name: newKeyName,
+            token: `hp_live_sk_${[...Array(24)].map(() => Math.random().toString(36)[2]).join('')}`,
+            created: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            lastUsed: 'Never',
+        };
+
+        setApiTokens(prevTokens => [newKey, ...prevTokens]);
+        closeModalAndResetForm(setIsNewKeyModalOpen);
+    };
+
+    const handleRevokeKey = (keyId: string) => {
+        if (window.confirm('Are you sure you want to revoke this API key? This action cannot be undone.')) {
+            setApiTokens(prevTokens => prevTokens.filter(token => token.id !== keyId));
+        }
+    };
+
+    const handleCreateWebhookSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const newWebhookUrl = modalFormData.webhookUrl;
+        if (!newWebhookUrl) return;
+
+        const events = Object.keys(modalFormData)
+            .filter(key => key.startsWith('event_') && modalFormData[key])
+            .map(key => key.replace('event_', '').replace(/_/g, '.'));
+
+        const newWebhook: Webhook = {
+            id: `wh_${Date.now()}`,
+            url: newWebhookUrl,
+            events: events,
+            status: 'Active',
+        };
+
+        setWebhooks(prev => [newWebhook, ...prev]);
+        closeModalAndResetForm(setIsNewWebhookModalOpen);
+    };
 
     const individualMenuItems = [
         { name: 'Overview', icon: <IconDashboard /> },
@@ -1791,21 +1884,32 @@ export const ClientDashboardPage: React.FC = () => {
     const hasUnreadNotifications = CLIENT_NOTIFICATIONS_DATA.some(n => n.status === 'Unread');
     
     const renderView = () => {
-        const props = { isEmpty: isDataEmpty, onCreateShipment: () => setIsShipmentWizardOpen(true) };
+        const props = { 
+            isEmpty: isDataEmpty, 
+            onCreateShipment: () => setIsShipmentWizardOpen(true),
+            onNewPreAlert: () => setIsPreAlertModalOpen(true),
+            onTopUp: () => setIsTopUpModalOpen(true),
+            onWithdraw: () => setIsWithdrawModalOpen(true),
+            onNewTicket: () => setIsNewTicketModalOpen(true),
+            onAddAddress: () => setIsAddAddressModalOpen(true),
+            onInviteMember: () => setIsInviteMemberModalOpen(true),
+            onGenerateKey: () => setIsNewKeyModalOpen(true),
+            onCreateWebhook: () => setIsNewWebhookModalOpen(true),
+        };
         switch (activeView) {
             case 'Overview': return <ClientDashboardOverviewView accountType={accountType} {...props} />;
-            case 'Shipments': return <ClientDashboardShipmentsView {...props} />;
-            case 'Pre Alerts': return <ClientDashboardPreAlertsView isEmpty={isDataEmpty} />;
+            case 'Shipments': return <ClientDashboardShipmentsView isEmpty={isDataEmpty} onCreateShipment={props.onCreateShipment} />;
+            case 'Pre Alerts': return <ClientDashboardPreAlertsView isEmpty={isDataEmpty} onNewPreAlert={props.onNewPreAlert} />;
             case 'Invoices': return <ClientDashboardInvoicesView isEmpty={isDataEmpty} />;
-            case 'Wallet': return <ClientDashboardWalletView isEmpty={isDataEmpty} />;
-            case 'Addresses': return <ClientDashboardAddressesView />;
+            case 'Wallet': return <ClientDashboardWalletView isEmpty={isDataEmpty} onTopUp={props.onTopUp} onWithdraw={props.onWithdraw} />;
+            case 'Addresses': return <ClientDashboardAddressesView onAddAddress={props.onAddAddress} />;
             case 'Account': return <ClientDashboardAccountView accountType={accountType} />;
-            case 'Refer a Friend': return accountType === 'individual' ? <ClientDashboardReferralView /> : null;
-            case 'Team Management': return accountType === 'business' ? <ClientDashboardTeamView /> : null;
+            case 'Refer A Friend': return accountType === 'individual' ? <ClientDashboardReferralView /> : null;
+            case 'Team Management': return accountType === 'business' ? <ClientDashboardTeamView onInviteMember={props.onInviteMember} /> : null;
             case 'Reports': return accountType === 'business' ? <ClientDashboardReportsView /> : null;
             case 'Loyalty': return accountType === 'business' ? <ClientDashboardLoyaltyView /> : null;
-            case 'Developer': return accountType === 'business' ? <ClientDashboardDeveloperView /> : null;
-            case 'Help Support': return <ClientDashboardHelpView />;
+            case 'Developer': return accountType === 'business' ? <ClientDashboardDeveloperView onGenerateKey={props.onGenerateKey} onCreateWebhook={props.onCreateWebhook} apiTokens={apiTokens} onRevokeKey={handleRevokeKey} webhooks={webhooks} /> : null;
+            case 'Help Support': return <ClientDashboardHelpView onNewTicket={props.onNewTicket}/>;
             default: return <ClientDashboardOverviewView accountType={accountType} {...props} />;
         }
     };
@@ -1813,6 +1917,97 @@ export const ClientDashboardPage: React.FC = () => {
     return (
         <>
         <CreateShipmentWizard isOpen={isShipmentWizardOpen} onClose={() => setIsShipmentWizardOpen(false)} />
+        
+        {/* All Modals */}
+        <Modal isOpen={isPreAlertModalOpen} onClose={() => closeModalAndResetForm(setIsPreAlertModalOpen)} title="Create New Pre-Alert">
+            <form className="space-y-4" onSubmit={e => { e.preventDefault(); closeModalAndResetForm(setIsPreAlertModalOpen); }}>
+                <div><label className="block text-sm font-medium">Facility</label><select name="facility" value={modalFormData.facility || 'UK'} onChange={handleModalInputChange} className="w-full p-2 border rounded-md"><option>UK</option><option>NG</option></select></div>
+                <FormInput name="carrier" label="Carrier (e.g., Amazon, FedEx)" value={modalFormData.carrier || ''} onChange={handleModalInputChange} />
+                <FormInput name="trackingNumber" label="Tracking Number" value={modalFormData.trackingNumber || ''} onChange={handleModalInputChange} />
+                <div><label className="block text-sm font-medium">Package Description</label><textarea name="description" value={modalFormData.description || ''} onChange={handleModalInputChange} rows={2} className="w-full p-2 border rounded-md"></textarea></div>
+                <div className="text-right pt-2"><Button primary type="submit">Submit Pre-Alert</Button></div>
+            </form>
+        </Modal>
+         <Modal isOpen={isTopUpModalOpen} onClose={() => closeModalAndResetForm(setIsTopUpModalOpen)} title="Top Up Wallet">
+             <form className="space-y-4" onSubmit={e => { e.preventDefault(); closeModalAndResetForm(setIsTopUpModalOpen); }}>
+                <div><label className="block text-sm font-medium">Currency</label><select name="currency" value={modalFormData.currency || 'GBP'} onChange={handleModalInputChange} className="w-full p-2 border rounded-md"><option>GBP (£)</option><option>NGN (₦)</option></select></div>
+                <FormInput name="amount" label="Amount" type="number" placeholder="e.g., 100.00" value={modalFormData.amount || ''} onChange={handleModalInputChange} />
+                <div><label className="block text-sm font-medium">Payment Method</label><div className="mt-1 space-y-2"><label className="flex items-center"><input type="radio" name="paymentMethod" value="stripe" onChange={handleModalInputChange} className="mr-2" /> Stripe (Card)</label><label className="flex items-center"><input type="radio" name="paymentMethod" value="paystack" onChange={handleModalInputChange} className="mr-2" /> Paystack (Card/Transfer)</label></div></div>
+                <div className="text-right pt-2"><Button primary type="submit">Proceed to Payment</Button></div>
+             </form>
+        </Modal>
+         <Modal isOpen={isWithdrawModalOpen} onClose={() => closeModalAndResetForm(setIsWithdrawModalOpen)} title="Withdraw Funds">
+             <form className="space-y-4" onSubmit={e => { e.preventDefault(); closeModalAndResetForm(setIsWithdrawModalOpen); }}>
+                <div><label className="block text-sm font-medium">From Wallet</label><select name="currency" value={modalFormData.currency || 'GBP'} onChange={handleModalInputChange} className="w-full p-2 border rounded-md"><option>GBP (£)</option><option>NGN (₦)</option></select></div>
+                <FormInput name="amount" label="Amount to Withdraw" type="number" value={modalFormData.amount || ''} onChange={handleModalInputChange} />
+                <div><label className="block text-sm font-medium">Bank Details</label><textarea name="bankDetails" value={modalFormData.bankDetails || ''} onChange={handleModalInputChange} placeholder="Enter your bank account number and sort code..." rows={3} className="w-full p-2 border rounded-md"></textarea></div>
+                <div className="text-right pt-2"><Button primary type="submit">Request Withdrawal</Button></div>
+             </form>
+        </Modal>
+        <Modal isOpen={isNewTicketModalOpen} onClose={() => closeModalAndResetForm(setIsNewTicketModalOpen)} title="Create Support Ticket">
+             <form className="space-y-4" onSubmit={e => { e.preventDefault(); closeModalAndResetForm(setIsNewTicketModalOpen); }}>
+                <div><label className="block text-sm font-medium">Department</label><select name="department" value={modalFormData.department || 'General Inquiry'} onChange={handleModalInputChange} className="w-full p-2 border rounded-md"><option>General Inquiry</option><option>Billing Support</option><option>Technical Support</option></select></div>
+                <FormInput name="subject" label="Subject" value={modalFormData.subject || ''} onChange={handleModalInputChange} />
+                <div><label className="block text-sm font-medium">Message</label><textarea name="message" value={modalFormData.message || ''} onChange={handleModalInputChange} rows={5} className="w-full p-2 border rounded-md"></textarea></div>
+                <div className="text-right pt-2"><Button primary type="submit">Submit Ticket</Button></div>
+             </form>
+        </Modal>
+        <Modal isOpen={isAddAddressModalOpen} onClose={() => closeModalAndResetForm(setIsAddAddressModalOpen)} title="Add New Address">
+            <form className="space-y-4" onSubmit={e => { e.preventDefault(); closeModalAndResetForm(setIsAddAddressModalOpen); }}>
+                <FormInput name="addrLabel" label="Address Label (e.g., Home, Office)" value={modalFormData.addrLabel || ''} onChange={handleModalInputChange} required />
+                <FormInput name="addrName" label="Recipient Name" value={modalFormData.addrName || ''} onChange={handleModalInputChange} required />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Address</label>
+                    <textarea name="addrStreet" value={modalFormData.addrStreet || ''} onChange={handleModalInputChange} rows={3} placeholder="Street, City, Postcode" className="w-full p-2 border rounded-md mt-1"></textarea>
+                </div>
+                <FormInput name="addrCountry" label="Country" value={modalFormData.addrCountry || ''} onChange={handleModalInputChange} required />
+                <FormInput name="addrPhone" label="Phone Number" type="tel" value={modalFormData.addrPhone || ''} onChange={handleModalInputChange} />
+                <div className="flex items-center gap-4">
+                    <label className="flex items-center"><input type="checkbox" name="isDefaultShipping" checked={modalFormData.isDefaultShipping || false} onChange={handleModalInputChange} className="h-4 w-4 mr-2" /> Set as default shipping</label>
+                    <label className="flex items-center"><input type="checkbox" name="isDefaultBilling" checked={modalFormData.isDefaultBilling || false} onChange={handleModalInputChange} className="h-4 w-4 mr-2" /> Set as default billing</label>
+                </div>
+                <div className="text-right pt-2"><Button primary type="submit">Save Address</Button></div>
+            </form>
+        </Modal>
+        <Modal isOpen={isInviteMemberModalOpen} onClose={() => closeModalAndResetForm(setIsInviteMemberModalOpen)} title="Invite Team Member">
+            <form className="space-y-4" onSubmit={e => { e.preventDefault(); closeModalAndResetForm(setIsInviteMemberModalOpen); }}>
+                <FormInput name="inviteEmail" label="Email Address" type="email" value={modalFormData.inviteEmail || ''} onChange={handleModalInputChange} required />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <select name="inviteRole" value={modalFormData.inviteRole || 'Member'} onChange={handleModalInputChange} className="w-full p-2 border rounded-md mt-1">
+                        <option>Member</option>
+                        <option>Finance</option>
+                        <option>Warehouse</option>
+                        <option>Admin</option>
+                    </select>
+                </div>
+                <div className="text-right pt-2"><Button primary type="submit">Send Invitation</Button></div>
+            </form>
+        </Modal>
+        <Modal isOpen={isNewKeyModalOpen} onClose={() => closeModalAndResetForm(setIsNewKeyModalOpen)} title="Generate New API Key">
+            <form className="space-y-4" onSubmit={handleGenerateKeySubmit}>
+                <FormInput name="keyName" label="Key Name (for your reference)" value={modalFormData.keyName || ''} onChange={handleModalInputChange} required placeholder="e.g., My Shopify Store" />
+                <div className="p-3 bg-yellow-50 text-yellow-800 rounded-md text-sm">
+                    This key will grant full access to your account via the API. Keep it secure and do not share it publicly.
+                </div>
+                <div className="text-right pt-2"><Button primary type="submit">Generate Key</Button></div>
+            </form>
+        </Modal>
+        <Modal isOpen={isNewWebhookModalOpen} onClose={() => closeModalAndResetForm(setIsNewWebhookModalOpen)} title="Create Webhook">
+            <form className="space-y-4" onSubmit={handleCreateWebhookSubmit}>
+                <FormInput name="webhookUrl" label="Webhook URL" type="url" value={modalFormData.webhookUrl || ''} onChange={handleModalInputChange} required placeholder="https://api.your-site.com/webhook" />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Events to send</label>
+                    <div className="mt-2 space-y-2">
+                        <label className="flex items-center"><input type="checkbox" name="event_shipment_created" checked={modalFormData.event_shipment_created || false} onChange={handleModalInputChange} className="h-4 w-4 mr-2" /> shipment.created</label>
+                        <label className="flex items-center"><input type="checkbox" name="event_shipment_updated" checked={modalFormData.event_shipment_updated || false} onChange={handleModalInputChange} className="h-4 w-4 mr-2" /> shipment.updated</label>
+                        <label className="flex items-center"><input type="checkbox" name="event_shipment_delivered" checked={modalFormData.event_shipment_delivered || false} onChange={handleModalInputChange} className="h-4 w-4 mr-2" /> shipment.delivered</label>
+                    </div>
+                </div>
+                <div className="text-right pt-2"><Button primary type="submit">Create Webhook</Button></div>
+            </form>
+        </Modal>
+
         <div className="min-h-screen bg-gray-100 flex">
             <aside className="w-64 bg-slate-800 text-white flex flex-col">
                  <div className="h-16 flex items-center justify-center border-b border-slate-700">
@@ -1822,8 +2017,8 @@ export const ClientDashboardPage: React.FC = () => {
                     <ul>
                         {menuItems.map(item => (
                              <li key={item.name}>
-                                <Link to={`/dashboard#${item.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
-                                      className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${activeView.replace(/ /g, '') === item.name.replace(/ /g, '') ? 'bg-slate-900 text-[#f0e1b0]' : 'hover:bg-slate-700'}`}>
+                                <Link to={`/dashboard#${item.name.toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-')}`}
+                                      className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${activeView.replace(/\s+/g, '') === item.name.replace(/ & /g, '').replace(/\s+/g, '') ? 'bg-slate-900 text-[#f0e1b0]' : 'hover:bg-slate-700'}`}>
                                     <IconWrapper className="w-5 h-5">{item.icon}</IconWrapper>
                                     <span>{item.name}</span>
                                 </Link>
@@ -1896,21 +2091,21 @@ const AdminUsersView: React.FC = () => (
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                     <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Account Type</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name / Company</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Account Type</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                     {ALL_USERS_DATA.map(user => (
                         <tr key={user.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{user.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">{user.email}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{user.name} <span className="block text-gray-500">{user.company || user.email}</span></td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">{user.accountType}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">{user.status}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{user.lastLogin}</td>
+                             <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                                 <button className="text-[#00529b] hover:underline">Edit</button>
                                 <button className="text-red-600 hover:underline">Delete</button>
                             </td>
@@ -1922,19 +2117,17 @@ const AdminUsersView: React.FC = () => (
     </div>
 );
 
-
 const AdminShipmentsView: React.FC = () => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">All Shipments</h3>
-         <div className="overflow-x-auto">
+        <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tracking ID</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Origin & Destination</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -1942,13 +2135,44 @@ const AdminShipmentsView: React.FC = () => (
                         <tr key={shipment.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#00529b]">{shipment.id}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.clientName}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.destination}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' : shipment.status === 'Customs Hold' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>{shipment.status}</span>
-                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.origin} &rarr; {shipment.destination}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.status}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+const AdminWalletRequestsView: React.FC = () => (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Wallet Top-up & Withdrawal Requests</h3>
+        <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {ADMIN_WALLET_REQUESTS_DATA.map(req => (
+                        <tr key={req.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{req.clientName}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{req.type}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{req.currency} {req.amount.toFixed(2)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{req.status}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                <button className="text-[#00529b] hover:underline">View</button>
-                                <button className="text-[#00529b] hover:underline">Update Status</button>
+                                {req.status === 'Pending' && (
+                                    <>
+                                        <button className="text-green-600 hover:underline">Approve</button>
+                                        <button className="text-red-600 hover:underline">Decline</button>
+                                    </>
+                                )}
                             </td>
                         </tr>
                     ))}
@@ -1958,16 +2182,58 @@ const AdminShipmentsView: React.FC = () => (
     </div>
 );
 
-// --- MAIN ADMIN DASHBOARD COMPONENT ---
-// FIX: Export the AdminDashboardPage component so it can be used in App.tsx.
+const AdminCmsView: React.FC = () => {
+    const [editingPage, setEditingPage] = useState<string | null>(null);
+    const pageKeys = Object.keys(MANAGEABLE_PAGES_CONTENT);
+
+    if (editingPage) {
+        const page = MANAGEABLE_PAGES_CONTENT[editingPage as keyof typeof MANAGEABLE_PAGES_CONTENT];
+        return (
+             <div className="bg-white p-6 rounded-lg shadow-sm">
+                <button onClick={() => setEditingPage(null)} className="text-sm font-medium text-[#00529b] hover:underline mb-4">&larr; Back to all pages</button>
+                <h3 className="text-xl font-semibold text-gray-800">Editing: {page.title}</h3>
+                <form className="space-y-4 mt-4">
+                    <div>
+                        <label className="block text-sm font-medium">Title</label>
+                        <input type="text" defaultValue={page.title} className="w-full p-2 border rounded-md" />
+                    </div>
+                     <div>
+                        <label className="block text-sm font-medium">Subtitle</label>
+                        <input type="text" defaultValue={page.subtitle} className="w-full p-2 border rounded-md" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Content (HTML)</label>
+                        <textarea rows={15} defaultValue={page.rawContent} className="w-full p-2 border rounded-md font-mono text-sm"></textarea>
+                    </div>
+                    <AdminButton primary>Save Changes</AdminButton>
+                </form>
+             </div>
+        )
+    }
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Content Management</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {pageKeys.map(key => (
+                    <div key={key} className="p-4 border rounded-lg flex justify-between items-center">
+                        <span className="font-medium text-gray-700 capitalize">{key} Page</span>
+                        <AdminButton onClick={() => setEditingPage(key)}>Edit</AdminButton>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+};
+
 export const AdminDashboardPage: React.FC = () => {
     const location = useLocation();
     const [activeView, setActiveView] = useState('Overview');
-
+    
     useEffect(() => {
-        const hash = location.hash.replace('#', '').replace(/-/g, ' ');
+        const hash = location.hash.replace('#', '');
         if (hash) {
-            const viewName = hash.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            const viewName = hash.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ').replace(/\s\s+/g, ' ');
             setActiveView(viewName);
         } else {
             setActiveView('Overview');
@@ -1976,15 +2242,23 @@ export const AdminDashboardPage: React.FC = () => {
 
     const menuItems = [
         { name: 'Overview', icon: <IconDashboard /> },
-        { name: 'Users', icon: <IconUserPlus /> },
         { name: 'Shipments', icon: <IconBoxSeam /> },
+        { name: 'Users', icon: <IconPerson /> },
+        { name: 'Wallet Requests', icon: <IconWallet2 /> },
+        { name: 'Invoices', icon: <IconReceipt /> },
+        { name: 'CMS', icon: <IconPencilSquare /> },
+        { name: 'Settings', icon: <IconSettings /> },
     ];
     
     const renderView = () => {
-        switch (activeView) {
+        switch (activeView.replace(/\s+/g, '')) {
             case 'Overview': return <AdminDashboardOverviewView />;
             case 'Users': return <AdminUsersView />;
             case 'Shipments': return <AdminShipmentsView />;
+            case 'WalletRequests': return <AdminWalletRequestsView />;
+            case 'CMS': return <AdminCmsView />;
+            case 'Invoices': return <p>Invoices view coming soon.</p>;
+            case 'Settings': return <p>Settings view coming soon.</p>;
             default: return <AdminDashboardOverviewView />;
         }
     };
@@ -1999,8 +2273,8 @@ export const AdminDashboardPage: React.FC = () => {
                     <ul>
                         {menuItems.map(item => (
                              <li key={item.name}>
-                                <Link to={`/admin#${item.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
-                                      className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${activeView.replace(/ /g, '') === item.name.replace(/ /g, '') ? 'bg-slate-900 text-[#f0e1b0]' : 'hover:bg-slate-700'}`}>
+                                <Link to={`/admin#${item.name.toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-')}`}
+                                      className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${activeView.replace(/\s+/g, '') === item.name.replace(/ & /g, '').replace(/\s+/g, '') ? 'bg-slate-900 text-[#f0e1b0]' : 'hover:bg-slate-700'}`}>
                                     <IconWrapper className="w-5 h-5">{item.icon}</IconWrapper>
                                     <span>{item.name}</span>
                                 </Link>
