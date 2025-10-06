@@ -115,19 +115,36 @@ export const SITE_CONFIG = {
     twitter: "https://x.com/hayapassglobal",
     instagram: "https://instagram.com/hayapasslogistics",
     linkedin: "https://linkedin.com/company/hayapass-global-logistics",
-  }
+  },
+  copyright: `© ${new Date().getFullYear()} HAYAPASS GLOBAL LOGISTICS. All Rights Reserved.`
 };
 
-export const HEADER_MENU_ITEMS: MenuItem[] = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about" },
-  { label: "Services", href: "/services" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Contact", href: "/contact" },
+export const HEADER_MENU_ITEMS: (MenuItem & { id: number })[] = [
+  { id: 1, label: "Home", href: "/" },
+  { id: 2, label: "About Us", href: "/about" },
+  { id: 3, label: "Services", href: "/services" },
+  { id: 4, label: "FAQ", href: "/faq" },
+  { id: 5, label: "Contact", href: "/contact" },
 ];
+
+// --- NEW: FOOTER LINK CONSTANTS ---
+export const FOOTER_QUICK_LINKS: MenuItem[] = [
+    { label: "Track Shipment", href: "/tracking" },
+    { label: "Calculate Rates", href: "/rates" },
+    { label: "Get a Quote", href: "/quote" },
+    { label: "Contact Support", href: "/contact" },
+];
+
+export const FOOTER_LEGAL_LINKS: MenuItem[] = [
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms & Conditions", href: "/terms" },
+    { label: "Admin Login", href: "/admin-login" },
+];
+
 
 export const HERO_SLIDES: HeroSlide[] = [
   {
+    id: 1,
     image: "https://images.unsplash.com/photo-1587671391393-39789696380a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
     headline: "Bridging Distances, Delivering Futures.",
     tagline: "Your trusted partner for seamless UK-Nigeria logistics and global connections.",
@@ -137,6 +154,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     ]
   },
   {
+    id: 2,
     image: "https://images.unsplash.com/photo-1578575437130-5278ce68056c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
     headline: "Expert Air Freight Solutions",
     tagline: "Fast, reliable air cargo services connecting continents with speed and precision.",
@@ -146,6 +164,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     ]
   },
   {
+    id: 3,
     image: "https://images.unsplash.com/photo-1605711214154-509F49d97182?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
     headline: "Reliable Sea Freight Services",
     tagline: "Cost-effective and dependable sea shipping for your global trade needs.",
@@ -154,6 +173,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     ]
   },
   {
+    id: 4,
     image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
     headline: "Secure Warehousing & Fulfilment",
     tagline: "Modern facilities and smart solutions for your inventory and distribution.",
@@ -162,6 +182,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     ]
   },
   {
+    id: 5,
     image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
     headline: "Your Logistics, Simplified",
     tagline: "Partner with us for end-to-end supply chain management and expert support.",
@@ -258,6 +279,126 @@ export const FAQ_DATA: FaqItemData[] = [
         answer: <p>We have primary operational hubs in the United Kingdom and Nigeria. You can find our detailed office addresses and contact information on our <Link to="/contact" className="text-[#00529b] hover:text-[#b58e31] underline">Contact Us page</Link>.</p>
     },
 ];
+
+// --- NEW: CONTENT FOR MANAGEABLE PAGES (CMS) ---
+export const MANAGEABLE_PAGES_CONTENT: { [key: string]: { title: string; subtitle: string; content: React.ReactNode; rawContent?: string; } } = {
+    about: {
+        title: "About Us",
+        subtitle: "Connecting continents with care, commitment, and cutting-edge logistics.",
+        rawContent: `
+<h2 class="text-3xl font-bold text-gray-800 mb-4">Our Mission</h2>
+<p class="text-lg text-gray-600 mb-6">To provide seamless, reliable, and innovative logistics solutions that bridge the distance between the UK, Nigeria, and the world. We are dedicated to simplifying complex supply chains, fostering global trade, and ensuring our clients' success through exceptional service and unwavering commitment.</p>
+<h2 class="text-3xl font-bold text-gray-800 mb-4">Our Vision</h2>
+<p class="text-lg text-gray-600">To be the leading logistics partner for UK-Nigeria trade, recognized for our operational excellence, client-centric approach, and technological innovation. We aim to build a future where geographical barriers are no longer an obstacle to business growth and personal connections.</p>
+`,
+        content: (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 className="text-3xl font-bold text-gray-800 mb-4">Our Mission</h2>
+                    <p className="text-lg text-gray-600 mb-6">To provide seamless, reliable, and innovative logistics solutions that bridge the distance between the UK, Nigeria, and the world. We are dedicated to simplifying complex supply chains, fostering global trade, and ensuring our clients' success through exceptional service and unwavering commitment.</p>
+                    <h2 className="text-3xl font-bold text-gray-800 mb-4">Our Vision</h2>
+                    <p className="text-lg text-gray-600">To be the leading logistics partner for UK-Nigeria trade, recognized for our operational excellence, client-centric approach, and technological innovation. We aim to build a future where geographical barriers are no longer an obstacle to business growth and personal connections.</p>
+                </div>
+                <div>
+                    <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?q=80&w=2067&auto=format&fit=crop" alt="Diverse team collaborating in an office" className="rounded-lg shadow-lg" />
+                </div>
+            </div>
+        )
+    },
+    privacy: {
+        title: "Privacy Policy",
+        subtitle: "Your privacy is important to us. This policy explains how we collect, use, and protect your information.",
+        rawContent: `
+<p><strong>Last Updated: {new Date().toLocaleDateString()}</strong></p>
+<h4>1. Introduction</h4>
+<p>Welcome to Hayapass Global Logistics ("we," "our," "us"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice, or our practices with regards to your personal information, please contact us at ${SITE_CONFIG.contact.email}.</p>
+<h4>2. Information We Collect</h4>
+<p>We collect personal information that you voluntarily provide to us when you register on the website, express an interest in obtaining information about us or our products and services, when you participate in activities on the website or otherwise when you contact us.</p>
+<ul>
+    <li><strong>Personal Information Provided by You:</strong> We collect names; phone numbers; email addresses; mailing addresses; job titles; contact preferences; billing addresses; and other similar information.</li>
+    <li><strong>Shipment Data:</strong> We collect data related to your shipments, including consignee and shipper information, package descriptions, and tracking data.</li>
+</ul>
+<h4>3. How We Use Your Information</h4>
+<p>We use personal information collected via our website for a variety of business purposes described below. We process your personal information for these purposes in reliance on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations.</p>
+<h4>4. Will Your Information Be Shared With Anyone?</h4>
+<p>We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations. We may need to share your information with third-party vendors, service providers, contractors or agents who perform services for us or on our behalf and require access to such information to do that work. Examples include: payment processing, data analysis, email delivery, hosting services, customer service and marketing efforts.</p>
+`,
+        content: (
+            <div className="prose max-w-none">
+                <p><strong>Last Updated: {new Date().toLocaleDateString()}</strong></p>
+                
+                <h4>1. Introduction</h4>
+                <p>Welcome to Hayapass Global Logistics ("we," "our," "us"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice, or our practices with regards to your personal information, please contact us at {SITE_CONFIG.contact.email}.</p>
+
+                <h4>2. Information We Collect</h4>
+                <p>We collect personal information that you voluntarily provide to us when you register on the website, express an interest in obtaining information about us or our products and services, when you participate in activities on the website or otherwise when you contact us.</p>
+                <p>The personal information that we collect depends on the context of your interactions with us and the website, the choices you make and the products and features you use. The personal information we collect may include the following:</p>
+                <ul>
+                    <li><strong>Personal Information Provided by You:</strong> We collect names; phone numbers; email addresses; mailing addresses; job titles; contact preferences; billing addresses; and other similar information.</li>
+                    <li><strong>Shipment Data:</strong> We collect data related to your shipments, including consignee and shipper information, package descriptions, and tracking data.</li>
+                </ul>
+
+                <h4>3. How We Use Your Information</h4>
+                <p>We use personal information collected via our website for a variety of business purposes described below. We process your personal information for these purposes in reliance on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations.</p>
+                <ul>
+                    <li>To facilitate account creation and logon process.</li>
+                    <li>To post testimonials on our website with your consent.</li>
+                    <li>To manage user accounts and keep them in working order.</li>
+                    <li>To send administrative information to you for business purposes, legal reasons and/or contractual reasons.</li>
+                    <li>To fulfill and manage your orders, payments, returns, and exchanges.</li>
+                    <li>To respond to your inquiries and solve any potential issues you might have with the use of our Services.</li>
+                </ul>
+
+                <h4>4. Will Your Information Be Shared With Anyone?</h4>
+                <p>We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations. We may need to share your information with third-party vendors, service providers, contractors or agents who perform services for us or on our behalf and require access to such information to do that work. Examples include: payment processing, data analysis, email delivery, hosting services, customer service and marketing efforts.</p>
+                
+                <h4>5. How Long Do We Keep Your Information?</h4>
+                <p>We will only keep your personal information for as long as it is necessary for the purposes set out in this privacy notice, unless a longer retention period is required or permitted by law (such as tax, accounting or other legal requirements).</p>
+            </div>
+        )
+    },
+    terms: {
+        title: "Terms & Conditions",
+        subtitle: "Please read these terms and conditions carefully before using our services.",
+        rawContent: `
+<p><strong>Last Updated: {new Date().toLocaleDateString()}</strong></p>
+<h4>1. Agreement to Terms</h4>
+<p>By using the services, websites, and applications offered by Hayapass Global Logistics, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.</p>
+<h4>2. Services</h4>
+<p>Hayapass Global Logistics provides logistics, shipping, freight, and customs services. All services are subject to the terms of the specific service agreement, waybill, or bill of lading applicable to the shipment. Our liability is limited as set forth in such agreements.</p>
+<h4>3. User Responsibilities</h4>
+<p>You agree to provide accurate, current, and complete information for all shipments and transactions. You are responsible for ensuring that your shipment complies with all applicable laws and regulations, including customs, import, and export laws of all countries involved. You warrant that you are the owner or authorized agent of the owner of the goods being shipped.</p>
+<h4>4. Prohibited Items</h4>
+<p>You agree not to ship any items that are prohibited by law or regulation in any origin, destination, or transit country. This includes, but is not limited to, hazardous materials not declared in accordance with transportation regulations, illegal substances, currency, and other restricted items. We reserve the right to inspect any shipment and to refuse or return any shipment that violates these terms.</p>
+`,
+        content: (
+            <div className="prose max-w-none">
+                <p><strong>Last Updated: {new Date().toLocaleDateString()}</strong></p>
+                
+                <h4>1. Agreement to Terms</h4>
+                <p>By using the services, websites, and applications offered by Hayapass Global Logistics, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.</p>
+
+                <h4>2. Services</h4>
+                <p>Hayapass Global Logistics provides logistics, shipping, freight, and customs services. All services are subject to the terms of the specific service agreement, waybill, or bill of lading applicable to the shipment. Our liability is limited as set forth in such agreements.</p>
+                
+                <h4>3. User Responsibilities</h4>
+                <p>You agree to provide accurate, current, and complete information for all shipments and transactions. You are responsible for ensuring that your shipment complies with all applicable laws and regulations, including customs, import, and export laws of all countries involved. You warrant that you are the owner or authorized agent of the owner of the goods being shipped.</p>
+
+                <h4>4. Prohibited Items</h4>
+                <p>You agree not to ship any items that are prohibited by law or regulation in any origin, destination, or transit country. This includes, but is not limited to, hazardous materials not declared in accordance with transportation regulations, illegal substances, currency, and other restricted items. We reserve the right to inspect any shipment and to refuse or return any shipment that violates these terms.</p>
+
+                <h4>5. Rates and Payment</h4>
+                <p>Rates and service quotations are estimates based on the information provided by you and are subject to change. Final charges will be based on the actual characteristics of the shipment and the services performed. All charges are due and payable as specified in the invoice. We reserve the right to hold shipments for unpaid charges.</p>
+
+                <h4>6. Limitation of Liability</h4>
+                <p>Our liability for loss or damage to any shipment is limited. For full details on liability, please refer to the specific service agreement. We are not liable for any loss, damage, delay, or non-delivery caused by events we cannot control, including but not limited to acts of God, war, civil disturbances, or actions of governmental authorities.</p>
+
+                <h4>7. Changes to Terms</h4>
+                <p>We reserve the right to modify these Terms and Conditions at any time. We will notify you of any changes by posting the new Terms and Conditions on this page. You are advised to review this page periodically for any changes.</p>
+            </div>
+        )
+    }
+};
 
 // --- MOCK DATA FOR CLIENT DASHBOARD ---
 export const CLIENT_SHIPMENTS_DATA: ClientShipment[] = [

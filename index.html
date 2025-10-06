@@ -17,6 +17,54 @@
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Montserrat', sans-serif;
         }
+
+        /* --- FORM & BUTTON UI ENHANCEMENTS --- */
+        /* Enhance base input styles for better readability */
+        input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="password"], textarea, select {
+            background-color: #f8fafc; /* Lighter gray background */
+            border-color: #cbd5e1;
+            color: #1e293b;
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Change placeholder text color for better contrast */
+        ::placeholder {
+            color: #94a3b8; /* Lighter but readable gray */
+            opacity: 1;
+        }
+
+        /* More prominent focus state */
+        input:focus, textarea:focus, select:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            border-color: #b58e31;
+            box-shadow: 0 0 0 2px rgba(181, 142, 49, 0.4);
+            background-color: #ffffff;
+        }
+        
+        /* Improve button text visibility and feel */
+        button, a.inline-block.py-2\.5 {
+          font-weight: 600; /* Bolder text on buttons */
+          letter-spacing: 0.025em;
+          text-transform: uppercase;
+          font-size: 0.8rem;
+        }
+        
+        /* Specific adjustments for primary button text contrast */
+        .bg-\[\#00529b\], .hover\:bg-\[\#00427a\] {
+          color: white;
+        }
+        
+        /* Specific adjustments for secondary button text contrast */
+        .bg-\[\#b58e31\], .hover\:bg-\[\#9f7b2a\] {
+          color: white;
+        }
+
+        /* Make outline button text bolder on hover */
+        .hover\:bg-\[\#00529b\]:hover {
+            color: white !important;
+        }
+
     </style>
   <script type="importmap">
 {

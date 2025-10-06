@@ -27,6 +27,7 @@ export interface Testimonial {
 
 // --- NEW TYPE FOR HERO SLIDER ---
 export interface HeroSlide {
+  id: number; // Added for unique keying in CMS
   image: string;
   headline: string;
   tagline: string;

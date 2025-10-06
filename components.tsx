@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { SITE_CONFIG, HEADER_MENU_ITEMS, HERO_SLIDES, ICON_MAP, IconPackage, IconShieldCheck } from './constants';
+import { SITE_CONFIG, HEADER_MENU_ITEMS, HERO_SLIDES, ICON_MAP, IconPackage, IconShieldCheck, FOOTER_QUICK_LINKS, FOOTER_LEGAL_LINKS } from './constants';
 import type { Service, Feature, Testimonial, TrackingData, FaqItemData } from './types';
 import { MOCK_TRACKING_DATA } from './constants';
 import { IconFacebook, IconTwitterX, IconInstagram, IconLinkedIn, IconWhatsapp, IconWrapper } from './constants';
@@ -32,6 +32,26 @@ export const Button: React.FC<ButtonProps> = ({ children, primary, secondary, ou
 
   return <button className={appliedClasses} {...props}>{children}</button>;
 };
+
+// --- NEW ADMIN BUTTON COMPONENT ---
+interface AdminButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    children: React.ReactNode;
+    primary?: boolean;
+    secondary?: boolean;
+    danger?: boolean;
+    className?: string;
+}
+export const AdminButton: React.FC<AdminButtonProps> = ({ children, primary, secondary, danger, className, ...props }) => {
+    const baseClasses = "px-4 py-2 text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors";
+    const primaryClasses = "bg-[#00529b] text-white hover:bg-[#00427a] focus:ring-[#00529b]";
+    const secondaryClasses = "bg-slate-200 text-slate-800 hover:bg-slate-300 focus:ring-slate-400";
+    const dangerClasses = "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500";
+    
+    const appliedClasses = `${baseClasses} ${primary ? primaryClasses : ''} ${secondary ? secondaryClasses : ''} ${danger ? dangerClasses : ''} ${!primary && !secondary && !danger ? secondaryClasses : ''} ${className}`;
+
+    return <button className={appliedClasses} {...props}>{children}</button>;
+};
+
 
 // --- HEADER ---
 export const Header: React.FC = () => {
@@ -115,23 +135,22 @@ export const Footer: React.FC = () => {
                     <div>
                         <h4 className="text-white text-lg font-bold mb-4">Quick Actions</h4>
                         <ul className="space-y-3 text-sm">
-                            <li><Link to="/tracking" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Track Shipment</Link></li>
-                            <li><Link to="/rates" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Calculate Rates</Link></li>
-                            <li><Link to="/quote" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Get a Quote</Link></li>
-                            <li><Link to="/contact" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Contact Support</Link></li>
+                           {FOOTER_QUICK_LINKS.map(item => (
+                               <li key={item.href}><Link to={item.href} className="hover:text-[#f0e1b0] hover:pl-1 transition-all">{item.label}</Link></li>
+                           ))}
                         </ul>
                     </div>
                     <div>
                         <h4 className="text-white text-lg font-bold mb-4">Legal</h4>
                         <ul className="space-y-3 text-sm">
-                            <li><Link to="/privacy-policy" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Privacy Policy</Link></li>
-                            <li><Link to="/terms" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Terms & Conditions</Link></li>
-                            <li><Link to="/admin-login" className="hover:text-[#f0e1b0] hover:pl-1 transition-all">Admin Login</Link></li>
+                            {FOOTER_LEGAL_LINKS.map(item => (
+                               <li key={item.href}><Link to={item.href} className="hover:text-[#f0e1b0] hover:pl-1 transition-all">{item.label}</Link></li>
+                           ))}
                         </ul>
                     </div>
                 </div>
                 <div className="text-center pt-8 border-t border-slate-700 text-sm">
-                    <p>&copy; {new Date().getFullYear()} {SITE_CONFIG.brandName}. All Rights Reserved.</p>
+                    <p>{SITE_CONFIG.copyright}</p>
                 </div>
             </div>
         </footer>
