@@ -216,3 +216,16 @@ export interface WalletRequest {
     status: 'Pending' | 'Approved' | 'Declined';
     method: string;
 }
+
+export interface SupportTicket {
+    id: string;
+    subject: string;
+    department: 'General' | 'Billing' | 'Technical';
+    status: 'Open' | 'Pending' | 'Resolved';
+    lastUpdated: string;
+    messages: {
+        sender: 'You' | 'Support';
+        text: string;
+        timestamp: string;
+    }[];
+}

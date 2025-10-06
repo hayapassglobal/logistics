@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier, HeroSlide, WalletRequest } from './types';
+import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier, HeroSlide, WalletRequest, SupportTicket } from './types';
 import { Link } from 'react-router-dom';
 
 // --- ICONS (Moved from components.tsx to break circular dependency) ---
@@ -564,3 +564,29 @@ export const LOYALTY_DATA: LoyaltyTier = {
         'Dedicated Account Manager',
     ]
 };
+
+export const SUPPORT_TICKETS_DATA: SupportTicket[] = [
+    {
+        id: 'TKT-001',
+        subject: 'Question about customs charges for INV-CLIENT1-015',
+        department: 'Billing',
+        status: 'Open',
+        lastUpdated: '04 Nov 2025',
+        messages: [
+            { sender: 'Support', text: 'Hello, thank you for reaching out. We are looking into the customs charges for your invoice and will get back to you shortly.', timestamp: '04 Nov 2025, 11:30 AM' },
+            { sender: 'You', text: 'Hi, I had a question about the customs charges on my latest invoice. Can you clarify?', timestamp: '04 Nov 2025, 10:15 AM' },
+        ],
+    },
+    {
+        id: 'TKT-002',
+        subject: 'My package HGLNG45602 is on hold',
+        department: 'General',
+        status: 'Resolved',
+        lastUpdated: '03 Nov 2025',
+        messages: [
+            { sender: 'You', text: 'Thank you for the quick help!', timestamp: '03 Nov 2025, 02:45 PM' },
+            { sender: 'Support', text: 'You are all set. The customs duty has been paid and the package is cleared for delivery.', timestamp: '03 Nov 2025, 02:40 PM' },
+            { sender: 'You', text: 'I see my package is on customs hold. How can I resolve this?', timestamp: '02 Nov 2025, 09:00 AM' },
+        ],
+    },
+];

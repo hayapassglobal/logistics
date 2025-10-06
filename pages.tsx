@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button, AdminButton } from './components';
-import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, MANAGEABLE_PAGES_CONTENT, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, LOYALTY_DATA, REFERRAL_DATA, API_TOKENS_DATA, WEBHOOKS_DATA } from './constants';
+import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, MANAGEABLE_PAGES_CONTENT, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, LOYALTY_DATA, REFERRAL_DATA, API_TOKENS_DATA, WEBHOOKS_DATA, SUPPORT_TICKETS_DATA } from './constants';
 import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, IconShieldCheck, IconFileText, IconHelpCircle, IconGlobe, IconWarehouse, IconCustoms, IconPackage, IconSend, ICON_MAP } from './constants';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, FaqItemData, WalletRequest } from './types';
+import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, FaqItemData, WalletRequest, SupportTicket } from './types';
 
 
 export const HomePage: React.FC = () => (
@@ -1100,58 +1100,93 @@ const DashboardCard: React.FC<{ title: string; value: string | number; icon: Rea
     </div>
 );
 
-const ClientDashboardOverviewView: React.FC<{ accountType: 'individual' | 'business' }> = ({ accountType }) => (
-    <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <DashboardCard title="Active Shipments" value={CLIENT_SHIPMENTS_DATA.filter(s => s.status !== 'Delivered').length} icon={<IconBoxSeam />} footer="+1 this week" />
-            <DashboardCard title="Wallet (GBP)" value={`£${WALLET_TRANSACTIONS_DATA.reduce((acc, t) => acc + (parseFloat(t.gbp || '0')), 0).toFixed(2)}`} icon={<IconWallet2 />} footer="Last transaction: 3 Nov" />
-            <DashboardCard title="Wallet (NGN)" value={`₦${WALLET_TRANSACTIONS_DATA.reduce((acc, t) => acc + (parseFloat(t.ngn || '0')), 0).toLocaleString()}`} icon={<IconWallet2 />} footer="Last transaction: 28 Oct" />
-            <DashboardCard title="Pending Pre-Alerts" value={CLIENT_PREALERTS_DATA.filter(p => p.status === 'Pending Arrival').length} icon={<IconBell />} footer="1 arrived today" />
+const EmptyState: React.FC<{ icon: React.ReactNode; title: string; description: string; actionButton?: React.ReactNode; }> = ({ icon, title, description, actionButton }) => (
+    <div className="text-center py-16 px-6 bg-white rounded-lg shadow-sm">
+        <div className="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4">
+            <IconWrapper className="w-8 h-8">{icon}</IconWrapper>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Shipments</h3>
-                <div className="overflow-x-auto">
-                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tracking ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {CLIENT_SHIPMENTS_DATA.slice(0, 3).map(shipment => (
-                                <tr key={shipment.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#00529b]">{shipment.id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shipment.destination}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{shipment.status}</span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-                 <div className="grid grid-cols-2 gap-4">
-                     <Link to="/dashboard#shipments" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconTruck/></IconWrapper><span className="text-sm font-medium">New Shipment</span></Link>
-                     <Link to="/dashboard#pre-alerts" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconBell/></IconWrapper><span className="text-sm font-medium">New Pre-Alert</span></Link>
-                     <Link to="/dashboard#wallet" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconWallet2/></IconWrapper><span className="text-sm font-medium">Top Up Wallet</span></Link>
-                     <Link to="/contact" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconHeadset/></IconWrapper><span className="text-sm font-medium">Contact Support</span></Link>
-                 </div>
-            </div>
-        </div>
+        <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+        <p className="text-gray-500 mt-2 mb-6 max-w-md mx-auto">{description}</p>
+        {actionButton}
     </div>
 );
 
-const ClientDashboardShipmentsView: React.FC = () => {
-    const [selectedShipment, setSelectedShipment] = useState<DetailedClientShipment | null>(CLIENT_SHIPMENT_DETAILS_DATA[CLIENT_SHIPMENTS_DATA[0].id]);
+const ClientDashboardOverviewView: React.FC<{ accountType: 'individual' | 'business', isEmpty: boolean, onCreateShipment: () => void }> = ({ accountType, isEmpty, onCreateShipment }) => {
+    if (isEmpty) {
+        return <EmptyState 
+            icon={<IconDashboard />}
+            title={`Welcome to your ${accountType} dashboard!`}
+            description="This is your command center for all your logistics needs. To get started, create your first shipment."
+            actionButton={<Button primary onClick={onCreateShipment}>Create Your First Shipment</Button>}
+        />
+    }
+
+    return (
+        <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <DashboardCard title="Active Shipments" value={CLIENT_SHIPMENTS_DATA.filter(s => s.status !== 'Delivered').length} icon={<IconBoxSeam />} footer="+1 this week" />
+                <DashboardCard title="Wallet (GBP)" value={`£${WALLET_TRANSACTIONS_DATA.reduce((acc, t) => acc + (parseFloat(t.gbp || '0')), 0).toFixed(2)}`} icon={<IconWallet2 />} footer="Last transaction: 3 Nov" />
+                <DashboardCard title="Wallet (NGN)" value={`₦${WALLET_TRANSACTIONS_DATA.reduce((acc, t) => acc + (parseFloat(t.ngn || '0')), 0).toLocaleString()}`} icon={<IconWallet2 />} footer="Last transaction: 28 Oct" />
+                <DashboardCard title="Pending Pre-Alerts" value={CLIENT_PREALERTS_DATA.filter(p => p.status === 'Pending Arrival').length} icon={<IconBell />} footer="1 arrived today" />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Shipments</h3>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tracking ID</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {CLIENT_SHIPMENTS_DATA.slice(0, 3).map(shipment => (
+                                    <tr key={shipment.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#00529b]">{shipment.id}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{shipment.destination}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{shipment.status}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <button onClick={onCreateShipment} className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconTruck /></IconWrapper><span className="text-sm font-medium">New Shipment</span></button>
+                        <Link to="/dashboard#pre-alerts" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconBell /></IconWrapper><span className="text-sm font-medium">New Pre-Alert</span></Link>
+                        <Link to="/dashboard#wallet" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconWallet2 /></IconWrapper><span className="text-sm font-medium">Top Up Wallet</span></Link>
+                        <Link to="/dashboard#help--support" className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg text-center transition-colors"><IconWrapper className="w-8 h-8 mx-auto mb-2 text-[#00529b]"><IconHeadset /></IconWrapper><span className="text-sm font-medium">Contact Support</span></Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+};
+
+const ClientDashboardShipmentsView: React.FC<{isEmpty: boolean, onCreateShipment: () => void}> = ({ isEmpty, onCreateShipment }) => {
+    const [selectedShipment, setSelectedShipment] = useState<DetailedClientShipment | null>(CLIENT_SHIPMENT_DETAILS_DATA[CLIENT_SHIPMENTS_DATA[0]?.id]);
+
+    if (isEmpty) {
+        return <EmptyState 
+            icon={<IconBoxSeam />}
+            title="No shipments yet"
+            description="All your created shipments will appear here. Let's get your first package on its way!"
+            actionButton={<Button primary onClick={onCreateShipment}>Create New Shipment</Button>}
+        />
+    }
+
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">All Shipments</h3>
+             <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">All Shipments</h3>
+                <Button primary onClick={onCreateShipment}><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconTruck /></IconWrapper>Create New Shipment</Button>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-1 h-96 overflow-y-auto pr-2">
                     <ul className="space-y-2">
@@ -1194,7 +1229,16 @@ const ClientDashboardShipmentsView: React.FC = () => {
     );
 };
 
-const ClientDashboardPreAlertsView: React.FC = () => (
+const ClientDashboardPreAlertsView: React.FC<{isEmpty: boolean}> = ({isEmpty}) => {
+     if (isEmpty) {
+        return <EmptyState 
+            icon={<IconBell />}
+            title="No pre-alerts"
+            description="Use a pre-alert to notify us of an incoming package from another retailer (like Amazon) to your Hayapass locker."
+            actionButton={<Button primary>Create a Pre-Alert</Button>}
+        />
+    }
+    return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-gray-800">Pre-Alerts</h3>
@@ -1223,9 +1267,17 @@ const ClientDashboardPreAlertsView: React.FC = () => (
             </table>
         </div>
     </div>
-);
+)};
 
-const ClientDashboardInvoicesView: React.FC = () => (
+const ClientDashboardInvoicesView: React.FC<{isEmpty: boolean}> = ({isEmpty}) => {
+    if (isEmpty) {
+        return <EmptyState 
+            icon={<IconReceipt />}
+            title="No invoices yet"
+            description="Invoices for your shipments and services will appear here once they are generated."
+        />
+    }
+    return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Invoices</h3>
         <div className="overflow-x-auto">
@@ -1256,9 +1308,18 @@ const ClientDashboardInvoicesView: React.FC = () => (
             </table>
         </div>
     </div>
-);
+)};
 
-const ClientDashboardWalletView: React.FC = () => (
+const ClientDashboardWalletView: React.FC<{isEmpty: boolean}> = ({isEmpty}) => {
+     if (isEmpty) {
+        return <EmptyState 
+            icon={<IconWallet2 />}
+            title="Your wallet is ready"
+            description="Top up your wallet for faster payments and seamless transactions for all your logistics needs."
+            actionButton={<Button primary>Top Up Wallet</Button>}
+        />
+    }
+    return (
     <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -1300,7 +1361,7 @@ const ClientDashboardWalletView: React.FC = () => (
             </table>
         </div>
     </div>
-);
+)};
 
 const ClientDashboardAddressesView: React.FC = () => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -1527,18 +1588,170 @@ const ClientDashboardReferralView: React.FC = () => (
      </div>
 );
 
+
+// --- START: NEW 100% COMPLETE DASHBOARD FEATURES ---
+
+const CreateShipmentWizard: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+    const [step, setStep] = useState(1);
+    const [formData, setFormData] = useState({});
+
+    const nextStep = () => setStep(s => s + 1);
+    const prevStep = () => setStep(s => s - 1);
+
+    const handleClose = () => {
+        setStep(1);
+        setFormData({});
+        onClose();
+    }
+
+    if (!isOpen) return null;
+
+    const renderStepContent = () => {
+        switch (step) {
+            case 1: return <div><h3 className="text-lg font-medium mb-4">1. Addresses</h3><p>Origin and Destination form goes here...</p></div>;
+            case 2: return <div><h3 className="text-lg font-medium mb-4">2. Package Details</h3><p>Weight, dimensions, contents form goes here...</p></div>;
+            case 3: return <div><h3 className="text-lg font-medium mb-4">3. Select Service</h3><p>Service options with pricing go here...</p></div>;
+            case 4: return <div><h3 className="text-lg font-medium mb-4">4. Review & Confirm</h3><p>Summary of all details goes here...</p></div>;
+            default: return null;
+        }
+    }
+
+    return (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in-fast">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+                <div className="flex justify-between items-center p-4 border-b">
+                    <h2 className="text-xl font-semibold text-gray-800">Create New Shipment</h2>
+                    <button onClick={handleClose} className="text-gray-500 hover:text-gray-800">&times;</button>
+                </div>
+                <div className="flex-grow overflow-y-auto p-6">{renderStepContent()}</div>
+                <div className="flex justify-between p-4 border-t bg-gray-50">
+                    {step > 1 && <Button secondary onClick={prevStep}>Back</Button>}
+                    <div className="flex-grow" />
+                    {step < 4 && <Button primary onClick={nextStep}>Next</Button>}
+                    {step === 4 && <Button primary onClick={handleClose}>Confirm Shipment</Button>}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const NotificationPanel: React.FC<{ notifications: ClientNotification[]; onClose: () => void }> = ({ notifications, onClose }) => (
+    <div className="absolute top-14 right-0 w-80 bg-white rounded-lg shadow-lg border z-50 animate-fade-in-fast">
+        <div className="p-3 border-b flex justify-between items-center">
+            <h4 className="font-semibold text-sm">Notifications</h4>
+            <button className="text-xs text-[#00529b] hover:underline">Mark all as read</button>
+        </div>
+        <ul className="max-h-80 overflow-y-auto">
+            {notifications.map((n, i) => (
+                <li key={i} className={`p-3 border-b hover:bg-gray-50 ${n.status === 'Unread' ? 'bg-blue-50' : ''}`}>
+                    <p className="font-semibold text-sm text-gray-800">{n.subject}</p>
+                    <p className="text-xs text-gray-600">{n.snippet}</p>
+                    <p className="text-xs text-gray-400 mt-1">{n.date}</p>
+                </li>
+            ))}
+        </ul>
+        <div className="p-2 text-center bg-gray-50">
+            <Link to="/dashboard#notifications" onClick={onClose} className="text-sm font-medium text-[#00529b] hover:underline">View all notifications</Link>
+        </div>
+    </div>
+);
+
+const ClientDashboardHelpView: React.FC = () => {
+    const [activeTab, setActiveTab] = useState<'faq' | 'tickets'>('faq');
+    const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
+
+    const renderTicketStatus = (status: SupportTicket['status']) => {
+        const classes = {
+            Open: 'bg-green-100 text-green-800',
+            Pending: 'bg-yellow-100 text-yellow-800',
+            Resolved: 'bg-gray-100 text-gray-800',
+        };
+        return <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${classes[status]}`}>{status}</span>;
+    }
+
+    if (selectedTicket) {
+        return (
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+                <button onClick={() => setSelectedTicket(null)} className="text-sm font-medium text-[#00529b] hover:underline mb-4">&larr; Back to all tickets</button>
+                <h3 className="text-xl font-semibold text-gray-800">{selectedTicket.subject}</h3>
+                <div className="flex items-center gap-4 text-sm text-gray-500 mt-1 mb-6">
+                    <span>ID: {selectedTicket.id}</span>
+                    <span>{renderTicketStatus(selectedTicket.status)}</span>
+                    <span>Last Updated: {selectedTicket.lastUpdated}</span>
+                </div>
+                <div className="space-y-4">
+                    {selectedTicket.messages.map((msg, i) => (
+                        <div key={i} className={`flex ${msg.sender === 'You' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-lg p-3 rounded-lg ${msg.sender === 'You' ? 'bg-[#00529b] text-white' : 'bg-gray-100 text-gray-800'}`}>
+                                <p className="text-sm">{msg.text}</p>
+                                <p className={`text-xs mt-1 ${msg.sender === 'You' ? 'text-blue-200' : 'text-gray-500'}`}>{msg.timestamp}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                 <div className="mt-6 pt-6 border-t">
+                    <textarea placeholder="Type your reply..." rows={4} className="w-full p-2 border rounded-md"></textarea>
+                    <div className="text-right mt-2">
+                        <Button primary><IconWrapper className="w-4 h-4 inline-block -mt-1 mr-2"><IconSend /></IconWrapper>Send Reply</Button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="flex border-b mb-6">
+                <button onClick={() => setActiveTab('faq')} className={`py-2 px-4 text-sm font-medium ${activeTab === 'faq' ? 'border-b-2 border-[#b58e31] text-[#00529b]' : 'text-gray-500'}`}>FAQ</button>
+                <button onClick={() => setActiveTab('tickets')} className={`py-2 px-4 text-sm font-medium ${activeTab === 'tickets' ? 'border-b-2 border-[#b58e31] text-[#00529b]' : 'text-gray-500'}`}>Support Tickets</button>
+            </div>
+            {activeTab === 'faq' && <FaqPage />}
+            {activeTab === 'tickets' && (
+                <div>
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-gray-800">My Support Tickets</h3>
+                        <Button primary><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconFileText/></IconWrapper>Create New Ticket</Button>
+                    </div>
+                     <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {SUPPORT_TICKETS_DATA.map(ticket => (
+                                    <tr key={ticket.id} onClick={() => setSelectedTicket(ticket)} className="cursor-pointer hover:bg-gray-50">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#00529b]">{ticket.subject}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">{renderTicketStatus(ticket.status)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">{ticket.lastUpdated}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 // --- MAIN CLIENT DASHBOARD COMPONENT ---
 
 export const ClientDashboardPage: React.FC = () => {
     const location = useLocation();
     const passedState = location.state as { accountType?: 'individual' | 'business' };
     
-    // Default to 'business' for showcasing more features, but allow login to set it.
     const [accountType, setAccountType] = useState<'individual' | 'business'>(passedState?.accountType || 'business');
     const [activeView, setActiveView] = useState('Overview');
+    const [isShipmentWizardOpen, setIsShipmentWizardOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [isDataEmpty, setIsDataEmpty] = useState(false);
     
     useEffect(() => {
-        const hash = location.hash.replace('#', '').replace('-', ' ');
+        const hash = location.hash.replace('#', '').replace(/-/g, ' ');
         if (hash) {
             const viewName = hash.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
             setActiveView(viewName);
@@ -1556,6 +1769,7 @@ export const ClientDashboardPage: React.FC = () => {
         { name: 'Addresses', icon: <IconGeoAlt /> },
         { name: 'Refer a Friend', icon: <IconShare /> },
         { name: 'Account', icon: <IconPerson /> },
+        { name: 'Help & Support', icon: <IconHelpCircle /> },
     ];
     
     const businessMenuItems = [
@@ -1570,17 +1784,20 @@ export const ClientDashboardPage: React.FC = () => {
         { name: 'Loyalty', icon: <IconShieldCheck /> },
         { name: 'Developer', icon: <IconCodeSlash /> },
         { name: 'Account', icon: <IconPerson /> },
+        { name: 'Help & Support', icon: <IconHelpCircle /> },
     ];
     
     const menuItems = accountType === 'individual' ? individualMenuItems : businessMenuItems;
+    const hasUnreadNotifications = CLIENT_NOTIFICATIONS_DATA.some(n => n.status === 'Unread');
     
     const renderView = () => {
+        const props = { isEmpty: isDataEmpty, onCreateShipment: () => setIsShipmentWizardOpen(true) };
         switch (activeView) {
-            case 'Overview': return <ClientDashboardOverviewView accountType={accountType} />;
-            case 'Shipments': return <ClientDashboardShipmentsView />;
-            case 'Pre Alerts': return <ClientDashboardPreAlertsView />;
-            case 'Invoices': return <ClientDashboardInvoicesView />;
-            case 'Wallet': return <ClientDashboardWalletView />;
+            case 'Overview': return <ClientDashboardOverviewView accountType={accountType} {...props} />;
+            case 'Shipments': return <ClientDashboardShipmentsView {...props} />;
+            case 'Pre Alerts': return <ClientDashboardPreAlertsView isEmpty={isDataEmpty} />;
+            case 'Invoices': return <ClientDashboardInvoicesView isEmpty={isDataEmpty} />;
+            case 'Wallet': return <ClientDashboardWalletView isEmpty={isDataEmpty} />;
             case 'Addresses': return <ClientDashboardAddressesView />;
             case 'Account': return <ClientDashboardAccountView accountType={accountType} />;
             case 'Refer a Friend': return accountType === 'individual' ? <ClientDashboardReferralView /> : null;
@@ -1588,11 +1805,14 @@ export const ClientDashboardPage: React.FC = () => {
             case 'Reports': return accountType === 'business' ? <ClientDashboardReportsView /> : null;
             case 'Loyalty': return accountType === 'business' ? <ClientDashboardLoyaltyView /> : null;
             case 'Developer': return accountType === 'business' ? <ClientDashboardDeveloperView /> : null;
-            default: return <ClientDashboardOverviewView accountType={accountType} />;
+            case 'Help Support': return <ClientDashboardHelpView />;
+            default: return <ClientDashboardOverviewView accountType={accountType} {...props} />;
         }
     };
 
     return (
+        <>
+        <CreateShipmentWizard isOpen={isShipmentWizardOpen} onClose={() => setIsShipmentWizardOpen(false)} />
         <div className="min-h-screen bg-gray-100 flex">
             <aside className="w-64 bg-slate-800 text-white flex flex-col">
                  <div className="h-16 flex items-center justify-center border-b border-slate-700">
@@ -1617,10 +1837,23 @@ export const ClientDashboardPage: React.FC = () => {
                 <header className="h-16 bg-white border-b flex items-center justify-between px-6">
                     <h1 className="text-xl font-bold text-gray-800">{activeView}</h1>
                     <div className="flex items-center gap-4">
+                        <div className="text-xs text-gray-500 mr-2">Simulators:</div>
                         {/* Demo Account Type Switcher */}
                         <div className="flex items-center gap-2 text-sm bg-gray-100 p-1 rounded-md">
                             <button onClick={() => setAccountType('individual')} className={`px-2 py-1 rounded ${accountType === 'individual' ? 'bg-white shadow-sm' : ''}`}>Individual</button>
                             <button onClick={() => setAccountType('business')} className={`px-2 py-1 rounded ${accountType === 'business' ? 'bg-white shadow-sm' : ''}`}>Business</button>
+                        </div>
+                         {/* Empty Data Simulator */}
+                        <div className="flex items-center gap-2 text-sm bg-gray-100 p-1 rounded-md">
+                            <button onClick={() => setIsDataEmpty(false)} className={`px-2 py-1 rounded ${!isDataEmpty ? 'bg-white shadow-sm' : ''}`}>Data</button>
+                            <button onClick={() => setIsDataEmpty(true)} className={`px-2 py-1 rounded ${isDataEmpty ? 'bg-white shadow-sm' : ''}`}>Empty</button>
+                        </div>
+                        <div className="relative">
+                            <button onClick={() => setIsNotificationsOpen(o => !o)} className="relative text-gray-600 hover:text-[#00529b]">
+                                <IconWrapper className="w-6 h-6"><IconBell/></IconWrapper>
+                                {hasUnreadNotifications && <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />}
+                            </button>
+                            {isNotificationsOpen && <NotificationPanel notifications={CLIENT_NOTIFICATIONS_DATA} onClose={() => setIsNotificationsOpen(false)} />}
                         </div>
                         <p className="text-sm hidden md:block">Welcome, Client!</p>
                         <Link to="/" className="text-sm text-[#00529b] hover:underline">Logout</Link>
@@ -1631,6 +1864,7 @@ export const ClientDashboardPage: React.FC = () => {
                 </main>
             </div>
         </div>
+        </>
     );
 };
 
@@ -1698,7 +1932,7 @@ const AdminShipmentsView: React.FC = () => (
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tracking ID</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Origin & Destination</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -1707,11 +1941,14 @@ const AdminShipmentsView: React.FC = () => (
                     {ADMIN_SHIPMENTS_DATA.map(shipment => (
                         <tr key={shipment.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#00529b]">{shipment.id}</td>
-                             <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.clientName}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.origin} -> {shipment.destination}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.status}</td>
-                             <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                <button className="text-[#00529b] hover:underline">View Details</button>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.clientName}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{shipment.destination}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${shipment.status === 'Delivered' ? 'bg-green-100 text-green-800' : shipment.status === 'Customs Hold' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>{shipment.status}</span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                <button className="text-[#00529b] hover:underline">View</button>
+                                <button className="text-[#00529b] hover:underline">Update Status</button>
                             </td>
                         </tr>
                     ))}
@@ -1721,69 +1958,16 @@ const AdminShipmentsView: React.FC = () => (
     </div>
 );
 
-const AdminWalletRequestsView: React.FC = () => {
-    const [requests, setRequests] = useState(ADMIN_WALLET_REQUESTS_DATA);
-    const handleStatusChange = (id: string, newStatus: 'Approved' | 'Declined') => {
-        setRequests(requests.map(req => req.id === id ? { ...req, status: newStatus } : req));
-    };
-
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Wallet Top-up & Withdrawal Requests</h3>
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {requests.map(req => (
-                            <tr key={req.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">{req.clientName}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">{req.type}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">{req.currency} {req.amount.toLocaleString()}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">{req.status}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                    {req.status === 'Pending' && (
-                                        <>
-                                            <AdminButton primary onClick={() => handleStatusChange(req.id, 'Approved')}>Approve</AdminButton>
-                                            <AdminButton danger onClick={() => handleStatusChange(req.id, 'Declined')}>Decline</AdminButton>
-                                        </>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-};
-
-const AdminSettingsView: React.FC = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">System Settings</h2>
-        <p className="text-gray-600">
-            This section is for managing site-wide content and branding.
-            <br />
-            CMS features are currently under development.
-        </p>
-    </div>
-);
-
+// --- MAIN ADMIN DASHBOARD COMPONENT ---
+// FIX: Export the AdminDashboardPage component so it can be used in App.tsx.
 export const AdminDashboardPage: React.FC = () => {
     const location = useLocation();
     const [activeView, setActiveView] = useState('Overview');
-    
+
     useEffect(() => {
-        const hash = location.hash.replace('#', '').replace('-', ' ');
+        const hash = location.hash.replace('#', '').replace(/-/g, ' ');
         if (hash) {
-            const viewName = hash.replace(/\b\w/g, l => l.toUpperCase());
+            const viewName = hash.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
             setActiveView(viewName);
         } else {
             setActiveView('Overview');
@@ -1792,10 +1976,8 @@ export const AdminDashboardPage: React.FC = () => {
 
     const menuItems = [
         { name: 'Overview', icon: <IconDashboard /> },
-        { name: 'Users', icon: <IconPerson /> },
+        { name: 'Users', icon: <IconUserPlus /> },
         { name: 'Shipments', icon: <IconBoxSeam /> },
-        { name: 'Wallet Requests', icon: <IconWallet2 /> },
-        { name: 'System Settings', icon: <IconSettings /> },
     ];
     
     const renderView = () => {
@@ -1803,24 +1985,22 @@ export const AdminDashboardPage: React.FC = () => {
             case 'Overview': return <AdminDashboardOverviewView />;
             case 'Users': return <AdminUsersView />;
             case 'Shipments': return <AdminShipmentsView />;
-            case 'Wallet Requests': return <AdminWalletRequestsView />;
-            case 'System Settings': return <AdminSettingsView />;
             default: return <AdminDashboardOverviewView />;
         }
     };
-    
+
     return (
         <div className="min-h-screen bg-gray-100 flex">
             <aside className="w-64 bg-slate-800 text-white flex flex-col">
                  <div className="h-16 flex items-center justify-center border-b border-slate-700">
-                    <img src={SITE_CONFIG.logoUrl} alt="Logo" className="h-10"/>
+                    <Link to="/"><img src={SITE_CONFIG.logoUrl} alt="Logo" className="h-10"/></Link>
                 </div>
                 <nav className="flex-grow py-4">
                     <ul>
                         {menuItems.map(item => (
                              <li key={item.name}>
-                                <Link to={`/admin#${item.name.toLowerCase().replace(' ', '-')}`}
-                                      className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${activeView.replace(' ', '') === item.name.replace(' ', '') ? 'bg-slate-900 text-[#f0e1b0]' : 'hover:bg-slate-700'}`}>
+                                <Link to={`/admin#${item.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
+                                      className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${activeView.replace(/ /g, '') === item.name.replace(/ /g, '') ? 'bg-slate-900 text-[#f0e1b0]' : 'hover:bg-slate-700'}`}>
                                     <IconWrapper className="w-5 h-5">{item.icon}</IconWrapper>
                                     <span>{item.name}</span>
                                 </Link>
@@ -1829,15 +2009,16 @@ export const AdminDashboardPage: React.FC = () => {
                     </ul>
                 </nav>
             </aside>
+
             <div className="flex-1 flex flex-col">
                 <header className="h-16 bg-white border-b flex items-center justify-between px-6">
                     <h1 className="text-xl font-bold text-gray-800">{activeView}</h1>
                     <div className="flex items-center gap-4">
-                        <p className="text-sm">Welcome, Admin!</p>
+                        <p className="text-sm hidden md:block">Welcome, Admin!</p>
                         <Link to="/" className="text-sm text-[#00529b] hover:underline">Logout</Link>
                     </div>
                 </header>
-                <main className="flex-grow p-6">
+                <main className="flex-grow p-6 overflow-y-auto">
                     {renderView()}
                 </main>
             </div>
