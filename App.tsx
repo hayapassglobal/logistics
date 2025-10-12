@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { Header, Footer } from './components';
-// FIX: Correctly import AdminDashboardPage which is now exported from pages.tsx
+// Correctly import AdminDashboardPage which is now exported from pages.tsx
 import { HomePage, AboutPage, ServicesOverviewPage, ServiceDomesticPage, ServiceInternationalPage, ServiceWarehousingPage, ServiceCustomsPage, ServiceSpecializedPage, ServiceConsultancyPage, TrackingPage, QuoteRequestPage, FaqPage, ContactPage, PrivacyPolicyPage, TermsPage, AdminLoginPage, ClientAuthPage, ClientDashboardPage, RatesCalculatorPage, ServiceUKDomesticPage, PersonalShopperPage, AdminDashboardPage } from './pages';
 
 // Helper component to scroll to top on page change

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier, HeroSlide, WalletRequest, SupportTicket } from './types';
+import { MenuItem, Service, Feature, Testimonial, TrackingData, FaqItemData, ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, User, AnalyticsDataPoint, ApiToken, Webhook, Referral, LoyaltyTier, HeroSlide, WalletRequest, SupportTicket, AdminRole, ShippingRate, AlertConfiguration, WorkflowRule, ActivityLog, ShipmentDelayForecast, PaymentGatewaySettings } from './types';
 import { Link } from 'react-router-dom';
 
 // --- ICONS (Moved from components.tsx to break circular dependency) ---
@@ -85,6 +85,16 @@ export const IconPersonCircle: React.FC = () => <svg xmlns="http://www.w3.org/20
 export const IconFileText: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path d="M5 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2-2H4a2 2 0 0 1-2-2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1z"/></svg>;
 export const IconHelpCircle: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/></svg>;
 export const IconSend: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className="w-full h-full"><path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/></svg>;
+export const IconPlus: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/></svg>;
+export const IconKey: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 9.5a.5.5 0 0 1-.354-.146L7.293 9H7.25A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/></svg>;
+export const IconPlug: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6 0a.5.5 0 0 1 .5.5V3h3V.5a.5.5 0 0 1 1 0V3h1a.5.5 0 0 1 .5.5v3A3.5 3.5 0 0 1 8.5 10V12h-1v-2A3.5 3.5 0 0 1 4 6.5v-3a.5.5 0 0 1 .5-.5h1V.5A.5.5 0 0 1 6 0M3 5v1.5A3.5 3.5 0 0 1 6.5 10H8v4a.5.5 0 0 1-1 0V12h-1v2a.5.5 0 0 1-1 0v-2H2.5A2.5 2.5 0 0 1 0 9.5V5a.5.5 0 0 1 .5-.5zM8 12v2a.5.5 0 0 1-1 0v-2zm4.5-2A2.5 2.5 0 0 1 10 12.5V14a.5.5 0 0 1-1 0v-1.5A2.5 2.5 0 0 1 6.5 10H8V5h4.5A2.5 2.5 0 0 1 15 7.5V10z"/></svg>;
+export const IconBellFill: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/></svg>;
+export const IconRecycle: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M9.302 1.256a1.5 1.5 0 0 0-2.604 0l-1.704 2.98a.5.5 0 0 0 .869.497l1.703-2.98a.5.5 0 0 1 .868 0l2.54 4.444-1.256-.337a.5.5 0 1 0-.26.966l2.415.647a.5.5 0 0 0 .613-.353l.647-2.415a.5.5 0 1 0-.966-.259l-.333 1.242-2.532-4.431zM2.973 7.773l-1.255.337a.5.5 0 1 1-.26-.966l2.416-.647a.5.5 0 0 1 .612.353l.647 2.415a.5.5 0 0 1-.966.259l-.333-1.242-2.532 4.431a.5.5 0 0 0 .869.497l1.703-2.98a.5.5 0 0 1 .868 0l2.54 4.444-1.256-.337a.5.5 0 1 0-.26.966l2.415.647a.5.5 0 0 0 .613-.353l.647-2.415a.5.5 0 1 0-.966-.259l-.333 1.242-2.532-4.431z"/></svg>;
+export const IconPlayBtn: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/></svg>;
+export const IconLightningCharge: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.032M6.374 8.5H11.25L7.75 1.5z"/></svg>;
+export const IconFilter: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-full h-full" viewBox="0 0 16 16"><path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/></svg>;
+export const IconCreditCard: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-full h-full" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/><path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></svg>;
+
 
 export const ICON_MAP: { [key: string]: React.ReactNode } = {
     'truck': <IconTruck />,
@@ -96,6 +106,10 @@ export const ICON_MAP: { [key: string]: React.ReactNode } = {
     'customs': <IconCustoms />,
     'clock': <IconClock />,
     'person': <IconPersonCircle />,
+    'email': <IconEnvelope />,
+    'notification': <IconBell />,
+    'workflow': <IconRecycle />,
+    'lightning': <IconLightningCharge />,
 };
 
 export const SITE_CONFIG = {
@@ -174,7 +188,7 @@ export const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop",
     headline: "Secure Warehousing & Fulfilment",
     tagline: "Modern facilities and smart solutions for your inventory and distribution.",
     buttons: [
@@ -183,7 +197,7 @@ export const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: 5,
-    image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+    image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop",
     headline: "Your Logistics, Simplified",
     tagline: "Partner with us for end-to-end supply chain management and expert support.",
     buttons: [
@@ -221,11 +235,11 @@ export const TESTIMONIALS: Testimonial[] = [
 ];
 
 export const MOCK_TRACKING_DATA: { [key: string]: Omit<TrackingData, 'id'> } = {
-  "HGLUK123": { status: "In Transit", badge: "bg-[#17a2b8] text-white", origin: "London, UK", destination: "Lagos, NG", estDelivery: Date.now() + 3 * 86400000,
+  "HGLUK123": { clientId: "USR-002", status: "In Transit", badge: "bg-[#17a2b8] text-white", origin: "London, UK", destination: "Lagos, NG", estDelivery: Date.now() + 3 * 86400000,
       milestones: [
           { date: Date.now() - 1 * 86400000, status: "Departed Origin Facility", location: "London Heathrow" },
           { date: Date.now() - 2 * 86400000, status: "Shipment Information Received", location: "London Hub" } ]},
-  "HGLNG456": { status: "Delivered", badge: "bg-[#28a745] text-white", origin: "Manchester, UK", destination: "Abuja, NG", estDelivery: Date.now() - 1 * 86400000,
+  "HGLNG456": { clientId: "USR-001", status: "Delivered", badge: "bg-[#28a745] text-white", origin: "Manchester, UK", destination: "Abuja, NG", estDelivery: Date.now() - 1 * 86400000,
       milestones: [
           { date: Date.now() - 1 * 86400000, status: "Delivered", location: "Abuja Recipient Address" },
           { date: Date.now() - 2 * 86400000, status: "Out for Delivery", location: "Abuja Delivery Hub" },
@@ -237,18 +251,22 @@ export const ALL_SHIPMENTS_MOCK_DATA: TrackingData[] = Object.entries(MOCK_TRACK
 
 export const FAQ_DATA: FaqItemData[] = [
     {
+        id: 1,
         question: "What services does Hayapass Global Logistics offer?",
         answer: <p>We offer a comprehensive range of logistics services including UK and Nigeria domestic shipping, international air and sea freight (with a strong focus on the UK-Nigeria route), warehousing and fulfilment, customs clearance, specialized cargo handling, and logistics consultancy. Visit our <Link to="/services" className="text-[#00529b] hover:text-[#b58e31] underline">Services page</Link> for more details.</p>
     },
     {
+        id: 2,
         question: "How can I track my shipment?",
         answer: <p>You can easily track your shipment using our online tracking tool. Simply enter your Hayapass tracking number (e.g., HGLUK123) on our <Link to="/tracking" className="text-[#00529b] hover:text-[#b58e31] underline">Tracking page</Link> or the tracking form on our homepage to get real-time updates on its status and location.</p>
     },
     {
+        id: 3,
         question: "How do I get a quote for my shipment?",
         answer: <p>To get a personalized quote, please fill out our <Link to="/quote" className="text-[#00529b] hover:text-[#b58e31] underline">Request a Quote form</Link> with details about your shipment (origin, destination, weight, dimensions, service type, etc.). Our team will review your request and provide you with a competitive, no-obligation quote as soon as possible.</p>
     },
     {
+        id: 4,
         question: "What are your transit times for UK to Nigeria shipping?",
         answer: (
             <>
@@ -263,18 +281,22 @@ export const FAQ_DATA: FaqItemData[] = [
         )
     },
     {
+        id: 5,
         question: "Do you handle customs clearance?",
         answer: <p>Yes, absolutely! We have an experienced in-house customs brokerage team that handles all aspects of customs clearance for both imports and exports in the UK, Nigeria, and other countries. We ensure compliance with all regulations to minimize delays. See our <Link to="/services/customs" className="text-[#00529b] hover:text-[#b58e31] underline">Customs Clearance</Link> page for details.</p>
     },
     {
+        id: 6,
         question: "What items are prohibited for shipping?",
         answer: <p>A general list of prohibited items includes (but is not limited to): illegal substances, firearms and ammunition, explosives, flammable materials, counterfeit goods, live animals (without special arrangement), pornography, and items restricted by IATA, IMO, or specific country regulations. For a detailed list or if you are unsure about an item, please <Link to="/contact" className="text-[#00529b] hover:text-[#b58e31] underline">contact our support team</Link> before shipping.</p>
     },
     {
+        id: 7,
         question: "Do you offer cargo insurance?",
         answer: <p>Yes, we offer comprehensive cargo insurance options to protect your goods against loss or damage during transit. We highly recommend insuring valuable shipments. You can request information on cargo insurance when you <Link to="/quote" className="text-[#00529b] hover:text-[#b58e31] underline">request a quote</Link> or discuss it with our team.</p>
     },
     {
+        id: 8,
         question: "Where are your offices located?",
         answer: <p>We have primary operational hubs in the United Kingdom and Nigeria. You can find our detailed office addresses and contact information on our <Link to="/contact" className="text-[#00529b] hover:text-[#b58e31] underline">Contact Us page</Link>.</p>
     },
@@ -283,24 +305,96 @@ export const FAQ_DATA: FaqItemData[] = [
 // --- NEW: CONTENT FOR MANAGEABLE PAGES (CMS) ---
 export const MANAGEABLE_PAGES_CONTENT: { [key: string]: { title: string; subtitle: string; content: React.ReactNode; rawContent?: string; } } = {
     about: {
-        title: "About Us",
-        subtitle: "Connecting continents with care, commitment, and cutting-edge logistics.",
+        title: "About Hayapass Global Logistics",
+        subtitle: "Your Bridge to Global Trade, Built on Trust and Expertise.",
         rawContent: `
-<h2 class="text-3xl font-bold text-gray-800 mb-4">Our Mission</h2>
-<p class="text-lg text-gray-600 mb-6">To provide seamless, reliable, and innovative logistics solutions that bridge the distance between the UK, Nigeria, and the world. We are dedicated to simplifying complex supply chains, fostering global trade, and ensuring our clients' success through exceptional service and unwavering commitment.</p>
-<h2 class="text-3xl font-bold text-gray-800 mb-4">Our Vision</h2>
-<p class="text-lg text-gray-600">To be the leading logistics partner for UK-Nigeria trade, recognized for our operational excellence, client-centric approach, and technological innovation. We aim to build a future where geographical barriers are no longer an obstacle to business growth and personal connections.</p>
-`,
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+    <div class="space-y-8">
+        <div>
+            <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?q=80&w=2067&auto=format&fit=crop" alt="Team collaborating" class="rounded-lg shadow-2xl w-full h-auto object-cover" />
+        </div>
+        <div class="bg-gray-50 p-8 rounded-lg">
+            <h3 class="text-2xl font-bold text-[#00529b] mb-3">Our Mission</h3>
+            <p class="text-gray-700 mb-6">To deliver superior logistics solutions through innovation, dedication, and a client-first approach, ensuring the seamless and secure movement of goods across the globe.</p>
+            <h3 class="text-2xl font-bold text-[#00529b] mb-3">Our Vision</h3>
+            <p class="text-gray-700">To be the most trusted and innovative logistics partner connecting Africa to the world, recognized for our operational excellence and unwavering commitment to customer success.</p>
+        </div>
+    </div>
+    <div class="space-y-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4 tracking-tight">Our Story: From a Vision to a Global Reality</h2>
+            <p class="text-lg text-gray-600 mb-4">Founded on the principle of bridging distances, Hayapass Global Logistics was born from a clear need for a more reliable, transparent, and client-focused logistics service between the United Kingdom and Nigeria. We saw the challenges—the delays, the uncertainty, the lack of communication—and we built a company to solve them.</p>
+            <p class="text-lg text-gray-600">From our specialized focus on the UK-Nigeria corridor, we have grown into a comprehensive global provider. Today, we leverage our deep-rooted expertise and an extensive international network to offer a full suite of services. Our journey is driven by a passion for excellence and a commitment to empowering our clients' growth.</p>
+        </div>
+    </div>
+</div>`,
         content: (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h2 className="text-3xl font-bold text-gray-800 mb-4">Our Mission</h2>
-                    <p className="text-lg text-gray-600 mb-6">To provide seamless, reliable, and innovative logistics solutions that bridge the distance between the UK, Nigeria, and the world. We are dedicated to simplifying complex supply chains, fostering global trade, and ensuring our clients' success through exceptional service and unwavering commitment.</p>
-                    <h2 className="text-3xl font-bold text-gray-800 mb-4">Our Vision</h2>
-                    <p className="text-lg text-gray-600">To be the leading logistics partner for UK-Nigeria trade, recognized for our operational excellence, client-centric approach, and technological innovation. We aim to build a future where geographical barriers are no longer an obstacle to business growth and personal connections.</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                {/* Left Column: Image, Mission, Vision */}
+                <div className="space-y-8">
+                    <div>
+                        <img 
+                            src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?q=80&w=2067&auto=format&fit=crop" 
+                            alt="Diverse team collaborating in an office" 
+                            className="rounded-lg shadow-2xl w-full h-auto object-cover" 
+                        />
+                    </div>
+                    <div className="bg-gray-50 p-8 rounded-lg">
+                        <h3 className="text-2xl font-bold text-[#00529b] mb-3">Our Mission</h3>
+                        <p className="text-gray-700 mb-6">
+                            To deliver superior logistics solutions through innovation, dedication, and a client-first approach, ensuring the seamless and secure movement of goods across the globe.
+                        </p>
+                        <h3 className="text-2xl font-bold text-[#00529b] mb-3">Our Vision</h3>
+                        <p className="text-gray-700">
+                            To be the most trusted and innovative logistics partner connecting Africa to the world, recognized for our operational excellence and unwavering commitment to customer success.
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?q=80&w=2067&auto=format&fit=crop" alt="Diverse team collaborating in an office" className="rounded-lg shadow-lg" />
+                
+                {/* Right Column: Main Text and Values */}
+                <div className="space-y-8">
+                    <div>
+                        <h2 className="text-3xl font-bold text-gray-800 mb-4 tracking-tight">Our Story: From a Vision to a Global Reality</h2>
+                        <p className="text-lg text-gray-600 mb-4">
+                            Founded on the principle of bridging distances, Hayapass Global Logistics was born from a clear need for a more reliable, transparent, and client-focused logistics service between the United Kingdom and Nigeria. We saw the challenges—the delays, the uncertainty, the lack of communication—and we built a company to solve them.
+                        </p>
+                        <p className="text-lg text-gray-600">
+                            From our specialized focus on the UK-Nigeria corridor, we have grown into a comprehensive global provider. Today, we leverage our deep-rooted expertise and an extensive international network to offer a full suite of services. Our journey is driven by a passion for excellence and a commitment to empowering our clients' growth.
+                        </p>
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-bold text-gray-800 mb-6 tracking-tight">Our Core Values</h2>
+                        <ul className="space-y-6">
+                            <li className="flex items-start gap-4">
+                                <IconWrapper className="w-10 h-10 text-[#b58e31] flex-shrink-0 mt-1"><IconShieldCheck/></IconWrapper>
+                                <div>
+                                    <h4 className="text-xl font-semibold text-gray-800">Integrity</h4>
+                                    <p className="text-gray-600">Operating with honesty and transparency. Trust is the foundation of our relationships.</p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <IconWrapper className="w-10 h-10 text-[#b58e31] flex-shrink-0 mt-1"><IconClock/></IconWrapper>
+                                <div>
+                                    <h4 className="text-xl font-semibold text-gray-800">Reliability</h4>
+                                    <p className="text-gray-600">We do what we say we will do. Our clients depend on us for timely, secure, and efficient delivery.</p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-4">
+                                <IconWrapper className="w-10 h-10 text-[#b58e31] flex-shrink-0 mt-1"><IconHeadset/></IconWrapper>
+                                <div>
+                                    <h4 className="text-xl font-semibold text-gray-800">Customer-Centricity</h4>
+                                    <p className="text-gray-600">We listen, adapt, and provide tailored solutions to exceed our clients' expectations.</p>
+                                </div>
+                            </li>
+                             <li className="flex items-start gap-4">
+                                <IconWrapper className="w-10 h-10 text-[#b58e31] flex-shrink-0 mt-1"><IconLightningCharge/></IconWrapper>
+                                <div>
+                                    <h4 className="text-xl font-semibold text-gray-800">Innovation</h4>
+                                    <p className="text-gray-600">Continuously embracing technology to improve our services and enhance efficiency.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         )
@@ -359,236 +453,307 @@ export const MANAGEABLE_PAGES_CONTENT: { [key: string]: { title: string; subtitl
     },
     terms: {
         title: "Terms & Conditions",
-        subtitle: "Please read these terms and conditions carefully before using our services.",
+        subtitle: "Please read our terms and conditions carefully before using our services.",
         rawContent: `
 <p><strong>Last Updated: {new Date().toLocaleDateString()}</strong></p>
 <h4>1. Agreement to Terms</h4>
-<p>By using the services, websites, and applications offered by Hayapass Global Logistics, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.</p>
-<h4>2. Services</h4>
-<p>Hayapass Global Logistics provides logistics, shipping, freight, and customs services. All services are subject to the terms of the specific service agreement, waybill, or bill of lading applicable to the shipment. Our liability is limited as set forth in such agreements.</p>
+<p>By using our Services, you agree to be bound by these Terms. If you do not agree to be bound by these Terms, do not use the Services. These terms affect your legal rights and obligations.</p>
+<h4>2. Service Description</h4>
+<p>Hayapass Global Logistics provides logistics and shipping services, including but not limited to, domestic and international freight, warehousing, customs clearance, and consultancy. All services are subject to the terms and conditions outlined herein.</p>
 <h4>3. User Responsibilities</h4>
-<p>You agree to provide accurate, current, and complete information for all shipments and transactions. You are responsible for ensuring that your shipment complies with all applicable laws and regulations, including customs, import, and export laws of all countries involved. You warrant that you are the owner or authorized agent of the owner of the goods being shipped.</p>
-<h4>4. Prohibited Items</h4>
-<p>You agree not to ship any items that are prohibited by law or regulation in any origin, destination, or transit country. This includes, but is not limited to, hazardous materials not declared in accordance with transportation regulations, illegal substances, currency, and other restricted items. We reserve the right to inspect any shipment and to refuse or return any shipment that violates these terms.</p>
+<p>You agree to provide accurate and complete information for all shipments. You are responsible for ensuring that your shipments comply with all applicable laws and regulations, including customs and import/export laws. You agree not to ship any prohibited items.</p>
+<h4>4. Payments and Charges</h4>
+<p>All charges for services are due as per the terms of your invoice. We reserve the right to hold shipments for non-payment. Quotes are estimates and may be subject to change based on the actual characteristics of the shipment.</p>
 `,
         content: (
-            <div className="prose max-w-none">
+             <div className="prose max-w-none">
                 <p><strong>Last Updated: {new Date().toLocaleDateString()}</strong></p>
-                
                 <h4>1. Agreement to Terms</h4>
-                <p>By using the services, websites, and applications offered by Hayapass Global Logistics, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.</p>
-
-                <h4>2. Services</h4>
-                <p>Hayapass Global Logistics provides logistics, shipping, freight, and customs services. All services are subject to the terms of the specific service agreement, waybill, or bill of lading applicable to the shipment. Our liability is limited as set forth in such agreements.</p>
-                
+                <p>By using our Services, you agree to be bound by these Terms. If you do not agree to be bound by these Terms, do not use the Services. These terms affect your legal rights and obligations.</p>
+                <h4>2. Service Description</h4>
+                <p>Hayapass Global Logistics provides logistics and shipping services, including but not limited to, domestic and international freight, warehousing, customs clearance, and consultancy. All services are subject to the terms and conditions outlined herein.</p>
                 <h4>3. User Responsibilities</h4>
-                <p>You agree to provide accurate, current, and complete information for all shipments and transactions. You are responsible for ensuring that your shipment complies with all applicable laws and regulations, including customs, import, and export laws of all countries involved. You warrant that you are the owner or authorized agent of the owner of the goods being shipped.</p>
-
-                <h4>4. Prohibited Items</h4>
-                <p>You agree not to ship any items that are prohibited by law or regulation in any origin, destination, or transit country. This includes, but is not limited to, hazardous materials not declared in accordance with transportation regulations, illegal substances, currency, and other restricted items. We reserve the right to inspect any shipment and to refuse or return any shipment that violates these terms.</p>
-
-                <h4>5. Rates and Payment</h4>
-                <p>Rates and service quotations are estimates based on the information provided by you and are subject to change. Final charges will be based on the actual characteristics of the shipment and the services performed. All charges are due and payable as specified in the invoice. We reserve the right to hold shipments for unpaid charges.</p>
-
-                <h4>6. Limitation of Liability</h4>
-                <p>Our liability for loss or damage to any shipment is limited. For full details on liability, please refer to the specific service agreement. We are not liable for any loss, damage, delay, or non-delivery caused by events we cannot control, including but not limited to acts of God, war, civil disturbances, or actions of governmental authorities.</p>
-
-                <h4>7. Changes to Terms</h4>
-                <p>We reserve the right to modify these Terms and Conditions at any time. We will notify you of any changes by posting the new Terms and Conditions on this page. You are advised to review this page periodically for any changes.</p>
+                <p>You agree to provide accurate and complete information for all shipments. You are responsible for ensuring that your shipments comply with all applicable laws and regulations, including customs and import/export laws. You agree not to ship any prohibited items. A list of prohibited items can be provided upon request.</p>
+                <h4>4. Payments and Charges</h4>
+                <p>All charges for services are due as per the terms of your invoice. We reserve the right to hold shipments for non-payment. Quotes are estimates and may be subject to change based on the actual characteristics of the shipment, including weight, dimensions, and any additional services required.</p>
+                <h4>5. Limitation of Liability</h4>
+                <p>Our liability for any loss or damage to your shipment is limited by the terms of the relevant international conventions (e.g., Warsaw, Montreal) or our standard trading conditions. We strongly recommend you purchase cargo insurance for valuable goods.</p>
             </div>
         )
     }
 };
 
-// --- MOCK DATA FOR CLIENT DASHBOARD ---
+// --- MOCK DATA FOR CLIENT/ADMIN DASHBOARDS ---
+
+// --- CLIENT DATA ---
+
 export const CLIENT_SHIPMENTS_DATA: ClientShipment[] = [
-    { id: 'HGLUK12301', date: '28 Oct 2025', origin: 'London, UK', destination: 'Lagos, NG', status: 'In Transit', estDelivery: '05 Nov 2025' },
-    { id: 'HGLNG45602', date: '25 Oct 2025', origin: 'Abuja, NG', destination: 'Manchester, UK', status: 'Customs Hold', estDelivery: '08 Nov 2025' },
-    { id: 'HGLUK78903', date: '15 Oct 2025', origin: 'Self (UK Locker)', destination: 'Ibadan, NG', status: 'Delivered', estDelivery: '22 Oct 2025' },
+  { id: 'HGLUK123', date: '2023-11-01', origin: 'London, UK', destination: 'Lagos, NG', status: 'In Transit', estDelivery: '2023-11-05' },
+  { id: 'HGLNG456', date: '2023-10-28', origin: 'Manchester, UK', destination: 'Abuja, NG', status: 'Delivered', estDelivery: '2023-11-02' },
+  { id: 'HGLUK789', date: '2023-11-02', origin: 'Birmingham, UK', destination: 'Port Harcourt, NG', status: 'Customs Hold', estDelivery: '2023-11-08' },
+  { id: 'HGLUK999', date: '2023-10-25', origin: 'London, UK', destination: 'Kano, NG', status: 'Delivered', estDelivery: '2023-10-30' },
 ];
 
 export const CLIENT_SHIPMENT_DETAILS_DATA: { [key: string]: DetailedClientShipment } = {
-    'HGLUK12301': {
-        id: 'HGLUK12301', date: '28 Oct 2025', origin: 'London, UK', destination: 'Lagos, NG', status: 'In Transit', estDelivery: '05 Nov 2025',
-        weight: '5.2 kg', dimensions: '30x20x15 cm', service: 'Air Freight (Express)',
-        notes: 'Fragile item. Handle with care.', associatedInvoiceIds: ['INV-CLIENT1-015'],
-        milestones: [
-            { date: '01 Nov 2025', time: '10:30', status: 'Departed from Origin Country', location: 'London Heathrow (LHR), UK' },
-            { date: '30 Oct 2025', time: '14:00', status: 'Processed at HGL Facility', location: 'London Hub, UK' },
-            { date: '28 Oct 2025', time: '18:00', status: 'Shipment Information Received', location: 'London, UK' },
-        ]
-    },
-    'HGLNG45602': {
-        id: 'HGLNG45602', date: '25 Oct 2025', origin: 'Abuja, NG', destination: 'Manchester, UK', status: 'Customs Hold', estDelivery: '08 Nov 2025',
-        weight: '12.0 kg', dimensions: '50x40x30 cm', service: 'Air Freight (Standard)',
-        notes: 'Contains lithium batteries. Requires special handling sticker.', associatedInvoiceIds: [],
-        milestones: [
-            { date: '02 Nov 2025', time: '09:00', status: 'Held by UK Customs', location: 'Manchester Airport (MAN), UK', notes: 'Awaiting duty payment.' },
-            { date: '01 Nov 2025', time: '17:45', status: 'Arrived at Destination Country', location: 'Manchester Airport (MAN), UK' },
-            { date: '27 Oct 2025', time: '11:00', status: 'Departed from Origin Country', location: 'Nnamdi Azikiwe Intl (ABV), NG' },
-            { date: '25 Oct 2025', time: '12:00', status: 'Shipment Information Received', location: 'Abuja, NG' },
-        ]
-    },
-     'HGLUK78903': {
-        id: 'HGLUK78903', date: '15 Oct 2025', origin: 'Self (UK Locker)', destination: 'Ibadan, NG', status: 'Delivered', estDelivery: '22 Oct 2025',
-        weight: '2.5 kg', dimensions: '20x15x10 cm', service: 'Sea Freight (LCL)',
-        notes: '', associatedInvoiceIds: ['INV-CLIENT1-012'],
-        milestones: [
-            { date: '22 Oct 2025', time: '13:15', status: 'Delivered', location: 'Ibadan, NG', notes: 'Signed for by consignee.' },
-            { date: '21 Oct 2025', time: '08:00', status: 'Out for Delivery', location: 'Ibadan Hub, NG' },
-            { date: '20 Oct 2025', time: '16:00', status: 'Cleared Customs', location: 'Lagos Port, NG' },
-            { date: '15 Oct 2025', time: '09:00', status: 'Shipment Information Received', location: 'London, UK' },
-        ]
-    }
+  'HGLUK123': {
+    id: 'HGLUK123', clientId: 'USR-002', date: '2023-11-01', origin: 'London, UK', destination: 'Lagos, NG', status: 'In Transit', estDelivery: '2023-11-05',
+    milestones: [
+        { date: '2023-11-02', time: '10:00', status: 'Departed Origin Facility', location: 'London Heathrow, UK' },
+        { date: '2023-11-01', time: '18:00', status: 'Package received at Hayapass hub', location: 'London, UK' },
+    ],
+    associatedInvoiceIds: ['INV-001'], notes: 'Fragile items inside.', weight: '5kg', dimensions: '30x20x15 cm', service: 'Air Freight (Express)'
+  },
+  'HGLNG456': {
+    id: 'HGLNG456', clientId: 'USR-001', date: '2023-10-28', origin: 'Manchester, UK', destination: 'Abuja, NG', status: 'Delivered', estDelivery: '2023-11-02',
+    milestones: [
+        { date: '2023-11-02', time: '14:30', status: 'Delivered', location: 'Abuja, NG' },
+        { date: '2023-11-02', time: '09:00', status: 'Out for delivery', location: 'Abuja, NG' },
+        { date: '2023-10-31', time: '16:00', status: 'Cleared customs', location: 'Lagos, NG' },
+    ],
+    associatedInvoiceIds: ['INV-002'], notes: 'Signed by receiver.', weight: '12kg', dimensions: '50x40x30 cm', service: 'Air Freight (Standard)'
+  },
+  'HGLUK789': {
+    id: 'HGLUK789', clientId: 'USR-001', date: '2023-11-02', origin: 'Birmingham, UK', destination: 'Port Harcourt, NG', status: 'Customs Hold', estDelivery: '2023-11-08',
+    milestones: [
+        { date: '2023-11-05', time: '11:00', status: 'Held at customs for inspection', location: 'Lagos, NG', notes: 'Additional documentation required.' },
+        { date: '2023-11-04', time: '08:00', status: 'Arrived at destination country', location: 'Lagos, NG' },
+    ],
+    associatedInvoiceIds: ['INV-003'], notes: '', weight: '2kg', dimensions: '20x10x10 cm', service: 'Air Freight (Express)'
+  },
+  'HGLUK999': {
+    id: 'HGLUK999', clientId: 'USR-002', date: '2023-10-25', origin: 'London, UK', destination: 'Kano, NG', status: 'Delivered', estDelivery: '2023-10-30',
+    milestones: [
+        { date: '2023-10-30', time: '12:00', status: 'Delivered', location: 'Kano, NG' },
+    ],
+    associatedInvoiceIds: ['INV-004'], notes: '', weight: '25kg', dimensions: '60x40x40 cm', service: 'Road Freight'
+  },
 };
 
 export const CLIENT_PREALERTS_DATA: ClientPreAlert[] = [
-    { id: 'PA-CLIENT1-005', facility: 'UK', carrier: 'Amazon', tracking: 'TBA123...', description: 'Shoes', estArrival: '03 Nov 2025', status: 'Pending Arrival' },
-    { id: 'PA-CLIENT1-004', facility: 'UK', carrier: 'FedEx', tracking: '1Z999XYZ', description: 'Laptop', estArrival: '01 Nov 2025', status: 'Arrived at HGL' },
-    { id: 'PA-CLIENT1-003', facility: 'NG', carrier: 'Local Courier', tracking: 'WAYBILL001', description: 'Fabrics', estArrival: '30 Oct 2025', status: 'Arrived at HGL' },
+    { id: 'PA-001', facility: 'UK', carrier: 'Amazon', tracking: 'AMZ12345', description: 'Books and electronics', estArrival: '2023-11-06', status: 'Pending Arrival' },
+    { id: 'PA-002', facility: 'UK', carrier: 'ASOS', tracking: 'ASOS67890', description: 'Clothing', estArrival: '2023-11-04', status: 'Arrived at HGL' },
 ];
 
 export const CLIENT_INVOICES_DATA: ClientInvoice[] = [
-    { id: 'INV-CLIENT1-015', issueDate: '01 Nov 2025', dueDate: '15 Nov 2025', amount: '75.00', currency: 'GBP', status: 'Unpaid' },
-    { id: 'INV-CLIENT1-014', issueDate: '20 Oct 2025', dueDate: '03 Nov 2025', amount: '15000.00', currency: 'NGN', status: 'Paid' },
-    { id: 'INV-CLIENT1-012', issueDate: '05 Oct 2025', dueDate: '19 Oct 2025', amount: '120.50', currency: 'GBP', status: 'Paid' },
+    { id: 'INV-001', issueDate: '2023-11-01', dueDate: '2023-11-15', amount: '125.50', currency: 'GBP', status: 'Unpaid' },
+    { id: 'INV-002', issueDate: '2023-10-28', dueDate: '2023-11-12', amount: '250.00', currency: 'GBP', status: 'Paid' },
+    { id: 'INV-003', issueDate: '2023-11-02', dueDate: '2023-11-16', amount: '80.00', currency: 'GBP', status: 'Unpaid' },
 ];
 
 export const WALLET_TRANSACTIONS_DATA: WalletTransaction[] = [
-    { date: '04 Nov 2025', description: 'Top Up via Bank Transfer', gbp: '+ 1500.00', type: 'Credit' },
-    { date: '03 Nov 2025', description: 'Payment for INV-BUSINESS-051', gbp: '- 450.50', type: 'Debit' },
-    { date: '01 Nov 2025', description: 'Top Up via Paystack', ngn: '+ 500000.00', type: 'Credit' },
-    { date: '29 Oct 2025', description: 'Customs Duty for HGLUK99904', ngn: '- 85000.00', type: 'Debit' },
-    { date: '28 Oct 2025', description: 'Top Up via Stripe', gbp: '+ 500.00', type: 'Credit' },
-    { date: '25 Oct 2025', description: 'Shipping Fee HGLNG45602', ngn: '- 10000.00', type: 'Debit' },
-    { date: '20 Oct 2025', description: 'Welcome Bonus', gbp: '+ 10.00', type: 'Credit' },
+    { date: '2023-11-03', description: 'Top-up via Stripe', gbp: '100.00', type: 'Credit' },
+    { date: '2023-11-01', description: 'Payment for INV-002', gbp: '-250.00', type: 'Debit' },
+    { date: '2023-10-28', description: 'Top-up via Paystack', ngn: '50000', type: 'Credit' },
 ];
 
 export const CLIENT_ADDRESSES_DATA: Address[] = [
-    { id: '1', label: 'UK Home', isDefaultShipping: true, isDefaultBilling: false, name: 'Client Example Name', street: '1 Example Road, London, E1 1AA', city: '', country: 'United Kingdom', phone: '+44 7012345678' },
-    { id: '2', label: 'NG Office', isDefaultShipping: false, isDefaultBilling: true, name: 'Client Example Name (Work)', street: '123 Business Avenue, Ikeja, Lagos', city: '', country: 'Nigeria', phone: '+234 8012345678' },
-    { id: '3', label: 'Parents (UK)', isDefaultShipping: false, isDefaultBilling: false, name: 'Relative Name', street: '5 Another Street, Manchester, M1 1BB', city: '', country: 'United Kingdom', phone: '' },
+    { id: 'ADDR-1', label: 'Home (London)', isDefaultShipping: true, isDefaultBilling: true, name: 'Bola Adeyemi', street: '123 Fake Street', city: 'London', country: 'United Kingdom', phone: '+44...' },
+    { id: 'ADDR-2', label: 'Office (Lagos)', isDefaultShipping: false, isDefaultBilling: false, name: 'Bola Adeyemi', street: '456 Real Avenue', city: 'Ikeja, Lagos', country: 'Nigeria', phone: '+234...' },
 ];
 
 export const CLIENT_NOTIFICATIONS_DATA: ClientNotification[] = [
-    { date: '03 Nov 2025', subject: 'Shipment HGLUK12301 Update', snippet: 'Your package has arrived at Lagos customs...', status: 'Unread' },
-    { date: '02 Nov 2025', subject: 'Wallet Top-up Successful', snippet: 'Your GBP wallet has been credited with £50.00...', status: 'Unread' },
-    { date: '28 Oct 2025', subject: 'Invoice INV-CLIENT1-015 Issued', snippet: 'A new invoice for your recent shipment...', status: 'Read' },
+    { date: '3 hours ago', subject: 'Shipment HGLUK123 has departed', snippet: 'Your shipment is on its way to Lagos...', status: 'Unread' },
+    { date: '1 day ago', subject: 'Invoice INV-003 is due soon', snippet: 'Your invoice for £80.00 is due on 2023-11-16.', status: 'Unread' },
+    { date: '3 days ago', subject: 'Welcome to Hayapass!', snippet: 'Thank you for creating an account with us.', status: 'Read' },
 ];
 
 export const CLIENT_TEAM_MEMBERS_DATA: User[] = [
-    { id: '1', name: 'Client Example Name', email: 'client@example.com', role: 'Admin', status: 'Active', accountType: 'Client', lastLogin: '04 Nov 2025' },
-    { id: '2', name: 'Finance Manager', email: 'finance@example.com', role: 'Finance', status: 'Active', accountType: 'Client', lastLogin: '03 Nov 2025' },
-    { id: '3', name: 'Warehouse Staff', email: 'warehouse.staff@example.com', role: 'Warehouse', status: 'Active', accountType: 'Client', lastLogin: '04 Nov 2025' },
-    { id: '4', name: 'New Hire Invite', email: 'new.hire@example.com', role: 'Member', status: 'Pending', accountType: 'Client', lastLogin: 'Never' },
+    { id: 'USR-001', name: 'Bola Adeyemi', email: 'bola@nijabiz.com', role: 'Admin', status: 'Active', accountType: 'Client', lastLogin: '2023-11-03', company: 'NijaBiz Connect' },
+    { id: 'USR-003', name: 'John Doe', email: 'john@nijabiz.com', role: 'Member', status: 'Active', accountType: 'Client', lastLogin: '2023-11-02', company: 'NijaBiz Connect' },
+    { id: 'USR-004', name: 'Jane Smith', email: 'jane@nijabiz.com', role: 'Finance', status: 'Pending', accountType: 'Client', lastLogin: 'Never', company: 'NijaBiz Connect' },
 ];
 
-
-// --- MOCK DATA FOR ADMIN DASHBOARD ---
-export const ALL_USERS_DATA: User[] = [
-    { id: '1', name: 'Bola Adeyemi', email: 'bola@nijabiz.com', role: 'Admin', status: 'Active', accountType: 'Client', company: 'NijaBiz Connect', lastLogin: '04 Nov 2025' },
-    { id: '2', name: 'John Smith', email: 'john@ukexporters.co.uk', role: 'Admin', status: 'Active', accountType: 'Client', company: 'UK Exporters Ltd.', lastLogin: '03 Nov 2025' },
-    { id: '3', name: 'Chioma Okoro', email: 'chioma.o@email.com', role: 'Admin', status: 'Active', accountType: 'Client', company: 'Individual', lastLogin: '01 Nov 2025' },
-    { id: '4', name: 'Admin User', email: 'admin@hayapass.com', role: 'Super Admin', status: 'Active', accountType: 'Admin', company: 'Hayapass', lastLogin: '04 Nov 2025' },
-    { id: '5', name: 'Deactivated Client', email: 'old@client.com', role: 'Admin', status: 'Deactivated', accountType: 'Client', company: 'Old Company', lastLogin: '15 Jun 2025' },
-];
-
-export const ADMIN_SHIPMENTS_DATA: (DetailedClientShipment & { clientName: string })[] = [
-    { ...CLIENT_SHIPMENT_DETAILS_DATA['HGLUK12301'], clientName: 'Bola Adeyemi' },
-    { ...CLIENT_SHIPMENT_DETAILS_DATA['HGLNG45602'], clientName: 'John Smith' },
-    { ...CLIENT_SHIPMENT_DETAILS_DATA['HGLUK78903'], clientName: 'Chioma Okoro' },
-    { id: 'HGLUK99904', date: '02 Nov 2025', origin: 'Glasgow, UK', destination: 'Port Harcourt, NG', status: 'In Transit', estDelivery: '10 Nov 2025', weight: '25kg', dimensions: '50x50x50 cm', service: 'Sea Freight', notes: '', associatedInvoiceIds: ['INV-ADMIN-001'], milestones: [ { date: '03 Nov 2025', time: '11:00', status: 'Processed at HGL Facility', location: 'Glasgow Hub, UK' }, { date: '02 Nov 2025', time: '16:30', status: 'Shipment Information Received', location: 'Glasgow, UK' }], clientName: 'UK Exporters Ltd.' }
-];
-
-export const ADMIN_WALLET_REQUESTS_DATA: WalletRequest[] = [
-    { id: 'WR-001', clientId: '1', clientName: 'Bola Adeyemi', date: '04 Nov 2025', type: 'Top-up', amount: 100, currency: 'GBP', status: 'Pending', method: 'Bank Transfer Ref: BA-TOPUP' },
-    { id: 'WR-002', clientId: '2', clientName: 'John Smith', date: '03 Nov 2025', type: 'Withdrawal', amount: 50, currency: 'GBP', status: 'Pending', method: 'UK Bank: 01-02-03 12345678' },
-    { id: 'WR-003', clientId: '3', clientName: 'Chioma Okoro', date: '02 Nov 2025', type: 'Top-up', amount: 25000, currency: 'NGN', status: 'Approved', method: 'Paystack' },
-    { id: 'WR-004', clientId: '1', clientName: 'Bola Adeyemi', date: '01 Nov 2025', type: 'Withdrawal', amount: 20, currency: 'GBP', status: 'Declined', method: 'UK Bank: 04-05-06 87654321' },
-];
-
-
-export const ADMIN_ANALYTICS_DATA = {
-    totalRevenue: 250600,
-    totalShipments: 1240,
-    newClients: 35,
-    pendingIssues: 3,
-    revenueByService: [
-        { name: 'Air Freight', value: 120000 },
-        { name: 'Sea Freight', value: 85000 },
-        { name: 'Domestic', value: 35600 },
-        { name: 'Customs', value: 10000 },
-    ]
-};
-
-
-
-// --- MOCK DATA FOR 100% COMPLETE DASHBOARD ---
-
-export const ANALYTICS_DATA: { monthlySpend: AnalyticsDataPoint[], topRoutes: (AnalyticsDataPoint & { shipments: number })[] } = {
+export const ANALYTICS_DATA = {
     monthlySpend: [
-        { name: 'May', value: 3400 },
-        { name: 'Jun', value: 4500 },
-        { name: 'Jul', value: 3900 },
-        { name: 'Aug', value: 5200 },
-        { name: 'Sep', value: 4800 },
-        { name: 'Oct', value: 6100 },
+        { name: 'May', value: 4500 }, { name: 'Jun', value: 5200 }, { name: 'Jul', value: 6100 },
+        { name: 'Aug', value: 5800 }, { name: 'Sep', value: 6500 }, { name: 'Oct', value: 6800 },
     ],
     topRoutes: [
-        { name: 'UK -> NG', value: 18500, shipments: 152 },
-        { name: 'NG -> UK', value: 9200, shipments: 88 },
-        { name: 'UK -> US', value: 4500, shipments: 45 },
+        { name: 'London -> Lagos', value: 18500, shipments: 25 },
+        { name: 'Manchester -> Abuja', value: 9200, shipments: 15 },
+        { name: 'Birmingham -> Port Harcourt', value: 4500, shipments: 8 },
     ]
 };
 
+export const LOYALTY_DATA: LoyaltyTier = {
+    name: 'Gold',
+    currentSpend: 6800,
+    nextTierSpend: 10000,
+    benefits: ['5% discount on all shipments', 'Priority support', 'Dedicated account manager']
+};
+
+export const REFERRAL_DATA: Referral[] = [
+    { date: '2023-10-15', email: 'friend1@example.com', status: 'Completed', reward: '£10 Credit' },
+    { date: '2023-10-22', email: 'friend2@example.com', status: 'Pending', reward: '-' },
+];
+
 export const API_TOKENS_DATA: ApiToken[] = [
-    { id: '1', name: 'Shopify Integration Key', token: 'hp_live_sk_****...**_a1b2', created: '15 Aug 2025', lastUsed: '03 Nov 2025' },
-    { id: '2', name: 'Warehouse System Key', token: 'hp_live_sk_****...**_c3d4', created: '01 Jul 2025', lastUsed: '02 Nov 2025' },
+    { id: 'key_1', name: 'Shopify Integration', token: 'hp_live_sk_...', created: '2023-09-01', lastUsed: '2023-11-03' },
 ];
 
 export const WEBHOOKS_DATA: Webhook[] = [
-    { id: '1', url: 'https://api.example.com/webhooks/hayapass', events: ['shipment.created', 'shipment.updated'], status: 'Active' }
+    { id: 'wh_1', url: 'https://api.example.com/webhooks/hayapass', events: ['shipment.created', 'shipment.updated'], status: 'Active' },
 ];
-
-export const REFERRAL_DATA: Referral[] = [
-    { date: '10 Oct 2025', email: 'friend1@example.com', status: 'Completed', reward: '£10.00' },
-    { date: '25 Sep 2025', email: 'colleague@example.com', status: 'Completed', reward: '£10.00' },
-    { date: '15 Sep 2025', email: 'contact@example.com', status: 'Pending', reward: '£10.00' },
-];
-
-export const LOYALTY_DATA: LoyaltyTier = {
-    name: 'Silver',
-    currentSpend: 4850,
-    nextTierSpend: 10000,
-    benefits: [
-        '5% Discount on all Air Freight',
-        'Priority Support',
-        'Dedicated Account Manager',
-    ]
-};
 
 export const SUPPORT_TICKETS_DATA: SupportTicket[] = [
+    { id: 'TKT-001', clientId: 'USR-001', clientName: 'Bola Adeyemi', subject: 'Question about customs charges', department: 'Billing', status: 'Open', lastUpdated: '2 days ago', messages: [
+        { sender: 'Client', text: 'Hi, I have a question about the customs charges on my last invoice.', timestamp: '2023-11-04 10:00' },
+        { sender: 'Support', text: 'Hello Bola, of course. Could you please provide the shipment ID?', timestamp: '2023-11-04 10:05' }
+    ]},
+    { id: 'TKT-002', clientId: 'USR-002', clientName: 'Chioma Okoro', subject: 'Package not yet delivered', department: 'General', status: 'Pending', lastUpdated: '1 day ago', messages: [
+        { sender: 'Client', text: 'My package HGLUK123 is showing in transit but it is past the estimated delivery date.', timestamp: '2023-11-03 15:00' }
+    ]},
+];
+
+// --- ADMIN DATA ---
+
+export const ALL_USERS_DATA: User[] = [
+    ...CLIENT_TEAM_MEMBERS_DATA,
+    { id: 'USR-002', name: 'Chioma Okoro', email: 'chioma@example.com', role: 'Member', status: 'Active', accountType: 'Client', company: undefined, lastLogin: '2023-11-01' },
+    { id: 'ADM-001', name: 'Admin User', email: 'admin@hayapass.com', role: 'Super Admin', status: 'Active', accountType: 'Admin', lastLogin: '2023-11-04' },
+];
+
+export const ADMIN_SHIPMENTS_DATA: (ClientShipment & { clientId: string })[] = [
+    { id: 'HGLUK123', clientId: 'USR-001', date: '2023-11-01', origin: 'London, UK', destination: 'Lagos, NG', status: 'In Transit', estDelivery: '2023-11-05' },
+    { id: 'HGLNG456', clientId: 'USR-001', date: '2023-10-28', origin: 'Manchester, UK', destination: 'Abuja, NG', status: 'Delivered', estDelivery: '2023-11-02' },
+    { id: 'HGLUK789', clientId: 'USR-001', date: '2023-11-02', origin: 'Birmingham, UK', destination: 'Port Harcourt, NG', status: 'Customs Hold', estDelivery: '2023-11-08' },
+    { id: 'HGLUK999', clientId: 'USR-002', date: '2023-10-25', origin: 'London, UK', destination: 'Kano, NG', status: 'Delivered', estDelivery: '2023-10-30' },
+    { id: 'HGLUK99901', clientId: 'USR-001', date: '2023-11-04', origin: 'London, UK', destination: 'Lagos, NG', status: 'In Transit', estDelivery: '2023-11-09' },
+    { id: 'HGLUK99902', clientId: 'USR-002', date: '2023-11-04', origin: 'London, UK', destination: 'Lagos, NG', status: 'In Transit', estDelivery: '2023-11-09' },
+    { id: 'HGLUK99903', clientId: 'USR-001', date: '2023-11-03', origin: 'London, UK', destination: 'Abuja, NG', status: 'Customs Hold', estDelivery: '2023-11-10' },
+    { id: 'HGLUK99904', clientId: 'USR-002', date: '2023-11-02', origin: 'Manchester, UK', destination: 'Lagos, NG', status: 'Delivered', estDelivery: '2023-11-05' },
+];
+
+export const ADMIN_ANALYTICS_DATA = {
+    totalRevenue: 350000,
+    newClients: 12,
+    pendingIssues: 4, // 3 tickets + 1 wallet request
+    revenueByService: [
+        { name: 'Air Freight', value: 125000 },
+        { name: 'Sea Freight', value: 85000 },
+        { name: 'Warehousing', value: 60000 },
+        { name: 'Domestic', value: 45000 },
+        { name: 'Customs', value: 35000 },
+    ],
+};
+
+export const ADMIN_WALLET_REQUESTS_DATA: WalletRequest[] = [
+    { id: 'WR-001', clientId: 'USR-001', clientName: 'Bola Adeyemi', date: '2023-11-04', type: 'Top-up', amount: 100, currency: 'GBP', status: 'Pending', method: 'Stripe' },
+    { id: 'WR-002', clientId: 'USR-002', clientName: 'Chioma Okoro', date: '2023-11-03', type: 'Withdrawal', amount: 50, currency: 'GBP', status: 'Approved', method: 'Bank Transfer' },
+];
+
+export const ADMIN_ROLES_DATA: AdminRole[] = [
+    { id: 'ROLE-1', name: 'Super Admin', description: 'Full access to all features.', permissions: ['*'] },
+    { id: 'ROLE-2', name: 'Admin', description: 'Manages shipments and users.', permissions: ['manage_shipments', 'manage_users'] },
+    { id: 'ROLE-3', name: 'Support', description: 'Handles support tickets.', permissions: ['manage_tickets'] },
+    { id: 'ROLE-4', name: 'Finance', description: 'Manages invoices and wallets.', permissions: ['manage_invoices', 'manage_wallets'] },
+];
+
+export const ADMIN_SHIPPING_RATES_DATA: ShippingRate[] = [
+    { id: 'RATE-1', serviceName: 'Air Express', origin: 'UK', destination: 'NG', basePrice: 20, pricePerKg: 12.5, estimatedTime: '3-5 days' },
+    { id: 'RATE-2', serviceName: 'Air Standard', origin: 'UK', destination: 'NG', basePrice: 15, pricePerKg: 9.8, estimatedTime: '5-8 days' },
+    { id: 'RATE-3', serviceName: 'Sea Freight', origin: 'UK', destination: 'NG', basePrice: 100, pricePerKg: 3.5, estimatedTime: '3-5 weeks' },
+];
+
+export const MOCK_PAYMENT_GATEWAY_SETTINGS: PaymentGatewaySettings = {
+    stripe: {
+        publicKey: 'pk_test_...',
+        secretKey: 'sk_test_...',
+    },
+    paystack: {
+        publicKey: 'pk_test_...',
+        secretKey: 'sk_test_...',
+    },
+    paypal: {
+        clientId: 'A...Z',
+    }
+};
+
+// --- NEW CONSTANTS FOR ADMIN NOTIFICATIONS ---
+export const DEFAULT_ALERT_CONFIG: AlertConfiguration = {
+    customsHold: {
+        enabled: true,
+        thresholdHours: 48,
+    },
+    ticketEscalation: {
+        enabled: true,
+        thresholdHours: 24,
+    },
+    lowWallet: {
+        enabled: true,
+        thresholdGbp: 50,
+    },
+};
+
+// --- NEW CONSTANTS FOR AUTOMATED WORKFLOWS ---
+export const MOCK_WORKFLOW_RULES: WorkflowRule[] = [
     {
-        id: 'TKT-001',
-        subject: 'Question about customs charges for INV-CLIENT1-015',
-        department: 'Billing',
-        status: 'Open',
-        lastUpdated: '04 Nov 2025',
-        messages: [
-            { sender: 'Support', text: 'Hello, thank you for reaching out. We are looking into the customs charges for your invoice and will get back to you shortly.', timestamp: '04 Nov 2025, 11:30 AM' },
-            { sender: 'You', text: 'Hi, I had a question about the customs charges on my latest invoice. Can you clarify?', timestamp: '04 Nov 2025, 10:15 AM' },
-        ],
+        id: 'WF-001',
+        name: 'Post-Delivery Feedback',
+        description: 'When a shipment is delivered, send the client an email to rate their experience.',
+        trigger: {
+            type: 'Shipment Status Change',
+            details: { status: 'Delivered' }
+        },
+        action: {
+            type: 'Send Email To Client',
+            details: { template: 'Shipment Delivered - Rate Experience' }
+        },
+        enabled: true,
     },
     {
-        id: 'TKT-002',
-        subject: 'My package HGLNG45602 is on hold',
-        department: 'General',
-        status: 'Resolved',
-        lastUpdated: '03 Nov 2025',
-        messages: [
-            { sender: 'You', text: 'Thank you for the quick help!', timestamp: '03 Nov 2025, 02:45 PM' },
-            { sender: 'Support', text: 'You are all set. The customs duty has been paid and the package is cleared for delivery.', timestamp: '03 Nov 2025, 02:40 PM' },
-            { sender: 'You', text: 'I see my package is on customs hold. How can I resolve this?', timestamp: '02 Nov 2025, 09:00 AM' },
-        ],
+        id: 'WF-002',
+        name: 'Pre-Alert Arrival Notification',
+        description: 'When a pre-alerted package arrives at our facility, notify the client.',
+        trigger: {
+            type: 'Pre-Alert Arrived',
+            details: {}
+        },
+        action: {
+            type: 'Send Email To Client',
+            details: { template: 'Pre-Alert Received Notification' }
+        },
+        enabled: true,
+    },
+    {
+        id: 'WF-003',
+        name: 'Customs Hold Alert',
+        description: 'Immediately notify the client via email if their shipment is held at customs.',
+        trigger: {
+            type: 'Shipment Status Change',
+            details: { status: 'Customs Hold' }
+        },
+        action: {
+            type: 'Send Email To Client',
+            details: { template: 'Pre-Alert Received Notification' } // Re-using for demo
+        },
+        enabled: false,
+    }
+];
+
+export const INITIAL_ACTIVITY_LOGS: ActivityLog[] = [
+    {
+        id: 'LOG-001',
+        timestamp: Date.now() - 3600000, // 1 hour ago
+        icon: 'email',
+        message: "Sent 'Shipment Delivered' email to client USR-002 for shipment HGLUK99904."
+    }
+];
+
+// --- NEW CONSTANTS FOR PREDICTIVE ANALYTICS ---
+export const MOCK_SHIPMENT_DELAY_FORECASTS: ShipmentDelayForecast[] = [
+    {
+        shipmentId: 'HGLUK99901',
+        clientName: 'Bola Adeyemi',
+        riskLevel: 'High',
+        riskReason: 'Peak season backlog expected at Lagos port.',
+        suggestedAction: 'Proactively notify client of potential delay.',
+    },
+    {
+        shipmentId: 'HGLUK99902',
+        clientName: 'Chioma Okoro',
+        riskLevel: 'Medium',
+        riskReason: 'High-congestion route detected.',
+        suggestedAction: 'Monitor closely; prepare alternative routing.',
     },
 ];

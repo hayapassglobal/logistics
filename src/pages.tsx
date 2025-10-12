@@ -1,10 +1,11 @@
+
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button, AdminButton, Modal, Table, Pagination, FormInput, FormTextarea } from './components';
-import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, MANAGEABLE_PAGES_CONTENT, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, LOYALTY_DATA, REFERRAL_DATA, API_TOKENS_DATA, WEBHOOKS_DATA, SUPPORT_TICKETS_DATA, ADMIN_ROLES_DATA, ADMIN_SHIPPING_RATES_DATA, DEFAULT_ALERT_CONFIG, MOCK_WORKFLOW_RULES, INITIAL_ACTIVITY_LOGS, MOCK_SHIPMENT_DELAY_FORECASTS, MOCK_PAYMENT_GATEWAY_SETTINGS, HERO_SLIDES } from './constants';
-// FIX: Added IconClock to the import list to resolve a 'Cannot find name' error.
-import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, IconShieldCheck, IconFileText, IconHelpCircle, IconGlobe, IconWarehouse, IconCustoms, IconPackage, IconSend, ICON_MAP, IconPlus, IconKey, IconPlug, IconBellFill, IconRecycle, IconPlayBtn, IconLightningCharge, IconFilter, IconCreditCard, IconClock } from './constants';
+import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button, AdminButton } from '../components';
+import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, MANAGEABLE_PAGES_CONTENT, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, LOYALTY_DATA, REFERRAL_DATA, API_TOKENS_DATA, WEBHOOKS_DATA, SUPPORT_TICKETS_DATA, ADMIN_ROLES_DATA, ADMIN_SHIPPING_RATES_DATA, DEFAULT_ALERT_CONFIG, MOCK_WORKFLOW_RULES, INITIAL_ACTIVITY_LOGS, MOCK_SHIPMENT_DELAY_FORECASTS } from '../constants';
+import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, IconShieldCheck, IconFileText, IconHelpCircle, IconGlobe, IconWarehouse, IconCustoms, IconPackage, IconSend, ICON_MAP, IconPlus, IconKey, IconPlug, IconBellFill, IconRecycle, IconPlayBtn, IconLightningCharge, IconFilter } from '../constants';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, FaqItemData, WalletRequest, SupportTicket, ApiToken, Webhook, HeroSlide, AdminRole, ShippingRate, AdminNotification, AlertConfiguration, WorkflowRule, ActivityLog, ShipmentDelayForecast, Milestone, PaymentGatewaySettings, SiteConfig } from './types';
+import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, FaqItemData, WalletRequest, SupportTicket, ApiToken, Webhook, HeroSlide, AdminRole, ShippingRate, AdminNotification, AlertConfiguration, WorkflowRule, ActivityLog, ShipmentDelayForecast, ShipmentMilestone } from '../types';
 
 
 export const HomePage: React.FC = () => (
@@ -561,7 +562,7 @@ export const FaqPage: React.FC = () => {
                  <div className="bg-white p-8 rounded-lg shadow-lg">
                     {FAQ_DATA.map((item, index) => (
                         <FaqItem
-                            key={item.id}
+                            key={index}
                             item={item}
                             isOpen={openIndex === index}
                             onClick={() => handleToggle(index)}
@@ -667,6 +668,28 @@ export const AdminLoginPage: React.FC = () => {
 
 // --- START: AUTHENTICATION COMPONENTS ---
 
+const ProgressStepper: React.FC<{ steps: string[]; currentStep: number }> = ({ steps, currentStep }) => (
+    <nav aria-label="Progress" className="my-8">
+        <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
+            {steps.map((step, stepIdx) => (
+                <li key={step} className="md:flex-1">
+                    {stepIdx <= currentStep ? (
+                        <div className="group flex flex-col border-l-4 border-[#00529b] py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span className="text-sm font-medium text-[#00529b]">{`Step ${stepIdx + 1}`}</span>
+                            <span className="text-sm font-medium">{step}</span>
+                        </div>
+                    ) : (
+                        <div className="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span className="text-sm font-medium text-gray-500">{`Step ${stepIdx + 1}`}</span>
+                            <span className="text-sm font-medium">{step}</span>
+                        </div>
+                    )}
+                </li>
+            ))}
+        </ol>
+    </nav>
+);
+
 const PasswordStrengthMeter: React.FC<{ password?: string }> = ({ password = '' }) => {
     const checkPasswordStrength = (pass: string) => {
         let score = 0;
@@ -694,13 +717,109 @@ const PasswordStrengthMeter: React.FC<{ password?: string }> = ({ password = '' 
     );
 };
 
+const EnhancedFileUpload: React.FC<{ label: string; id: string; required?: boolean; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; file: File | null; onRemove: () => void; description: string }> = ({ label, id, required, onChange, file, onRemove, description }) => {
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (file && file.type.startsWith('image/')) {
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+            return () => URL.revokeObjectURL(url);
+        }
+        setPreviewUrl(null);
+    }, [file]);
+    
+    return (
+    <div>
+        <label className="block text-sm font-medium text-gray-700">{label}</label>
+        {file ? (
+            <div className="mt-1 p-2 border border-gray-300 rounded-md flex items-center justify-between bg-gray-50">
+                <div className="flex items-center gap-3 overflow-hidden">
+                    {previewUrl ? (
+                         <img src={previewUrl} alt="Preview" className="h-12 w-12 object-cover rounded-md flex-shrink-0" />
+                    ) : (
+                        <IconWrapper className="h-10 w-10 text-gray-400 flex-shrink-0"><IconFileText/></IconWrapper>
+                    )}
+                    <span className="text-sm text-gray-800 truncate">{file.name}</span>
+                </div>
+                <button type="button" onClick={onRemove} className="text-sm text-red-600 hover:text-red-800 font-medium flex-shrink-0 ml-2">Remove</button>
+            </div>
+        ) : (
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div className="space-y-1 text-center">
+                    <IconWrapper className="mx-auto h-12 w-12 text-gray-400"><IconUpload/></IconWrapper>
+                    <div className="flex text-sm text-gray-600">
+                        <label htmlFor={id} className="relative cursor-pointer bg-white rounded-md font-medium text-[#00529b] hover:text-[#b58e31] focus-within:outline-none">
+                            <span>Upload a file</span>
+                            <input id={id} name={id} type="file" className="sr-only" required={required} onChange={onChange} accept=".pdf,.png,.jpg,.jpeg" />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">{description}</p>
+                </div>
+            </div>
+        )}
+    </div>
+    );
+};
+
+const FormInput: React.FC<{ name: string, label: string, type?: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, error?: string, required?: boolean, placeholder?: string }> = ({ name, label, type = 'text', value, onChange, error, required, placeholder }) => (
+    <div>
+        <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
+        <input type={type} name={name} id={name} value={value} onChange={onChange} required={required} placeholder={placeholder} className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm ${error ? 'border-red-500' : 'border-gray-300'}`} />
+        {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    </div>
+);
+
 export const ClientAuthPage: React.FC = () => {
     const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgotPassword' | 'resetPassword'>('login');
+    const [registrationStep, setRegistrationStep] = useState(0);
+    const [accountType, setAccountType] = useState<'individual' | 'business' | null>(null);
+    const [files, setFiles] = useState<{ [key: string]: File | null }>({});
     const [formData, setFormData] = useState<any>({});
     const [errors, setErrors] = useState<any>({});
+    const [termsAccepted, setTermsAccepted] = useState(false);
     const [forgotPasswordEmailSent, setForgotPasswordEmailSent] = useState(false);
     const navigate = useNavigate();
+
+    const registrationSteps = ['Account Type', 'Your Details', 'Verification', 'Verify Email', 'Complete'];
     
+    useEffect(() => {
+        if (authMode === 'register' && (registrationStep < 0 || registrationStep >= registrationSteps.length)) {
+            setRegistrationStep(0);
+        }
+    }, [registrationStep, authMode]);
+
+    useEffect(() => {
+        try {
+            const savedProgress = localStorage.getItem('registrationProgress');
+            if (savedProgress) {
+                if (window.confirm('You have saved registration progress. Would you like to continue?')) {
+                    const { step, type, data } = JSON.parse(savedProgress);
+                    setRegistrationStep(step);
+                    setAccountType(type);
+                    setFormData(data);
+                    setAuthMode('register');
+                } else {
+                    localStorage.removeItem('registrationProgress');
+                }
+            }
+        } catch (error) {
+            console.error("Could not load saved progress:", error);
+            localStorage.removeItem('registrationProgress');
+        }
+    }, []);
+
+    const saveProgress = () => {
+        const progress = {
+            step: registrationStep,
+            type: accountType,
+            data: formData,
+        };
+        localStorage.setItem('registrationProgress', JSON.stringify(progress));
+        alert('Progress saved!');
+    };
+
     const validateField = (name: string, value: string) => {
         let errorMsg = '';
         if ((name === 'confirmPassword' || name === 'resetConfirmPassword') && value !== formData[name.replace('Confirm', '')]) {
@@ -718,10 +837,26 @@ export const ClientAuthPage: React.FC = () => {
         validateField(name, value);
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setFiles(prev => ({ ...prev, [e.target.name]: e.target.files![0] }));
+        }
+    };
+    
+    const handleRemoveFile = (fileName: string) => {
+        setFiles(prev => ({ ...prev, [fileName]: null }));
+    };
+
     const handleLoginSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        // Determine user type based on email for demo
         const userType = formData.loginEmail?.includes('business') ? 'business' : 'individual';
         navigate('/dashboard', { state: { accountType: userType } });
+    };
+    
+    const handleRegistrationSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setRegistrationStep(3); // Move to email verification
     };
     
     const handleForgotPasswordSubmit = (e: React.FormEvent) => {
@@ -733,6 +868,118 @@ export const ClientAuthPage: React.FC = () => {
         e.preventDefault();
         alert("Password has been reset successfully!");
         setAuthMode('login');
+    };
+
+    const renderRegistrationForm = () => {
+        const commonFields = (
+            <>
+                <FormInput name="email" label="Contact Email Address" type="email" value={formData.email || ''} onChange={handleInputChange} error={errors.email} required />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" value={formData.password || ''} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm" />
+                    <PasswordStrengthMeter password={formData.password} />
+                </div>
+                <FormInput name="confirmPassword" label="Confirm Password" type="password" value={formData.confirmPassword || ''} onChange={handleInputChange} error={errors.confirmPassword} required />
+            </>
+        );
+
+        switch (registrationStep) {
+            case 0:
+                return (
+                    <div>
+                        <h2 className="text-xl font-semibold mb-6 text-center">Choose Your Account Type</h2>
+                        <div className="space-y-4">
+                            <button onClick={() => { setAccountType('individual'); setRegistrationStep(1); }} className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#b58e31]"><h3 className="font-bold text-[#00529b]">Individual Client</h3><p className="text-sm text-gray-600">For personal shipments and individual use.</p></button>
+                            <button onClick={() => { setAccountType('business'); setRegistrationStep(1); }} className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#b58e31]"><h3 className="font-bold text-[#00529b]">Business Client</h3><p className="text-sm text-gray-600">For companies, SMEs, and corporate logistics.</p></button>
+                        </div>
+                    </div>
+                );
+            case 1:
+                return (
+                    <form onSubmit={(e) => { e.preventDefault(); setRegistrationStep(2); }} className="space-y-4">
+                        <h2 className="text-xl font-semibold mb-4 text-center">{accountType === 'individual' ? 'Individual' : 'Business'} Account Details</h2>
+                        {accountType === 'individual' ? (
+                            <>
+                                <FormInput name="fullName" label="Full Legal Name" placeholder="As on your ID" value={formData.fullName || ''} onChange={handleInputChange} required />
+                                {commonFields}
+                                <FormInput name="phone" label="Mobile Phone Number" type="tel" value={formData.phone || ''} onChange={handleInputChange} required />
+                                <div><label className="block text-sm font-medium text-gray-700">Residential Address</label><textarea name="address" value={formData.address || ''} onChange={handleInputChange} required rows={3} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm"></textarea></div>
+                            </>
+                        ) : (
+                             <>
+                                <fieldset className="border p-4 rounded-md space-y-4"><legend className="text-sm font-medium px-1">Company Details</legend>
+                                    <FormInput name="companyName" label="Full Legal Company Name" value={formData.companyName || ''} onChange={handleInputChange} required />
+                                    <FormInput name="tradingName" label="Company Trading Name (if different)" value={formData.tradingName || ''} onChange={handleInputChange} />
+                                     <div><label className="block text-sm font-medium text-gray-700">Full Registered Business Address</label><textarea name="companyAddress" value={formData.companyAddress || ''} onChange={handleInputChange} required rows={3} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea></div>
+                                     <FormInput name="companyWebsite" label="Company Website" type="url" value={formData.companyWebsite || ''} onChange={handleInputChange} />
+                                     <FormInput name="registrationNumber" label="Company Registration Number" value={formData.registrationNumber || ''} onChange={handleInputChange} required />
+                                     <FormInput name="taxNumber" label="VAT / Tax ID Number" value={formData.taxNumber || ''} onChange={handleInputChange} required />
+                                </fieldset>
+                                <fieldset className="border p-4 rounded-md space-y-4"><legend className="text-sm font-medium px-1">Primary Contact Details</legend>
+                                    <FormInput name="contactName" label="Full Name" value={formData.contactName || ''} onChange={handleInputChange} required />
+                                    <FormInput name="jobTitle" label="Job Title" value={formData.jobTitle || ''} onChange={handleInputChange} required />
+                                    <FormInput name="workPhone" label="Direct Phone Number" type="tel" value={formData.workPhone || ''} onChange={handleInputChange} required />
+                                    {commonFields}
+                                </fieldset>
+                            </>
+                        )}
+                        <div className="flex justify-between items-center pt-4">
+                            <button type="button" onClick={saveProgress} className="text-sm font-medium text-gray-600 hover:text-[#00529b]">Save & Continue Later</button>
+                            <Button type="submit" primary>Next: Upload Documents</Button>
+                        </div>
+                    </form>
+                );
+            case 2:
+                return (
+                    <form onSubmit={handleRegistrationSubmit} className="space-y-6">
+                        <h2 className="text-xl font-semibold text-center">Verification Documents</h2>
+                        {accountType === 'individual' ? (
+                            <EnhancedFileUpload id="proofOfId" label="Proof of Identity" description="Passport, Driver's License, or National ID" required file={files.proofOfId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfId')} />
+                        ) : accountType === 'business' ? (
+                             <>
+                                <EnhancedFileUpload id="proofOfReg" label="Proof of Business Registration" description="Certificate of Incorporation" required file={files.proofOfReg || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfReg')} />
+                                <EnhancedFileUpload id="proofOfAddr" label="Proof of Business Address" description="Recent utility bill or bank statement" required file={files.proofOfAddr || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfAddr')} />
+                                <EnhancedFileUpload id="proofOfDirectorId" label="Proof of ID for Director/Primary Contact" description="Passport or Driver's License" required file={files.proofOfDirectorId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfDirectorId')} />
+                             </>
+                        ) : null}
+                        <div className="flex items-start"><input id="terms" name="terms" type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="h-4 w-4 text-[#00529b] focus:ring-[#b58e31] border-gray-300 rounded mt-1" /><label htmlFor="terms" className="ml-2 block text-sm text-gray-900">I agree to the <Link to="/terms" target="_blank" className="font-medium text-[#00529b] hover:underline">Terms & Conditions</Link> and <Link to="/privacy-policy" target="_blank" className="font-medium text-[#00529b] hover:underline">Privacy Policy</Link>.</label></div>
+                        <div className="flex justify-between items-center pt-4">
+                           <button type="button" onClick={() => setRegistrationStep(1)} className="text-sm font-medium text-gray-600 hover:text-[#00529b]">Back to details</button>
+                           <Button type="submit" primary disabled={!termsAccepted}>Create Account</Button>
+                       </div>
+                   </form>
+                );
+            case 3: // Email Verification
+                 return (
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4">Please Verify Your Email</h2>
+                        <p className="text-gray-700 mb-6">We've sent a verification link to <strong>{formData.email}</strong>. Please check your inbox and click the link to activate your account.</p>
+                        <p className="text-sm text-gray-500 mb-6">Didn't receive the email? Check your spam folder or...</p>
+                        <div className="space-y-3">
+                           <Button onClick={() => alert('Verification email resent!')} primary className="w-full">Resend Verification Email</Button>
+                           <Button onClick={() => { localStorage.removeItem('registrationProgress'); setRegistrationStep(4); }} secondary className="w-full">Continue (Simulate Verification)</Button>
+                        </div>
+                    </div>
+                );
+            case 4: // Success / 2FA
+                return (
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Set Up Two-Factor Authentication</h2>
+                        <p className="text-gray-600 mb-6">Scan this QR code with your authenticator app.</p>
+                        <div className="flex justify-center my-4">
+                           <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=otpauth://totp/Hayapass:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Hayapass" alt="QR Code Placeholder" />
+                        </div>
+                        <FormInput name="2faCode" label="Verification Code" value={formData['2faCode'] || ''} onChange={handleInputChange} placeholder="Enter 6-digit code" required />
+                         <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                           <Button onClick={() => navigate('/dashboard', { state: { accountType } })} primary className="w-full">Verify & Finish</Button>
+                           <Button onClick={() => navigate('/dashboard', { state: { accountType } })} secondary className="w-full">Skip for Now</Button>
+                        </div>
+                    </div>
+                );
+            default:
+                setRegistrationStep(0);
+                return null;
+        }
     };
 
     const renderMainContent = () => {
@@ -749,11 +996,7 @@ export const ClientAuthPage: React.FC = () => {
                     </form>
                 );
             case 'register':
-                 return (
-                    <div className="text-center">
-                        <p className="text-gray-700">Registration is currently handled by our team. Please <Link to="/contact" className="font-medium text-[#00529b] hover:underline">contact us</Link> to set up an account.</p>
-                    </div>
-                );
+                return renderRegistrationForm();
             case 'forgotPassword':
                 if (forgotPasswordEmailSent) {
                     return (
@@ -795,10 +1038,15 @@ export const ClientAuthPage: React.FC = () => {
                      <Link to="/"><img src={SITE_CONFIG.logoUrl} alt="Logo" className="mx-auto h-12 mb-4"/></Link>
                 </div>
                 
-                <div className="mb-6 flex justify-center border border-gray-300 rounded-lg p-1 bg-gray-200">
-                    <button onClick={() => setAuthMode('login')} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'login' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Login</button>
-                    <button onClick={() => { setAuthMode('register');}} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'register' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Register</button>
-                </div>
+                {authMode !== 'forgotPassword' && authMode !== 'resetPassword' && (
+                    <>
+                        <div className="mb-6 flex justify-center border border-gray-300 rounded-lg p-1 bg-gray-200">
+                            <button onClick={() => setAuthMode('login')} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'login' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Login</button>
+                            <button onClick={() => { setAuthMode('register'); setRegistrationStep(0); setAccountType(null); }} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'register' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Register</button>
+                        </div>
+                        {authMode === 'register' && registrationStep < registrationSteps.length -1 && <ProgressStepper steps={registrationSteps} currentStep={registrationStep} />}
+                    </>
+                )}
                 
                 {renderMainContent()}
 
@@ -807,7 +1055,7 @@ export const ClientAuthPage: React.FC = () => {
     );
 };
 
-// --- START: CLIENT DASHBOARD PAGE & VIEWS ---
+// --- START: CLIENT DASHBOARD VIEWS ---
 
 const DashboardCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; footer?: string; }> = ({ title, value, icon, footer }) => (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -953,7 +1201,281 @@ const ClientDashboardShipmentsView: React.FC<{isEmpty: boolean, onCreateShipment
     );
 };
 
-// ... other client dashboard views are unchanged and omitted for brevity ...
+const ClientDashboardPreAlertsView: React.FC<{isEmpty: boolean, onNewPreAlert: () => void}> = ({isEmpty, onNewPreAlert}) => {
+     if (isEmpty) {
+        return <EmptyState 
+            icon={<IconBell />}
+            title="No pre-alerts"
+            description="Use a pre-alert to notify us of an incoming package from another retailer (like Amazon) to your Hayapass locker."
+            actionButton={<Button primary onClick={onNewPreAlert}>Create a Pre-Alert</Button>}
+        />
+    }
+    return (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Pre-Alerts</h3>
+            <Button primary onClick={onNewPreAlert}><IconWrapper className="w-4 h-4 inline-block mr-2"><IconUpload/></IconWrapper>New Pre-Alert</Button>
+        </div>
+        <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facility</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Carrier & Tracking</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {CLIENT_PREALERTS_DATA.map(pa => (
+                        <tr key={pa.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{pa.facility}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{pa.carrier} - {pa.tracking}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{pa.description}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{pa.status}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+)};
+
+const ClientDashboardInvoicesView: React.FC<{isEmpty: boolean}> = ({isEmpty}) => {
+    if (isEmpty) {
+        return <EmptyState 
+            icon={<IconReceipt />}
+            title="No invoices yet"
+            description="Invoices for your shipments and services will appear here once they are generated."
+        />
+    }
+    return (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Invoices</h3>
+        <div className="overflow-x-auto">
+             <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice ID</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {CLIENT_INVOICES_DATA.map(inv => (
+                        <tr key={inv.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{inv.id}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{inv.dueDate}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{inv.currency === 'GBP' ? '£' : '₦'}{inv.amount}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{inv.status}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                <button className="text-[#00529b] hover:underline">View</button>
+                                {inv.status === 'Unpaid' && <button className="text-green-600 hover:underline">Pay</button>}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+)};
+
+const ClientDashboardWalletView: React.FC<{isEmpty: boolean, onTopUp: () => void, onWithdraw: () => void}> = ({isEmpty, onTopUp, onWithdraw}) => {
+     if (isEmpty) {
+        return <EmptyState 
+            icon={<IconWallet2 />}
+            title="Your wallet is ready"
+            description="Top up your wallet for faster payments and seamless transactions for all your logistics needs."
+            actionButton={<Button primary onClick={onTopUp}>Top Up Wallet</Button>}
+        />
+    }
+    return (
+    <div className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">GBP Wallet</h3>
+                <p className="text-3xl font-bold">£{WALLET_TRANSACTIONS_DATA.reduce((acc, t) => acc + (parseFloat(t.gbp || '0')), 0).toFixed(2)}</p>
+            </div>
+             <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">NGN Wallet</h3>
+                <p className="text-3xl font-bold">₦{WALLET_TRANSACTIONS_DATA.reduce((acc, t) => acc + (parseFloat(t.ngn || '0')), 0).toLocaleString()}</p>
+            </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+             <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Transaction History</h3>
+                <div className="space-x-2">
+                    <Button secondary onClick={onTopUp}><IconWrapper className="w-4 h-4 inline-block mr-2"><IconArrowUpCircle/></IconWrapper>Top-up</Button>
+                    <Button outline onClick={onWithdraw}><IconWrapper className="w-4 h-4 inline-block mr-2"><IconArrowDownCircle/></IconWrapper>Withdraw</Button>
+                </div>
+            </div>
+             <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">GBP</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">NGN</th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {WALLET_TRANSACTIONS_DATA.map((t, i) => (
+                        <tr key={i}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{t.date}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{t.description}</td>
+                            <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${t.type === 'Credit' ? 'text-green-600' : 'text-red-600'}`}>{t.gbp}</td>
+                            <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${t.type === 'Credit' ? 'text-green-600' : 'text-red-600'}`}>{t.ngn}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+)};
+
+const ClientDashboardAddressesView: React.FC<{onAddAddress: () => void}> = ({ onAddAddress }) => (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-semibold text-gray-800">Address Book</h3>
+            <Button primary onClick={onAddAddress}><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconPlus/></IconWrapper>Add New Address</Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {CLIENT_ADDRESSES_DATA.map(addr => (
+                <div key={addr.id} className="p-4 border rounded-lg relative">
+                    <div className="absolute top-2 right-2 flex gap-2">
+                        {addr.isDefaultShipping && <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Shipping</span>}
+                        {addr.isDefaultBilling && <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Billing</span>}
+                    </div>
+                    <p className="font-bold text-gray-800">{addr.label}</p>
+                    <p className="text-sm text-gray-600">{addr.name}</p>
+                    <p className="text-sm text-gray-600">{addr.street}</p>
+                    <p className="text-sm text-gray-600">{addr.country}</p>
+                    <p className="text-sm text-gray-600">{addr.phone}</p>
+                    <div className="mt-4 pt-4 border-t flex gap-2 text-sm">
+                        <button className="text-[#00529b] hover:underline font-medium">Edit</button>
+                        <button className="text-red-600 hover:underline font-medium">Delete</button>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+);
+
+const ClientDashboardAccountView: React.FC<{accountType: 'individual' | 'business'}> = ({accountType}) => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Profile Information</h3>
+            <form className="space-y-4">
+                {accountType === 'business' ? (
+                     <>
+                        <FormInput name="companyName" label="Company Name" value="NijaBiz Connect" onChange={() => {}} />
+                        <FormInput name="contactName" label="Contact Name" value="Bola Adeyemi" onChange={() => {}} />
+                     </>
+                ) : (
+                    <FormInput name="fullName" label="Full Name" value="Chioma Okoro" onChange={() => {}} />
+                )}
+                 <FormInput name="email" label="Email Address" type="email" value="bola@nijabiz.com" onChange={() => {}} />
+                 <FormInput name="phone" label="Phone Number" type="tel" value="+234 801 234 5678" onChange={() => {}} />
+                 <div className="pt-2"><Button primary>Save Changes</Button></div>
+            </form>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+             <h3 className="text-lg font-semibold text-gray-800 mb-4">Security</h3>
+             <form className="space-y-4">
+                <FormInput name="currentPassword" label="Current Password" type="password" value="" onChange={() => {}} />
+                <FormInput name="newPassword" label="New Password" type="password" value="" onChange={() => {}} />
+                 <div className="pt-2"><Button secondary>Change Password</Button></div>
+             </form>
+        </div>
+    </div>
+);
+
+// --- START: BUSINESS-ONLY DASHBOARD VIEWS ---
+
+const ClientDashboardTeamView: React.FC<{onInviteMember: () => void}> = ({ onInviteMember }) => (
+    <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Team Management</h3>
+            <Button primary onClick={onInviteMember}><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconUserPlus/></IconWrapper>Invite Member</Button>
+        </div>
+        <div className="overflow-x-auto">
+             <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {CLIENT_TEAM_MEMBERS_DATA.map(user => (
+                        <tr key={user.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{user.name} <span className="block text-gray-500">{user.email}</span></td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{user.role}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{user.status}</td>
+                             <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                <button className="text-[#00529b] hover:underline">Edit</button>
+                                {user.status === 'Pending' && <button className="text-green-600 hover:underline">Resend Invite</button>}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+const ClientDashboardReportsView: React.FC = () => (
+    <div className="space-y-8">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Reports & Analytics</h3>
+        </div>
+    </div>
+);
+const ClientDashboardApiView: React.FC = () => (
+    <div className="space-y-8">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+             <h3 className="text-lg font-semibold text-gray-800 mb-4">API & Webhooks</h3>
+        </div>
+    </div>
+);
+const ClientDashboardSupportView: React.FC<{onNewTicket: () => void}> = ({onNewTicket}) => (
+     <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Support Tickets</h3>
+            <Button primary onClick={onNewTicket}><IconWrapper className="w-4 h-4 inline-block mr-2 -mt-1"><IconPlus/></IconWrapper>New Ticket</Button>
+        </div>
+         <div className="overflow-x-auto">
+             <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket ID</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                    </tr>
+                </thead>
+                 <tbody className="bg-white divide-y divide-gray-200">
+                    {SUPPORT_TICKETS_DATA.map(t => (
+                        <tr key={t.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#00529b]">{t.id}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{t.subject}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{t.status}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">{t.lastUpdated}</td>
+                        </tr>
+                    ))}
+                 </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+
+// --- START: CLIENT DASHBOARD PAGE ---
+
 export const ClientDashboardPage: React.FC = () => {
     const location = useLocation();
     const [activeView, setActiveView] = useState('overview');
@@ -988,20 +1510,18 @@ export const ClientDashboardPage: React.FC = () => {
     };
 
     const renderView = () => {
-        // Dummy components for brevity
-        const PlaceholderView: React.FC<{title: string}> = ({title}) => <div className="bg-white p-6 rounded-lg shadow-sm">This is the {title} view.</div>;
-        
         switch (activeView) {
             case 'overview': return <ClientDashboardOverviewView accountType={accountType} isEmpty={isEmpty} onCreateShipment={() => setActiveView('shipments')} onNewPreAlert={() => setActiveView('pre-alerts')} onTopUp={() => setActiveView('wallet')} onNewTicket={() => setActiveView('support')} />;
             case 'shipments': return <ClientDashboardShipmentsView isEmpty={isEmpty} onCreateShipment={() => alert('New Shipment form would open.')} />;
-            case 'pre-alerts': return <PlaceholderView title="Pre-Alerts" />;
-            case 'invoices': return <PlaceholderView title="Invoices" />;
-            case 'wallet': return <PlaceholderView title="Wallet" />;
-            case 'addresses': return <PlaceholderView title="Address Book" />;
-            case 'support': return <PlaceholderView title="Support" />;
-            case 'team': return isBusiness ? <PlaceholderView title="Team Management" /> : null;
-            case 'reports': return isBusiness ? <PlaceholderView title="Reports" /> : null;
-            case 'api': return isBusiness ? <PlaceholderView title="API & Webhooks" /> : null;
+            case 'pre-alerts': return <ClientDashboardPreAlertsView isEmpty={isEmpty} onNewPreAlert={() => alert('New Pre-Alert form would open.')} />;
+            case 'invoices': return <ClientDashboardInvoicesView isEmpty={isEmpty} />;
+            case 'wallet': return <ClientDashboardWalletView isEmpty={isEmpty} onTopUp={() => alert('Top up modal would open.')} onWithdraw={() => alert('Withdrawal form would open.')}/>;
+            case 'addresses': return <ClientDashboardAddressesView onAddAddress={() => alert('Add address form would open.')} />;
+            case 'account': return <ClientDashboardAccountView accountType={accountType} />;
+            case 'team': return isBusiness ? <ClientDashboardTeamView onInviteMember={() => alert('Invite member modal would open.')} /> : null;
+            case 'reports': return isBusiness ? <ClientDashboardReportsView /> : null;
+            case 'api': return isBusiness ? <ClientDashboardApiView /> : null;
+            case 'support': return <ClientDashboardSupportView onNewTicket={() => alert('New support ticket form would open.')} />;
             default: return <ClientDashboardOverviewView accountType={accountType} isEmpty={isEmpty} onCreateShipment={() => setActiveView('shipments')} onNewPreAlert={() => setActiveView('pre-alerts')} onTopUp={() => setActiveView('wallet')} onNewTicket={() => setActiveView('support')} />;
         }
     };
@@ -1042,7 +1562,7 @@ export const ClientDashboardPage: React.FC = () => {
                             <IconWrapper className="w-6 h-6"><IconBell/></IconWrapper>
                             <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
                         </button>
-                        <button onClick={() => alert('Navigate to account page')} className="flex items-center gap-2">
+                        <button onClick={() => handleNavigation('account')} className="flex items-center gap-2">
                              <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" className="h-8 w-8 rounded-full"/>
                              <span className="hidden sm:inline text-sm font-medium">{isBusiness ? 'Bola Adeyemi' : 'Chioma Okoro'}</span>
                         </button>
@@ -1059,7 +1579,6 @@ export const ClientDashboardPage: React.FC = () => {
 };
 
 // --- START: ADMIN DASHBOARD VIEWS & PAGE ---
-
 const AdminStatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; change?: string; }> = ({ title, value, icon, change }) => (
     <div className="bg-white p-5 rounded-lg shadow-sm">
         <div className="flex items-center">
@@ -1075,12 +1594,13 @@ const AdminStatCard: React.FC<{ title: string; value: string | number; icon: Rea
     </div>
 );
 
+// FIX: Destructure `onViewAll` from props to make it available within the component scope.
 const AdminDashboardOverviewView: React.FC<{ onViewAll: (view: string) => void }> = ({ onViewAll }) => {
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <AdminStatCard title="Total Revenue" value={`£${ADMIN_ANALYTICS_DATA.totalRevenue.toLocaleString()}`} icon={<IconGraphUpArrow />} change="+5.2%" />
-                <AdminStatCard title="Total Shipments" value={ALL_SHIPMENTS_MOCK_DATA.length} icon={<IconBoxSeam />} change="+12 shipments" />
+                <AdminStatCard title="Total Shipments" value={ADMIN_SHIPMENTS_DATA.length} icon={<IconBoxSeam />} change="+12 shipments" />
                 <AdminStatCard title="New Clients" value={ADMIN_ANALYTICS_DATA.newClients} icon={<IconUserPlus />} change="+3" />
                 <AdminStatCard title="Pending Issues" value={ADMIN_ANALYTICS_DATA.pendingIssues} icon={<IconBellFill />} />
             </div>
@@ -1095,7 +1615,7 @@ const AdminDashboardOverviewView: React.FC<{ onViewAll: (view: string) => void }
                             <th className="text-left text-sm font-medium text-gray-500 pb-2">Status</th>
                         </tr></thead>
                         <tbody>
-                            {ALL_SHIPMENTS_MOCK_DATA.slice(0, 5).map(s => (
+                            {ADMIN_SHIPMENTS_DATA.slice(0, 5).map(s => (
                                 <tr key={s.id} className="border-b border-gray-100"><td className="py-3 text-sm">{s.id}</td><td className="py-3 text-sm">{s.clientId}</td><td className="py-3 text-sm">{s.status}</td></tr>
                             ))}
                         </tbody>
@@ -1119,546 +1639,9 @@ const AdminDashboardOverviewView: React.FC<{ onViewAll: (view: string) => void }
     );
 };
 
-const AdminDashboardShipmentsView: React.FC = () => {
-    const [shipments, setShipments] = useState(ALL_SHIPMENTS_MOCK_DATA);
-    const [selectedShipment, setSelectedShipment] = useState<TrackingData | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    
-    const handleViewDetails = (shipment: TrackingData) => {
-        setSelectedShipment(shipment);
-        setIsModalOpen(true);
-    };
+// ... other Admin view components will go here
 
-    const handleUpdateMilestone = (shipmentId: string, newMilestone: Milestone) => {
-        setShipments(prevShipments => prevShipments.map(s => 
-            s.id === shipmentId ? { ...s, milestones: [newMilestone, ...s.milestones], status: newMilestone.status, badge: "bg-[#17a2b8] text-white" } : s
-        ));
-        setSelectedShipment(prev => prev ? { ...prev, milestones: [newMilestone, ...prev.milestones], status: newMilestone.status, badge: "bg-[#17a2b8] text-white" } : null);
-    };
-    
-    const MilestoneEditor: React.FC<{ shipment: TrackingData, onUpdate: (shipmentId: string, milestone: Milestone) => void }> = ({ shipment, onUpdate }) => {
-        const [status, setStatus] = useState('');
-        const [location, setLocation] = useState('');
-        const [notes, setNotes] = useState('');
-
-        const handleAdd = () => {
-            if (!status || !location) return;
-            onUpdate(shipment.id, { date: Date.now(), status, location, notes });
-            setStatus(''); setLocation(''); setNotes('');
-        };
-        
-        return (
-            <div className="mt-6 border-t pt-4">
-                <h4 className="font-semibold text-gray-800 mb-2">Add New Milestone</h4>
-                <div className="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="Status" value={status} onChange={e => setStatus(e.target.value)} className="p-2 border rounded-md" />
-                    <input type="text" placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} className="p-2 border rounded-md" />
-                    <textarea placeholder="Internal Notes (Optional)" value={notes} onChange={e => setNotes(e.target.value)} className="col-span-2 p-2 border rounded-md" rows={2}></textarea>
-                </div>
-                <AdminButton primary onClick={handleAdd} className="mt-2">Add Milestone</AdminButton>
-            </div>
-        );
-    };
-    
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Manage Shipments</h3>
-            <Table 
-                headers={[ {key: 'id', label: 'ID'}, {key: 'client', label: 'Client'}, {key: 'origin', label: 'Origin'}, {key: 'destination', label: 'Destination'}, {key: 'status', label: 'Status'}, {key: 'actions', label: 'Actions'} ]}
-                data={shipments}
-                renderRow={(s: TrackingData) => (
-                    <tr key={s.id}>
-                        <td className="py-3 px-4 text-sm font-medium text-[#00529b]">{s.id}</td>
-                        <td className="py-3 px-4 text-sm">{s.clientId}</td>
-                        <td className="py-3 px-4 text-sm">{s.origin}</td>
-                        <td className="py-3 px-4 text-sm">{s.destination}</td>
-                        <td className="py-3 px-4 text-sm"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${s.badge}`}>{s.status}</span></td>
-                        <td className="py-3 px-4 text-sm"><AdminButton onClick={() => handleViewDetails(s)}>Manage</AdminButton></td>
-                    </tr>
-                )}
-            />
-            
-            {selectedShipment && (
-                <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`Manage Shipment: ${selectedShipment.id}`}>
-                   <h4 className="font-semibold text-gray-800 mb-2">Current Milestones</h4>
-                   <ul className="space-y-2 max-h-60 overflow-y-auto">
-                       {selectedShipment.milestones.map((m, i) => (
-                           <li key={i} className="text-sm pb-2 border-b last:border-0">
-                               <p className="font-medium">{new Date(m.date).toLocaleString()} - {m.status}</p>
-                               <p className="text-gray-600">{m.location}</p>
-                               {m.notes && <p className="text-xs text-blue-600">Note: {m.notes}</p>}
-                           </li>
-                       ))}
-                   </ul>
-                   <MilestoneEditor shipment={selectedShipment} onUpdate={handleUpdateMilestone} />
-                </Modal>
-            )}
-        </div>
-    );
-};
-
-const AdminDashboardClientsView: React.FC = () => {
-    const [selectedClient, setSelectedClient] = useState<User | null>(null);
-    
-    return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-            <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm h-full overflow-y-auto">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">All Clients</h3>
-                <ul className="space-y-2">
-                    {ALL_USERS_DATA.filter(u => u.accountType === 'Client').map(client => (
-                        <li key={client.id} onClick={() => setSelectedClient(client)} className={`p-3 rounded-lg cursor-pointer ${selectedClient?.id === client.id ? 'bg-[#00529b] text-white' : 'bg-slate-50 hover:bg-slate-100'}`}>
-                            <p className="font-bold">{client.name}</p>
-                            <p className="text-sm">{client.email}</p>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm h-full overflow-y-auto">
-                {selectedClient ? (
-                    <div>
-                        <h3 className="text-xl font-bold text-gray-800">{selectedClient.name}</h3>
-                        <p className="text-gray-500">{selectedClient.email}</p>
-                        <div className="mt-6">
-                            <h4 className="font-semibold text-gray-700 mb-2">Recent Shipments</h4>
-                            <ul className="text-sm space-y-1">
-                                {ALL_SHIPMENTS_MOCK_DATA.filter(s => s.clientId === selectedClient.id).slice(0, 3).map(s => (
-                                    <li key={s.id} className="flex justify-between p-2 bg-slate-50 rounded-md"><span>{s.id}</span> <span>{s.status}</span></li>
-                                ))}
-                            </ul>
-                             <h4 className="font-semibold text-gray-700 mt-4 mb-2">Recent Support Tickets</h4>
-                             <ul className="text-sm space-y-1">
-                                {SUPPORT_TICKETS_DATA.filter(t => t.clientId === selectedClient.id).map(t => (
-                                    <li key={t.id} className="flex justify-between p-2 bg-slate-50 rounded-md"><span>{t.subject}</span> <span>{t.status}</span></li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-center h-full text-slate-500">Select a client to view their 360° profile.</div>
-                )}
-            </div>
-        </div>
-    );
-};
-
-const AdminDashboardSupportView: React.FC = () => {
-    const [tickets, setTickets] = useState(SUPPORT_TICKETS_DATA);
-    const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
-
-    const handleReply = (ticketId: string, replyText: string) => {
-        if(!replyText) return;
-        const newReply = { sender: 'Support' as 'Support', text: replyText, timestamp: new Date().toLocaleString() };
-        
-        const updateState = (items: SupportTicket[]) => items.map(t => 
-            t.id === ticketId ? { ...t, messages: [...t.messages, newReply], status: 'Pending' as 'Pending' } : t
-        );
-
-        setTickets(updateState);
-        setSelectedTicket(prev => prev ? updateState([prev])[0] : null);
-        (document.getElementById('reply') as HTMLTextAreaElement).value = '';
-    };
-
-    return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-            <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm h-full overflow-y-auto">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Support Queue</h3>
-                <ul className="space-y-2">
-                    {tickets.map(ticket => (
-                        <li key={ticket.id} onClick={() => setSelectedTicket(ticket)} className={`p-3 rounded-lg cursor-pointer ${selectedTicket?.id === ticket.id ? 'bg-[#00529b] text-white' : 'bg-slate-50 hover:bg-slate-100'}`}>
-                            <p className="font-bold">{ticket.subject}</p>
-                            <p className="text-sm">{ticket.clientName} - {ticket.id}</p>
-                            <p className="text-xs mt-1">{ticket.status}</p>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm h-full flex flex-col">
-                {selectedTicket ? (
-                    <>
-                        <div className="border-b pb-4 mb-4">
-                            <h3 className="text-xl font-bold text-gray-800">{selectedTicket.subject}</h3>
-                            <p className="text-sm text-gray-500">From: {selectedTicket.clientName} | Status: {selectedTicket.status}</p>
-                        </div>
-                        <div className="flex-1 space-y-4 overflow-y-auto pr-2 mb-4">
-                            {selectedTicket.messages.map((msg, i) => (
-                                <div key={i} className={`p-3 rounded-lg ${msg.sender === 'Client' ? 'bg-slate-100' : 'bg-blue-100'}`}>
-                                    <p className="text-sm">{msg.text}</p>
-                                    <p className="text-xs text-gray-500 text-right mt-1">{msg.timestamp}</p>
-                                </div>
-                            ))}
-                        </div>
-                        <div>
-                            <textarea id="reply" rows={4} className="w-full p-2 border rounded-md" placeholder="Type your reply..."></textarea>
-                            <AdminButton primary className="mt-2" onClick={() => handleReply(selectedTicket.id, (document.getElementById('reply') as HTMLTextAreaElement).value)}>Send Reply</AdminButton>
-                        </div>
-                    </>
-                ) : (
-                    <div className="flex items-center justify-center h-full text-slate-500">Select a ticket to view and reply.</div>
-                )}
-            </div>
-        </div>
-    );
-};
-
-const AdminDashboardReportsView: React.FC = () => {
-    return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold text-gray-800">Reports & Analytics</h3>
-                <AdminButton primary><IconWrapper className="w-4 h-4 inline-block -mt-1 mr-2"><IconFileEarmarkSpreadsheet/></IconWrapper>Download CSV</AdminButton>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                 <DashboardCard title="Total Revenue" value={`£${ADMIN_ANALYTICS_DATA.totalRevenue.toLocaleString()}`} icon={<IconGraphUpArrow />} footer="+5.2% this month" />
-                 <DashboardCard title="Shipments this Month" value={28} icon={<IconBoxSeam />} footer="+12% this month" />
-                 <DashboardCard title="Avg. Delivery Time" value={"4.2 Days"} icon={<IconClock />} footer="-0.5 days this month" />
-                 <DashboardCard title="Client Growth" value={12} icon={<IconUserPlus />} footer="+3 new clients" />
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h4 className="font-semibold text-gray-800 mb-4">Revenue by Service</h4>
-                <div className="h-64 bg-gray-100 flex items-center justify-center rounded-md">
-                    <p className="text-gray-500">Chart Placeholder</p>
-                </div>
-            </div>
-        </div>
-    )
-};
-
-const AdminDashboardSettingsView: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('financials');
-    const [gatewaySettings, setGatewaySettings] = useState<PaymentGatewaySettings>(MOCK_PAYMENT_GATEWAY_SETTINGS);
-    const [shippingRates, setShippingRates] = useState<ShippingRate[]>(ADMIN_SHIPPING_RATES_DATA);
-
-    const handleGatewayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        const [gateway, key] = name.split('.');
-        setGatewaySettings(prev => ({ ...prev, [gateway]: { ...prev[gateway as keyof PaymentGatewaySettings], [key]: value } }));
-    };
-
-    const handleSaveGateways = () => {
-        alert('Payment gateway settings saved!');
-        console.log(gatewaySettings);
-    };
-    
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="border-b mb-6">
-                <nav className="flex space-x-4">
-                    <button onClick={() => setActiveTab('financials')} className={`py-2 px-4 font-medium text-sm ${activeTab === 'financials' ? 'border-b-2 border-[#00529b] text-[#00529b]' : 'text-gray-500'}`}>Financial</button>
-                    <button onClick={() => setActiveTab('shippingRates')} className={`py-2 px-4 font-medium text-sm ${activeTab === 'shippingRates' ? 'border-b-2 border-[#00529b] text-[#00529b]' : 'text-gray-500'}`}>Shipping Rates</button>
-                </nav>
-            </div>
-
-            {activeTab === 'financials' && (
-                <div className="max-w-2xl">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Gateway Configuration</h3>
-                     <div className="space-y-6">
-                        <div className="p-4 border rounded-md">
-                            <h4 className="font-semibold text-gray-700 mb-2">Stripe</h4>
-                            <div className="space-y-2">
-                                <FormInput name="stripe.publicKey" label="Public Key" value={gatewaySettings.stripe.publicKey} onChange={handleGatewayChange} />
-                                <FormInput name="stripe.secretKey" label="Secret Key" type="password" value={gatewaySettings.stripe.secretKey} onChange={handleGatewayChange} />
-                            </div>
-                        </div>
-                         <div className="p-4 border rounded-md">
-                            <h4 className="font-semibold text-gray-700 mb-2">Paystack</h4>
-                            <div className="space-y-2">
-                                <FormInput name="paystack.publicKey" label="Public Key" value={gatewaySettings.paystack.publicKey} onChange={handleGatewayChange} />
-                                <FormInput name="paystack.secretKey" label="Secret Key" type="password" value={gatewaySettings.paystack.secretKey} onChange={handleGatewayChange} />
-                            </div>
-                        </div>
-                         <div className="p-4 border rounded-md">
-                            <h4 className="font-semibold text-gray-700 mb-2">PayPal</h4>
-                            <div className="space-y-2">
-                                <FormInput name="paypal.clientId" label="Client ID" value={gatewaySettings.paypal.clientId} onChange={handleGatewayChange} />
-                            </div>
-                        </div>
-                        <AdminButton primary onClick={handleSaveGateways}>Save Financial Settings</AdminButton>
-                    </div>
-                </div>
-            )}
-            
-            {activeTab === 'shippingRates' && (
-                 <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Manage Shipping Rates</h3>
-                    <Table
-                        headers={[ {key: 'serviceName', label: 'Service'}, {key: 'route', label: 'Route'}, {key: 'basePrice', label: 'Base Price'}, {key: 'pricePerKg', label: 'Price/kg'}, {key: 'actions', label: 'Actions'} ]}
-                        data={shippingRates}
-                        renderRow={(rate: ShippingRate) => (
-                             <tr key={rate.id}>
-                                <td className="py-3 px-4 text-sm font-medium">{rate.serviceName}</td>
-                                <td className="py-3 px-4 text-sm">{rate.origin} → {rate.destination}</td>
-                                <td className="py-3 px-4 text-sm">£{rate.basePrice.toFixed(2)}</td>
-                                <td className="py-3 px-4 text-sm">£{rate.pricePerKg.toFixed(2)}</td>
-                                <td className="py-3 px-4 text-sm"><AdminButton>Edit</AdminButton></td>
-                             </tr>
-                        )}
-                    />
-                </div>
-            )}
-        </div>
-    );
-};
-
-const AdminDashboardContentView: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('hero');
-    const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(HERO_SLIDES);
-    const [faqs, setFaqs] = useState<FaqItemData[]>(FAQ_DATA);
-    const [services, setServices] = useState<Service[]>(ALL_SERVICES);
-    const [pageContent, setPageContent] = useState(MANAGEABLE_PAGES_CONTENT);
-    const [siteConfig, setSiteConfig] = useState<SiteConfig>(SITE_CONFIG);
-    
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState<HeroSlide | FaqItemData | Service | null>(null);
-    const [modalType, setModalType] = useState<'hero' | 'faq' | 'service' | null>(null);
-    
-    const [editingPage, setEditingPage] = useState<keyof typeof MANAGEABLE_PAGES_CONTENT>('about');
-
-    const openModal = (item: HeroSlide | FaqItemData | Service | null, type: 'hero' | 'faq' | 'service') => {
-        setEditingItem(item ? JSON.parse(JSON.stringify(item)) : null); // Deep copy to avoid state mutation issues
-        setModalType(type);
-        setIsModalOpen(true);
-    };
-
-    const handleSave = () => {
-        if (!editingItem) return;
-
-        if (modalType === 'hero') {
-            const slide = editingItem as HeroSlide;
-            setHeroSlides(prev => slide.id ? prev.map(s => s.id === slide.id ? slide : s) : [...prev, { ...slide, id: Date.now() }]);
-        } else if (modalType === 'faq') {
-            const faq = editingItem as FaqItemData;
-            setFaqs(prev => faq.id ? prev.map(f => f.id === faq.id ? faq : f) : [...prev, { ...faq, id: Date.now(), answer: faq.answer.toString() }]);
-        } else if (modalType === 'service') {
-            const service = editingItem as Service;
-            setServices(prev => service.title ? prev.map(s => s.title === service.title ? service : s) : [...prev, service]);
-        }
-        setIsModalOpen(false);
-    };
-    
-    const handleDelete = (id: number | string, type: 'hero' | 'faq' | 'service') => {
-        if (!window.confirm('Are you sure you want to delete this item?')) return;
-        if (type === 'hero') setHeroSlides(prev => prev.filter(s => s.id !== id));
-        else if (type === 'faq') setFaqs(prev => prev.filter(f => f.id !== id));
-        else if (type === 'service') setServices(prev => prev.filter(s => s.title !== id));
-    };
-
-    const moveFaq = (id: number, direction: 'up' | 'down') => {
-        setFaqs(currentFaqs => {
-            const faqsCopy = [...currentFaqs];
-            const index = faqsCopy.findIndex(f => f.id === id);
-            if (index === -1) return faqsCopy;
-            const newIndex = direction === 'up' ? index - 1 : index + 1;
-            if (newIndex < 0 || newIndex >= faqsCopy.length) return faqsCopy;
-            [faqsCopy[index], faqsCopy[newIndex]] = [faqsCopy[newIndex], faqsCopy[index]]; // Swap
-            return faqsCopy;
-        });
-    };
-
-    const handleSiteConfigChange = (field: keyof SiteConfig, value: string) => {
-        setSiteConfig(prev => ({ ...prev, [field]: value }));
-    };
-
-    const handleNestedSiteConfigChange = (section: 'contact' | 'social', field: string, value: string) => {
-        setSiteConfig(prev => ({
-            ...prev,
-            [section]: {
-                ...prev[section],
-                [field]: value
-            }
-        }));
-    };
-    
-    // --- Hero Slide Button Handlers ---
-    const handleButtonChange = (index: number, field: string, value: string | boolean) => {
-        if (editingItem && modalType === 'hero') {
-            const slide = editingItem as HeroSlide;
-            const updatedButtons = [...slide.buttons];
-            updatedButtons[index] = { ...updatedButtons[index], [field]: value };
-            setEditingItem({ ...slide, buttons: updatedButtons });
-        }
-    };
-    const addButton = () => {
-        if (editingItem && modalType === 'hero') {
-            const newButton = { text: 'New Button', href: '/', primary: false };
-            setEditingItem({ ...editingItem, buttons: [...(editingItem as HeroSlide).buttons, newButton] });
-        }
-    };
-    const removeButton = (index: number) => {
-        if (editingItem && modalType === 'hero') {
-            const updatedButtons = (editingItem as HeroSlide).buttons.filter((_, i) => i !== index);
-            setEditingItem({ ...editingItem, buttons: updatedButtons });
-        }
-    };
-    
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="border-b mb-6">
-                <nav className="flex space-x-2 sm:space-x-4 overflow-x-auto pb-2">
-                    {['hero', 'services', 'pages', 'faq', 'siteInfo'].map(tab => (
-                         <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-3 sm:px-4 font-medium text-sm whitespace-nowrap ${activeTab === tab ? 'border-b-2 border-[#00529b] text-[#00529b]' : 'text-gray-500'}`}>
-                            {tab.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                         </button>
-                    ))}
-                </nav>
-            </div>
-
-            {activeTab === 'hero' && (
-                <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">Manage Hero Slides</h3>
-                        <AdminButton primary onClick={() => openModal({ id: 0, headline: '', tagline: '', image: '', buttons: [] }, 'hero')}>Add New Slide</AdminButton>
-                    </div>
-                    <Table headers={[{key: 'headline', label: 'Headline'}, {key: 'actions', label: 'Actions'}]} data={heroSlides}
-                        renderRow={(slide: HeroSlide) => (
-                            <tr key={slide.id}>
-                                <td className="py-3 px-4 text-sm font-medium">{slide.headline}</td>
-                                <td className="py-3 px-4 text-sm space-x-2"><AdminButton onClick={() => openModal(slide, 'hero')}>Edit</AdminButton><AdminButton danger onClick={() => handleDelete(slide.id, 'hero')}>Delete</AdminButton></td>
-                            </tr>
-                        )}
-                    />
-                </div>
-            )}
-
-            {activeTab === 'services' && (
-                 <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">Manage Services</h3>
-                        <AdminButton primary onClick={() => openModal({ title: '', description: '', icon: '', link: '' }, 'service')}>Add New Service</AdminButton>
-                    </div>
-                     <Table headers={[{key: 'title', label: 'Title'}, {key: 'icon', label: 'Icon'}, {key: 'actions', label: 'Actions'}]} data={services}
-                        renderRow={(service: Service) => (
-                            <tr key={service.title}>
-                                <td className="py-3 px-4 text-sm font-medium">{service.title}</td>
-                                <td className="py-3 px-4 text-sm">{service.icon}</td>
-                                <td className="py-3 px-4 text-sm space-x-2"><AdminButton onClick={() => openModal(service, 'service')}>Edit</AdminButton><AdminButton danger onClick={() => handleDelete(service.title, 'service')}>Delete</AdminButton></td>
-                            </tr>
-                        )}
-                    />
-                </div>
-            )}
-            
-            {activeTab === 'faq' && (
-                 <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">Manage FAQs</h3>
-                        <AdminButton primary onClick={() => openModal({ id: 0, question: '', answer: '' }, 'faq')}>Add New FAQ</AdminButton>
-                    </div>
-                    <Table headers={[{key: 'question', label: 'Question'}, {key: 'actions', label: 'Actions'}]} data={faqs}
-                        renderRow={(faq: FaqItemData, index: number) => (
-                            <tr key={faq.id}>
-                                <td className="py-3 px-4 text-sm font-medium">{faq.question}</td>
-                                <td className="py-3 px-4 text-sm space-x-2">
-                                    <AdminButton onClick={() => moveFaq(faq.id, 'up')} disabled={index === 0}>↑</AdminButton>
-                                    <AdminButton onClick={() => moveFaq(faq.id, 'down')} disabled={index === faqs.length - 1}>↓</AdminButton>
-                                    <AdminButton onClick={() => openModal(faq, 'faq')}>Edit</AdminButton>
-                                    <AdminButton danger onClick={() => handleDelete(faq.id, 'faq')}>Delete</AdminButton>
-                                </td>
-                            </tr>
-                        )}
-                    />
-                </div>
-            )}
-            
-            {activeTab === 'pages' && (
-                 <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Edit Page Content</h3>
-                    <div className="mb-4">
-                        <label htmlFor="page-select" className="sr-only">Select page</label>
-                        <select id="page-select" value={editingPage} onChange={(e) => setEditingPage(e.target.value as any)} className="p-2 border rounded-md">
-                            <option value="about">About Us</option><option value="privacy">Privacy Policy</option><option value="terms">Terms & Conditions</option>
-                        </select>
-                    </div>
-                     <div className="p-4 border rounded-md space-y-4">
-                        <FormInput name="title" label="Title" value={pageContent[editingPage].title} onChange={(e) => setPageContent(p => ({...p, [editingPage]: {...p[editingPage], title: e.target.value}}))} />
-                        <FormInput name="subtitle" label="Subtitle" value={pageContent[editingPage].subtitle} onChange={(e) => setPageContent(p => ({...p, [editingPage]: {...p[editingPage], subtitle: e.target.value}}))} />
-                        <FormTextarea name="rawContent" label="Content (HTML enabled)" rows={10} value={pageContent[editingPage].rawContent || ''} onChange={(e) => setPageContent(p => ({...p, [editingPage]: {...p[editingPage], rawContent: e.target.value}}))} />
-                         <AdminButton primary onClick={() => alert('Page Content Saved!')}>Save {pageContent[editingPage].title}</AdminButton>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'siteInfo' && (
-                <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Manage Site Information</h3>
-                    <div className="space-y-6 max-w-3xl">
-                        <fieldset className="p-4 border rounded-md space-y-4">
-                            <legend className="font-semibold px-2">General</legend>
-                            <FormInput label="Brand Name" value={siteConfig.brandName} onChange={e => handleSiteConfigChange('brandName', e.target.value)} />
-                            <FormInput label="Tagline" value={siteConfig.tagline} onChange={e => handleSiteConfigChange('tagline', e.target.value)} />
-                            <FormInput label="Logo URL" value={siteConfig.logoUrl} onChange={e => handleSiteConfigChange('logoUrl', e.target.value)} />
-                        </fieldset>
-                        <fieldset className="p-4 border rounded-md space-y-4">
-                            <legend className="font-semibold px-2">Contact Details</legend>
-                            <FormInput label="Email" value={siteConfig.contact.email} onChange={e => handleNestedSiteConfigChange('contact', 'email', e.target.value)} />
-                            <FormInput label="Phone (UK)" value={siteConfig.contact.phoneUK} onChange={e => handleNestedSiteConfigChange('contact', 'phoneUK', e.target.value)} />
-                            <FormInput label="Phone (NG)" value={siteConfig.contact.phoneNG} onChange={e => handleNestedSiteConfigChange('contact', 'phoneNG', e.target.value)} />
-                            <FormTextarea label="Address (UK)" value={siteConfig.contact.addressUK} onChange={e => handleNestedSiteConfigChange('contact', 'addressUK', e.target.value)} />
-                            <FormTextarea label="Address (NG)" value={siteConfig.contact.addressNG} onChange={e => handleNestedSiteConfigChange('contact', 'addressNG', e.target.value)} />
-                            <FormInput label="WhatsApp Number" value={siteConfig.contact.whatsapp} onChange={e => handleNestedSiteConfigChange('contact', 'whatsapp', e.target.value)} />
-                        </fieldset>
-                        <fieldset className="p-4 border rounded-md space-y-4">
-                            <legend className="font-semibold px-2">Social Media</legend>
-                            <FormInput label="Facebook URL" value={siteConfig.social.facebook} onChange={e => handleNestedSiteConfigChange('social', 'facebook', e.target.value)} />
-                            <FormInput label="Twitter/X URL" value={siteConfig.social.twitter} onChange={e => handleNestedSiteConfigChange('social', 'twitter', e.target.value)} />
-                            <FormInput label="Instagram URL" value={siteConfig.social.instagram} onChange={e => handleNestedSiteConfigChange('social', 'instagram', e.target.value)} />
-                            <FormInput label="LinkedIn URL" value={siteConfig.social.linkedin} onChange={e => handleNestedSiteConfigChange('social', 'linkedin', e.target.value)} />
-                        </fieldset>
-                        <AdminButton primary onClick={() => alert('Site Information Saved!')}>Save Site Info</AdminButton>
-                    </div>
-                </div>
-            )}
-            
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`Edit ${modalType}`}>
-                {modalType === 'hero' && editingItem && (
-                     <div className="space-y-4">
-                        <FormInput label="Headline" name="headline" value={(editingItem as HeroSlide).headline} onChange={e => setEditingItem({...editingItem, headline: e.target.value})} />
-                        <FormInput label="Tagline" name="tagline" value={(editingItem as HeroSlide).tagline} onChange={e => setEditingItem({...editingItem, tagline: e.target.value})} />
-                        <FormInput label="Image URL" name="image" value={(editingItem as HeroSlide).image} onChange={e => setEditingItem({...editingItem, image: e.target.value})} />
-                        <div className="border-t pt-4 mt-4">
-                            <h4 className="font-semibold mb-2">Buttons</h4>
-                            {(editingItem as HeroSlide).buttons?.map((btn, index) => (
-                                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 items-end border p-2 rounded-md mb-2">
-                                    <FormInput label="Text" name={`btn-text-${index}`} value={btn.text} onChange={(e) => handleButtonChange(index, 'text', e.target.value)} />
-                                    <FormInput label="Link" name={`btn-href-${index}`} value={btn.href} onChange={(e) => handleButtonChange(index, 'href', e.target.value)} />
-                                    <div className="flex items-center gap-4 pb-2">
-                                        <div className="flex items-center"><input type="checkbox" id={`btn-primary-${index}`} checked={btn.primary} onChange={(e) => handleButtonChange(index, 'primary', e.target.checked)} className="h-4 w-4" /><label htmlFor={`btn-primary-${index}`} className="ml-2 text-sm">Primary</label></div>
-                                        <AdminButton danger onClick={() => removeButton(index)}>X</AdminButton>
-                                    </div>
-                                </div>
-                            ))}
-                            <AdminButton secondary onClick={addButton}>Add Button</AdminButton>
-                        </div>
-                     </div>
-                )}
-                 {modalType === 'faq' && editingItem && (
-                     <div className="space-y-4">
-                        <FormInput label="Question" name="question" value={(editingItem as FaqItemData).question} onChange={e => setEditingItem({...editingItem, question: e.target.value})} />
-                        <FormTextarea label="Answer (can use basic HTML)" name="answer" value={(editingItem as FaqItemData).answer?.toString() || ''} onChange={e => setEditingItem({...editingItem, answer: e.target.value})} />
-                     </div>
-                )}
-                {modalType === 'service' && editingItem && (
-                     <div className="space-y-4">
-                        <FormInput label="Title" name="title" value={(editingItem as Service).title} onChange={e => setEditingItem({...editingItem, title: e.target.value})} />
-                        <FormTextarea label="Description" name="description" value={(editingItem as Service).description} onChange={e => setEditingItem({...editingItem, description: e.target.value})} />
-                        <FormInput label="Link" name="link" value={(editingItem as Service).link} onChange={e => setEditingItem({...editingItem, link: e.target.value})} />
-                        <div>
-                           <label className="block text-sm font-medium text-gray-700">Icon</label>
-                           <select name="icon" value={(editingItem as Service).icon} onChange={e => setEditingItem({...editingItem, icon: e.target.value})} className="mt-1 block w-full p-2 border rounded-md">
-                             {Object.keys(ICON_MAP).map(iconKey => <option key={iconKey} value={iconKey}>{iconKey}</option>)}
-                           </select>
-                        </div>
-                     </div>
-                )}
-                <div className="pt-4 mt-4 border-t flex justify-end">
-                    <AdminButton secondary onClick={() => setIsModalOpen(false)} className="mr-2">Cancel</AdminButton>
-                    <AdminButton primary onClick={handleSave}>Save Changes</AdminButton>
-                </div>
-            </Modal>
-        </div>
-    );
-};
-
-// FIX: Added the main AdminDashboardPage component and export to fix the error in App.tsx.
+// And finally, the main dashboard component...
 export const AdminDashboardPage: React.FC = () => {
     const [activeView, setActiveView] = useState('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -1680,18 +1663,10 @@ export const AdminDashboardPage: React.FC = () => {
     };
 
     const renderView = () => {
-        const PlaceholderView: React.FC<{title: string}> = ({title}) => <div className="bg-white p-6 rounded-lg shadow-sm">This is the {title} view. The component for this view has not been fully implemented.</div>;
-
         switch (activeView) {
-            case 'overview': return <AdminDashboardOverviewView onViewAll={setActiveView} />;
-            case 'shipments': return <AdminDashboardShipmentsView />;
-            case 'clients': return <AdminDashboardClientsView />;
-            case 'support': return <AdminDashboardSupportView />;
-            case 'reports': return <AdminDashboardReportsView />;
-            case 'settings': return <AdminDashboardSettingsView />;
-            case 'content': return <AdminDashboardContentView />;
-            case 'finance': return <PlaceholderView title="Finance"/>;
-            default: return <AdminDashboardOverviewView onViewAll={setActiveView} />;
+            case 'overview':
+            default:
+                return <AdminDashboardOverviewView onViewAll={setActiveView} />;
         }
     };
     

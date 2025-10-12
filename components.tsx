@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { SITE_CONFIG, HEADER_MENU_ITEMS, HERO_SLIDES, ICON_MAP, IconPackage, IconShieldCheck, FOOTER_QUICK_LINKS, FOOTER_LEGAL_LINKS } from './constants';
@@ -51,6 +50,44 @@ export const AdminButton: React.FC<AdminButtonProps> = ({ children, primary, sec
 
     return <button className={appliedClasses} {...props}>{children}</button>;
 };
+
+// --- NEW FORM INPUT COMPONENT ---
+export const FormInput: React.FC<{ name: string, label: string, type?: string, value: string | number, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, error?: string, required?: boolean, placeholder?: string, description?: string }> = ({ name, label, type = 'text', value, onChange, error, required, placeholder, description }) => (
+    <div>
+        <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
+        <input 
+            type={type} 
+            name={name} 
+            id={name} 
+            value={value} 
+            onChange={onChange} 
+            required={required} 
+            placeholder={placeholder} 
+            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm ${error ? 'border-red-500' : 'border-gray-300'}`} 
+        />
+        {description && <p className="mt-1 text-xs text-gray-500">{description}</p>}
+        {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    </div>
+);
+
+// --- NEW FORM TEXTAREA COMPONENT ---
+export const FormTextarea: React.FC<{ name: string, label: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, error?: string, required?: boolean, placeholder?: string, rows?: number, description?: string }> = ({ name, label, value, onChange, error, required, placeholder, rows = 4, description }) => (
+    <div>
+        <label htmlFor={name} className="block text-sm font-medium text-gray-700">{label}</label>
+        <textarea 
+            name={name} 
+            id={name} 
+            value={value} 
+            onChange={onChange} 
+            required={required} 
+            placeholder={placeholder} 
+            rows={rows}
+            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm ${error ? 'border-red-500' : 'border-gray-300'}`} 
+        />
+        {description && <p className="mt-1 text-xs text-gray-500">{description}</p>}
+        {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    </div>
+);
 
 
 // --- HEADER ---
@@ -404,5 +441,57 @@ export const FaqItem: React.FC<{ item: FaqItemData; isOpen: boolean; onClick: ()
                 {item.answer}
             </div>
         </div>
+    </div>
+);
+
+// --- NEW REUSABLE COMPONENTS FOR ADMIN DASHBOARD ---
+
+export const Modal: React.FC<{ isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode; footer?: React.ReactNode; }> = ({ isOpen, onClose, title, children, footer }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4" onClick={onClose}>
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-center p-4 border-b">
+                    <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                <div className="p-6 overflow-y-auto">
+                    {children}
+                </div>
+                {footer && (
+                    <div className="p-4 border-t flex justify-end gap-2">
+                        {footer}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export const Table: React.FC<{ headers: { key: string; label: string; }[]; data: any[]; renderRow: (item: any) => React.ReactNode; }> = ({ headers, data, renderRow }) => (
+    <div className="overflow-x-auto">
+        <table className="min-w-full bg-white">
+            <thead className="bg-slate-50">
+                <tr>
+                    {headers.map((h) => (
+                        <th key={h.key} className="py-3 px-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{h.label}</th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+                {data.length > 0 ? data.map(renderRow) : (
+                    <tr><td colSpan={headers.length} className="py-8 text-center text-slate-500">No data available.</td></tr>
+                )}
+            </tbody>
+        </table>
+    </div>
+);
+
+export const Pagination: React.FC<{ currentPage: number; totalPages: number; onPageChange: (page: number) => void; }> = ({ currentPage, totalPages, onPageChange }) => (
+    <div className="flex justify-between items-center mt-4 text-sm">
+        <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} className="px-3 py-1 border rounded-md disabled:opacity-50">Previous</button>
+        <span>Page {currentPage} of {totalPages}</span>
+        <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-3 py-1 border rounded-md disabled:opacity-50">Next</button>
     </div>
 );

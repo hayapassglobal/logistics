@@ -1,4 +1,3 @@
-// FIX: Add missing import for React to resolve 'Cannot find namespace React' errors.
 import React from 'react';
 
 export interface MenuItem {
@@ -25,6 +24,29 @@ export interface Testimonial {
   company: string;
 }
 
+// --- NEW TYPE FOR SITE CONFIG ---
+export interface SiteConfig {
+  brandName: string;
+  tagline: string;
+  logoUrl: string;
+  contact: {
+    email: string;
+    phoneUK: string;
+    phoneNG: string;
+    addressUK: string;
+    addressNG: string;
+    whatsapp: string;
+  };
+  social: {
+    facebook: string;
+    twitter: string;
+    instagram: string;
+    linkedin: string;
+  };
+  copyright: string;
+}
+
+
 // --- NEW TYPE FOR HERO SLIDER ---
 export interface HeroSlide {
   id: number; // Added for unique keying in CMS
@@ -43,10 +65,12 @@ export interface Milestone {
   date: number;
   status: string;
   location: string;
+  notes?: string; // Added for admin edits
 }
 
 export interface TrackingData {
   id: string; // Add ID to tracking data for better keying
+  clientId?: string;
   status: string;
   badge: string;
   origin: string;
@@ -56,6 +80,7 @@ export interface TrackingData {
 }
 
 export interface FaqItemData {
+  id: number; // Added for unique keying in CMS
   question: string;
   answer: React.ReactNode;
 }
@@ -95,6 +120,7 @@ export interface ShipmentMilestone {
 
 export interface ClientShipment {
   id: string;
+  clientId?: string;
   date: string;
   origin: string;
   destination: string;
@@ -162,7 +188,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
-    role: 'Admin' | 'Member' | 'Finance' | 'Warehouse' | 'Super Admin';
+    role: 'Admin' | 'Member' | 'Finance' | 'Warehouse' | 'Super Admin' | 'Support';
     status: 'Active' | 'Pending' | 'Deactivated';
     accountType: 'Client' | 'Admin';
     company?: string;
@@ -219,13 +245,108 @@ export interface WalletRequest {
 
 export interface SupportTicket {
     id: string;
+    clientId?: string;
+    clientName: string; // Added client name for admin view
     subject: string;
     department: 'General' | 'Billing' | 'Technical';
     status: 'Open' | 'Pending' | 'Resolved';
     lastUpdated: string;
     messages: {
-        sender: 'You' | 'Support';
+        sender: 'Client' | 'Support';
         text: string;
         timestamp: string;
     }[];
+}
+
+// --- NEW TYPES FOR ADMIN DASHBOARD ENHANCEMENTS ---
+export interface AdminRole {
+    id: string;
+    name: 'Super Admin' | 'Admin' | 'Support' | 'Finance';
+    description: string;
+    permissions: string[];
+}
+
+export interface ShippingRate {
+    id: string;
+    serviceName: string;
+    origin: string;
+    destination: string;
+    basePrice: number;
+    pricePerKg: number;
+    estimatedTime: string;
+}
+
+export interface PaymentGatewaySettings {
+    stripe: {
+        publicKey: string;
+        secretKey: string;
+    };
+    paystack: {
+        publicKey: string;
+        secretKey: string;
+    };
+    paypal: {
+        clientId: string;
+    };
+}
+
+// --- NEW TYPES FOR ADMIN NOTIFICATIONS ---
+export interface AdminNotification {
+    id: string;
+    type: 'Customs Delay' | 'Ticket Escalation' | 'Low Wallet Balance';
+    message: string;
+    targetId: string; // ID of the shipment, ticket, user, etc.
+    timestamp: number;
+    isRead: boolean;
+}
+
+export interface AlertConfiguration {
+    customsHold: {
+        enabled: boolean;
+        thresholdHours: number;
+    };
+    ticketEscalation: {
+        enabled: boolean;
+        thresholdHours: number;
+    };
+    lowWallet: {
+        enabled: boolean;
+        thresholdGbp: number;
+    };
+}
+
+// --- NEW TYPES FOR AUTOMATED WORKFLOWS ---
+export interface WorkflowRule {
+    id: string;
+    name: string;
+    description: string;
+    trigger: {
+        type: 'Shipment Status Change' | 'Pre-Alert Arrived';
+        details: {
+            status?: 'Delivered' | 'Customs Hold';
+        };
+    };
+    action: {
+        type: 'Send Email To Client';
+        details: {
+            template: 'Shipment Delivered - Rate Experience' | 'Pre-Alert Received Notification';
+        };
+    };
+    enabled: boolean;
+}
+
+export interface ActivityLog {
+    id: string;
+    timestamp: number;
+    icon: 'email' | 'notification' | 'workflow';
+    message: string;
+}
+
+// --- NEW TYPE FOR PREDICTIVE ANALYTICS ---
+export interface ShipmentDelayForecast {
+  shipmentId: string;
+  clientName: string;
+  riskLevel: 'Medium' | 'High';
+  riskReason: string;
+  suggestedAction: string;
 }
