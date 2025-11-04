@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { Header, Footer } from './components';
 // Correctly import AdminDashboardPage which is now exported from pages.tsx
-import { HomePage, AboutPage, ServicesOverviewPage, ServiceDomesticPage, ServiceInternationalPage, ServiceWarehousingPage, ServiceCustomsPage, ServiceSpecializedPage, ServiceConsultancyPage, TrackingPage, QuoteRequestPage, FaqPage, ContactPage, PrivacyPolicyPage, TermsPage, AdminLoginPage, ClientAuthPage, ClientDashboardPage, RatesCalculatorPage, ServiceUKDomesticPage, PersonalShopperPage, AdminDashboardPage } from './pages';
+import { HomePage, AboutPage, ServicesOverviewPage, ServiceNigeriaDomesticPage, ServiceInternationalPage, ServiceWarehousingPage, ServiceCustomsPage, ServiceSpecializedPage, ServiceConsultancyPage, TrackingPage, QuoteRequestPage, FaqPage, ContactPage, PrivacyPolicyPage, TermsPage, AdminLoginPage, ClientAuthPage, ClientDashboardPage, RatesCalculatorPage, ServiceUKDomesticPage, PersonalShopperPage, AdminDashboardPage } from './pages';
 
 // Helper component to scroll to top on page change
 const ScrollToTop = (): null => {
@@ -36,7 +36,7 @@ const App: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesOverviewPage />} />
-          <Route path="/services/domestic" element={<ServiceDomesticPage />} />
+          <Route path="/services/nigeria-domestic" element={<ServiceNigeriaDomesticPage />} />
           <Route path="/services/uk-domestic" element={<ServiceUKDomesticPage />} />
           <Route path="/services/international" element={<ServiceInternationalPage />} />
           <Route path="/services/warehousing" element={<ServiceWarehousingPage />} />
@@ -55,6 +55,8 @@ const App: React.FC = () => {
         
         {/* Standalone route for the client login/register page */}
         <Route path="/login" element={<ClientAuthPage />} />
+        <Route path="/register" element={<ClientAuthPage />} />
+
         {/* Standalone route for the admin login page */}
         <Route path="/admin-login" element={<AdminLoginPage />} />
         {/* Standalone route for the CLIENT dashboard page */}

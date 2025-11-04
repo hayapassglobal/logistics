@@ -207,14 +207,14 @@ export const HERO_SLIDES: HeroSlide[] = [
 ];
 
 export const CORE_SERVICES: Service[] = [
-  { icon: 'truck', title: "UK & Nigeria Domestic", description: "Swift, secure parcel and freight delivery across the United Kingdom and throughout Nigeria's major cities and regions.", link: "/services/domestic" },
+  { icon: 'truck', title: "UK Domestic Logistics", description: "Dedicated and comprehensive shipping services within the United Kingdom, from single parcels to full truckloads.", link: "/services/uk-domestic" },
+  { icon: 'truck', title: "Nigeria Domestic Logistics", description: "Connecting major cities and regions across Nigeria with secure and efficient freight services.", link: "/services/nigeria-domestic" },
   { icon: 'globe', title: "International Freight", description: "Expert air and sea freight solutions connecting the UK, Nigeria, and global markets with efficiency and competitive rates.", link: "/services/international" },
   { icon: 'warehouse', title: "Warehousing & Fulfilment", description: "Secure storage, inventory management, and order fulfilment services in our modern facilities in the UK and Nigeria.", link: "/services/warehousing" },
   { icon: 'customs', title: "Customs Clearance", description: "Hassle-free customs brokerage for imports and exports, ensuring compliance and timely release of your goods.", link: "/services/customs" },
 ];
 
 export const ALL_SERVICES: Service[] = [
-    { icon: 'truck', title: "UK Domestic Logistics", description: "Dedicated and comprehensive shipping services within the United Kingdom, from single parcels to full truckloads.", link: "/services/uk-domestic" },
     ...CORE_SERVICES,
     { icon: 'person', title: "Personal Shopper", description: "Your personal concierge for sourcing authentic Nigerian food items and goods, delivered directly to your doorstep worldwide.", link: "/personal-shopper" },
     { icon: 'package', title: "Specialized Cargo Handling", description: "From perishable goods to oversized project cargo and hazardous materials, we have the expertise to handle your specialized shipping requirements safely and efficiently.", link: "/services/specialized" },

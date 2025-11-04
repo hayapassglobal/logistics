@@ -1,10 +1,38 @@
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, ContentBlock, FaqItem, Button, AdminButton, Modal, Table, Pagination, FormInput, FormTextarea } from './components';
-import { CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, MANAGEABLE_PAGES_CONTENT, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, LOYALTY_DATA, REFERRAL_DATA, API_TOKENS_DATA, WEBHOOKS_DATA, SUPPORT_TICKETS_DATA, ADMIN_ROLES_DATA, ADMIN_SHIPPING_RATES_DATA, DEFAULT_ALERT_CONFIG, MOCK_WORKFLOW_RULES, INITIAL_ACTIVITY_LOGS, MOCK_SHIPMENT_DELAY_FORECASTS, MOCK_PAYMENT_GATEWAY_SETTINGS, HERO_SLIDES } from './constants';
-// FIX: Added IconClock to the import list to resolve a 'Cannot find name' error.
-import { IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, IconShieldCheck, IconFileText, IconHelpCircle, IconGlobe, IconWarehouse, IconCustoms, IconPackage, IconSend, ICON_MAP, IconPlus, IconKey, IconPlug, IconBellFill, IconRecycle, IconPlayBtn, IconLightningCharge, IconFilter, IconCreditCard, IconClock } from './constants';
+import { 
+    HeroSlider, ServiceCard, FeatureItem, TestimonialCard, TrackingForm, PageHeader, 
+    ContentBlock, FaqItem, Button, AdminButton, Modal, Table, Pagination, FormInput, 
+    FormTextarea, ProgressStepper, PasswordStrengthMeter, EnhancedFileUpload 
+} from './components';
+import { 
+    CORE_SERVICES, WHY_CHOOSE_US_FEATURES, TESTIMONIALS, ALL_SERVICES, FAQ_DATA, SITE_CONFIG, 
+    CLIENT_SHIPMENTS_DATA, CLIENT_SHIPMENT_DETAILS_DATA, CLIENT_PREALERTS_DATA, CLIENT_INVOICES_DATA, 
+    WALLET_TRANSACTIONS_DATA, CLIENT_ADDRESSES_DATA, CLIENT_NOTIFICATIONS_DATA, ALL_SHIPMENTS_MOCK_DATA, 
+    ALL_USERS_DATA, ADMIN_SHIPMENTS_DATA, ADMIN_ANALYTICS_DATA, ADMIN_WALLET_REQUESTS_DATA, 
+    MANAGEABLE_PAGES_CONTENT, CLIENT_TEAM_MEMBERS_DATA, ANALYTICS_DATA, LOYALTY_DATA, REFERRAL_DATA, 
+    API_TOKENS_DATA, WEBHOOKS_DATA, SUPPORT_TICKETS_DATA, ADMIN_ROLES_DATA, ADMIN_SHIPPING_RATES_DATA, 
+    DEFAULT_ALERT_CONFIG, MOCK_WORKFLOW_RULES, INITIAL_ACTIVITY_LOGS, MOCK_SHIPMENT_DELAY_FORECASTS, 
+    MOCK_PAYMENT_GATEWAY_SETTINGS, HERO_SLIDES 
+} from './constants';
+import { 
+    IconMarker, IconPhone, IconEnvelope, IconWhatsapp, IconWrapper, IconDashboard, IconBoxSeam, 
+    IconBell, IconReceipt, IconWallet2, IconPerson, IconGeoAlt, IconHeadset, IconSearch, 
+    IconArrowDownCircle, IconArrowUpCircle, IconUpload, IconLayoutTextWindowReverse, IconUserPlus, 
+    IconSettings, IconFileEarmarkSpreadsheet, IconShieldLock, IconPencilSquare, IconListTask, 
+    IconCardImage, IconShare, IconGraphUpArrow, IconCodeSlash, IconPersonCircle, IconTruck, 
+    IconShieldCheck, IconFileText, IconHelpCircle, IconGlobe, IconWarehouse, IconCustoms, 
+    IconPackage, IconSend, ICON_MAP, IconPlus, IconKey, IconPlug, IconBellFill, IconRecycle, 
+    IconPlayBtn, IconLightningCharge, IconFilter, IconCreditCard, IconClock 
+} from './constants';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import type { ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, FaqItemData, WalletRequest, SupportTicket, ApiToken, Webhook, HeroSlide, AdminRole, ShippingRate, AdminNotification, AlertConfiguration, WorkflowRule, ActivityLog, ShipmentDelayForecast, Milestone, PaymentGatewaySettings, SiteConfig } from './types';
+import type { 
+    ClientShipment, DetailedClientShipment, ClientPreAlert, ClientInvoice, WalletTransaction, 
+    Address, ClientNotification, RateResult, User, QuoteFormData, TrackingData, Service, 
+    FaqItemData, WalletRequest, SupportTicket, ApiToken, Webhook, HeroSlide, AdminRole, 
+    ShippingRate, AdminNotification, AlertConfiguration, WorkflowRule, ActivityLog, 
+    ShipmentDelayForecast, Milestone, PaymentGatewaySettings, SiteConfig 
+} from './types';
 
 
 export const HomePage: React.FC = () => (
@@ -15,7 +43,7 @@ export const HomePage: React.FC = () => (
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">Our Core Logistics Services</h2>
                 <p className="max-w-3xl mx-auto text-lg text-gray-600 mb-12">Comprehensive, reliable, and tailored solutions to meet your every shipping need, from local deliveries to international freight.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {CORE_SERVICES.map(service => <ServiceCard key={service.title} service={service} />)}
+                    {CORE_SERVICES.slice(0, 4).map(service => <ServiceCard key={service.title} service={service} />)}
                 </div>
             </div>
         </section>
@@ -106,23 +134,23 @@ const ServiceDetailPage: React.FC<{ title: string; subtitle: string; children: R
     </>
 );
 
-export const ServiceDomesticPage: React.FC = () => (
-    <ServiceDetailPage title="UK & Nigeria Domestic Logistics" subtitle="Reliable, fast, and secure delivery services within the United Kingdom and across Nigeria.">
+export const ServiceNigeriaDomesticPage: React.FC = () => (
+    <ServiceDetailPage title="Nigeria Domestic Logistics" subtitle="Connecting cities and regions across Nigeria with reliable and timely delivery services.">
         <ContentBlock>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Seamless Domestic Shipping</h2>
-            <p className="mb-4">Whether you're shipping within the bustling cities of the UK or across the diverse states of Nigeria, Hayapass offers a robust domestic logistics network designed for speed and reliability. We handle everything from small parcels to large freight with the same level of professionalism and care.</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Your Nationwide Partner in Nigeria</h2>
+            <p className="mb-4">Our extensive network within Nigeria ensures your goods are moved efficiently across the country. From Lagos to Abuja, Port Harcourt to Kano, we provide flexible and dependable shipping services for businesses and individuals.</p>
             <ul className="list-disc pl-5 space-y-2 text-gray-600">
-                <li>Same-day and next-day delivery options in major metropolitan areas.</li>
-                <li>Real-time tracking for all domestic shipments.</li>
-                <li>Specialized handling for fragile and high-value items.</li>
-                <li>Cost-effective solutions for businesses of all sizes.</li>
+                <li>Inter-state cargo and parcel delivery.</li>
+                <li>Last-mile delivery solutions for e-commerce businesses.</li>
+                <li>Secure transport for valuable goods.</li>
+                <li>Easy booking and real-time tracking via our client portal.</li>
             </ul>
         </ContentBlock>
     </ServiceDetailPage>
 );
 
 export const ServiceUKDomesticPage: React.FC = () => (
-    <ServiceDetailPage title="UK Domestic Services" subtitle="Comprehensive shipping solutions across England, Scotland, Wales, and Northern Ireland.">
+    <ServiceDetailPage title="UK Domestic Logistics" subtitle="Dedicated and comprehensive shipping services within the United Kingdom, from single parcels to full truckloads.">
         <ContentBlock>
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Your UK Logistics Partner</h2>
             <p className="mb-4">Our dedicated UK domestic service ensures your goods are moved efficiently across the country. We leverage a network of trusted partners and our own fleet to provide flexible and dependable shipping services.</p>
@@ -352,18 +380,33 @@ export const RatesCalculatorPage: React.FC = () => {
         e.preventDefault();
         setError('');
         setResult(null);
-        if(!formData.weight) {
+        if (!formData.weight) {
             setError('Please enter a weight for the shipment.');
             return;
         }
         setIsLoading(true);
         setTimeout(() => {
             const weight = parseFloat(formData.weight) || 0;
-            const mockResults: RateResult[] = [
-                { serviceName: 'Air Freight (Express)', estimatedCost: `£${(weight * 12.5).toFixed(2)}`, estimatedTime: '3-5 Business Days' },
-                { serviceName: 'Air Freight (Standard)', estimatedCost: `£${(weight * 9.8).toFixed(2)}`, estimatedTime: '5-8 Business Days' },
-                { serviceName: 'Sea Freight', estimatedCost: `£${(weight * 3.5).toFixed(2)}`, estimatedTime: '3-5 Weeks' },
-            ];
+            let mockResults: RateResult[] = [];
+
+            if (formData.origin === 'uk' && formData.destination === 'uk') {
+                mockResults = [
+                    { serviceName: 'UK Domestic (Standard)', estimatedCost: `£${(8 + weight * 1.5).toFixed(2)}`, estimatedTime: '1-2 Business Days' },
+                    { serviceName: 'UK Domestic (Express)', estimatedCost: `£${(12 + weight * 2.5).toFixed(2)}`, estimatedTime: 'Next Business Day' },
+                ];
+            } else if (formData.origin === 'nigeria' && formData.destination === 'nigeria') {
+                 mockResults = [
+                    { serviceName: 'Nigeria Domestic (Road)', estimatedCost: `₦${(5000 + weight * 1000).toLocaleString()}`, estimatedTime: '2-4 Business Days' },
+                    { serviceName: 'Nigeria Domestic (Air)', estimatedCost: `₦${(15000 + weight * 3000).toLocaleString()}`, estimatedTime: '1-2 Business Days' },
+                ];
+            } else { // International
+                 mockResults = [
+                    { serviceName: 'Air Freight (Express)', estimatedCost: `£${(20 + weight * 12.5).toFixed(2)}`, estimatedTime: '3-5 Business Days' },
+                    { serviceName: 'Air Freight (Standard)', estimatedCost: `£${(15 + weight * 9.8).toFixed(2)}`, estimatedTime: '5-8 Business Days' },
+                    { serviceName: 'Sea Freight', estimatedCost: `£${(100 + weight * 3.5).toFixed(2)}`, estimatedTime: '3-5 Weeks' },
+                ];
+            }
+            
             setResult(mockResults);
             setIsLoading(false);
         }, 1500);
@@ -665,42 +708,60 @@ export const AdminLoginPage: React.FC = () => {
     );
 };
 
-// --- START: AUTHENTICATION COMPONENTS ---
-
-const PasswordStrengthMeter: React.FC<{ password?: string }> = ({ password = '' }) => {
-    const checkPasswordStrength = (pass: string) => {
-        let score = 0;
-        if (!pass) return 0;
-        if (pass.length > 7) score++;
-        if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) score++;
-        if (/[0-9]/.test(pass)) score++;
-        if (/[^a-zA-Z0-9]/.test(pass)) score++;
-        return score;
-    };
-
-    const strength = checkPasswordStrength(password);
-    const strengthLabels = ['Weak', 'Weak', 'Okay', 'Good', 'Strong'];
-    const strengthColors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-lime-500', 'bg-green-500'];
-
-    return (
-        <div>
-            <div className="flex gap-1 mt-1">
-                {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className={`h-1 flex-1 rounded-full ${strength > i ? strengthColors[strength] : 'bg-gray-200'}`}></div>
-                ))}
-            </div>
-            {password.length > 0 && <p className={`text-xs mt-1 font-medium ${strengthColors[strength].replace('bg-', 'text-')}`}>{strengthLabels[strength]}</p>}
-        </div>
-    );
-};
+// --- START: AUTHENTICATION PAGE ---
 
 export const ClientAuthPage: React.FC = () => {
-    const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgotPassword' | 'resetPassword'>('login');
+    const location = useLocation();
+    const initialMode = location.pathname === '/register' ? 'register' : 'login';
+
+    const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgotPassword' | 'resetPassword'>(initialMode);
+    const [registrationStep, setRegistrationStep] = useState(0);
+    const [accountType, setAccountType] = useState<'individual' | 'business' | null>(null);
+    const [files, setFiles] = useState<{ [key: string]: File | null }>({});
     const [formData, setFormData] = useState<any>({});
     const [errors, setErrors] = useState<any>({});
+    const [termsAccepted, setTermsAccepted] = useState(false);
     const [forgotPasswordEmailSent, setForgotPasswordEmailSent] = useState(false);
     const navigate = useNavigate();
+
+    const registrationSteps = ['Account Type', 'Your Details', 'Verification', 'Verify Email', 'Complete'];
     
+    useEffect(() => {
+        if (authMode === 'register' && (registrationStep < 0 || registrationStep >= registrationSteps.length)) {
+            setRegistrationStep(0);
+        }
+    }, [registrationStep, authMode]);
+
+    useEffect(() => {
+        try {
+            const savedProgress = localStorage.getItem('registrationProgress');
+            if (savedProgress) {
+                if (window.confirm('You have saved registration progress. Would you like to continue?')) {
+                    const { step, type, data } = JSON.parse(savedProgress);
+                    setRegistrationStep(step);
+                    setAccountType(type);
+                    setFormData(data);
+                    setAuthMode('register');
+                } else {
+                    localStorage.removeItem('registrationProgress');
+                }
+            }
+        } catch (error) {
+            console.error("Could not load saved progress:", error);
+            localStorage.removeItem('registrationProgress');
+        }
+    }, []);
+
+    const saveProgress = () => {
+        const progress = {
+            step: registrationStep,
+            type: accountType,
+            data: formData,
+        };
+        localStorage.setItem('registrationProgress', JSON.stringify(progress));
+        alert('Progress saved!');
+    };
+
     const validateField = (name: string, value: string) => {
         let errorMsg = '';
         if ((name === 'confirmPassword' || name === 'resetConfirmPassword') && value !== formData[name.replace('Confirm', '')]) {
@@ -718,10 +779,25 @@ export const ClientAuthPage: React.FC = () => {
         validateField(name, value);
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setFiles(prev => ({ ...prev, [e.target.name]: e.target.files![0] }));
+        }
+    };
+    
+    const handleRemoveFile = (fileName: string) => {
+        setFiles(prev => ({ ...prev, [fileName]: null }));
+    };
+
     const handleLoginSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const userType = formData.loginEmail?.includes('business') ? 'business' : 'individual';
         navigate('/dashboard', { state: { accountType: userType } });
+    };
+    
+    const handleRegistrationSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setRegistrationStep(3); // Move to email verification
     };
     
     const handleForgotPasswordSubmit = (e: React.FormEvent) => {
@@ -733,6 +809,118 @@ export const ClientAuthPage: React.FC = () => {
         e.preventDefault();
         alert("Password has been reset successfully!");
         setAuthMode('login');
+    };
+
+    const renderRegistrationForm = () => {
+        const commonFields = (
+            <>
+                <FormInput name="email" label="Contact Email Address" type="email" value={formData.email || ''} onChange={handleInputChange} error={errors.email} required />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" value={formData.password || ''} onChange={handleInputChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm" />
+                    <PasswordStrengthMeter password={formData.password} />
+                </div>
+                <FormInput name="confirmPassword" label="Confirm Password" type="password" value={formData.confirmPassword || ''} onChange={handleInputChange} error={errors.confirmPassword} required />
+            </>
+        );
+
+        switch (registrationStep) {
+            case 0:
+                return (
+                    <div>
+                        <h2 className="text-xl font-semibold mb-6 text-center">Choose Your Account Type</h2>
+                        <div className="space-y-4">
+                            <button onClick={() => { setAccountType('individual'); setRegistrationStep(1); }} className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#b58e31]"><h3 className="font-bold text-[#00529b]">Individual Client</h3><p className="text-sm text-gray-600">For personal shipments and individual use.</p></button>
+                            <button onClick={() => { setAccountType('business'); setRegistrationStep(1); }} className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#b58e31]"><h3 className="font-bold text-[#00529b]">Business Client</h3><p className="text-sm text-gray-600">For companies, SMEs, and corporate logistics.</p></button>
+                        </div>
+                    </div>
+                );
+            case 1:
+                return (
+                    <form onSubmit={(e) => { e.preventDefault(); setRegistrationStep(2); }} className="space-y-4">
+                        <h2 className="text-xl font-semibold mb-4 text-center">{accountType === 'individual' ? 'Individual' : 'Business'} Account Details</h2>
+                        {accountType === 'individual' ? (
+                            <>
+                                <FormInput name="fullName" label="Full Legal Name" placeholder="As on your ID" value={formData.fullName || ''} onChange={handleInputChange} required />
+                                {commonFields}
+                                <FormInput name="phone" label="Mobile Phone Number" type="tel" value={formData.phone || ''} onChange={handleInputChange} required />
+                                <div><label className="block text-sm font-medium text-gray-700">Residential Address</label><textarea name="address" value={formData.address || ''} onChange={handleInputChange} required rows={3} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#b58e31] focus:border-[#b58e31] sm:text-sm"></textarea></div>
+                            </>
+                        ) : (
+                             <>
+                                <fieldset className="border p-4 rounded-md space-y-4"><legend className="text-sm font-medium px-1">Company Details</legend>
+                                    <FormInput name="companyName" label="Full Legal Company Name" value={formData.companyName || ''} onChange={handleInputChange} required />
+                                    <FormInput name="tradingName" label="Company Trading Name (if different)" value={formData.tradingName || ''} onChange={handleInputChange} />
+                                     <div><label className="block text-sm font-medium text-gray-700">Full Registered Business Address</label><textarea name="companyAddress" value={formData.companyAddress || ''} onChange={handleInputChange} required rows={3} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea></div>
+                                     <FormInput name="companyWebsite" label="Company Website" type="url" value={formData.companyWebsite || ''} onChange={handleInputChange} />
+                                     <FormInput name="registrationNumber" label="Company Registration Number" value={formData.registrationNumber || ''} onChange={handleInputChange} required />
+                                     <FormInput name="taxNumber" label="VAT / Tax ID Number" value={formData.taxNumber || ''} onChange={handleInputChange} required />
+                                </fieldset>
+                                <fieldset className="border p-4 rounded-md space-y-4"><legend className="text-sm font-medium px-1">Primary Contact Details</legend>
+                                    <FormInput name="contactName" label="Full Name" value={formData.contactName || ''} onChange={handleInputChange} required />
+                                    <FormInput name="jobTitle" label="Job Title" value={formData.jobTitle || ''} onChange={handleInputChange} required />
+                                    <FormInput name="workPhone" label="Direct Phone Number" type="tel" value={formData.workPhone || ''} onChange={handleInputChange} required />
+                                    {commonFields}
+                                </fieldset>
+                            </>
+                        )}
+                        <div className="flex justify-between items-center pt-4">
+                            <button type="button" onClick={saveProgress} className="text-sm font-medium text-gray-600 hover:text-[#00529b]">Save & Continue Later</button>
+                            <Button type="submit" primary>Next: Upload Documents</Button>
+                        </div>
+                    </form>
+                );
+            case 2:
+                return (
+                    <form onSubmit={handleRegistrationSubmit} className="space-y-6">
+                        <h2 className="text-xl font-semibold text-center">Verification Documents</h2>
+                        {accountType === 'individual' ? (
+                            <EnhancedFileUpload id="proofOfId" label="Proof of Identity" description="Passport, Driver's License, or National ID" required file={files.proofOfId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfId')} />
+                        ) : accountType === 'business' ? (
+                             <>
+                                <EnhancedFileUpload id="proofOfReg" label="Proof of Business Registration" description="Certificate of Incorporation" required file={files.proofOfReg || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfReg')} />
+                                <EnhancedFileUpload id="proofOfAddr" label="Proof of Business Address" description="Recent utility bill or bank statement" required file={files.proofOfAddr || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfAddr')} />
+                                <EnhancedFileUpload id="proofOfDirectorId" label="Proof of ID for Director/Primary Contact" description="Passport or Driver's License" required file={files.proofOfDirectorId || null} onChange={handleFileChange} onRemove={() => handleRemoveFile('proofOfDirectorId')} />
+                             </>
+                        ) : null}
+                        <div className="flex items-start"><input id="terms" name="terms" type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="h-4 w-4 text-[#00529b] focus:ring-[#b58e31] border-gray-300 rounded mt-1" /><label htmlFor="terms" className="ml-2 block text-sm text-gray-900">I agree to the <Link to="/terms" target="_blank" className="font-medium text-[#00529b] hover:underline">Terms & Conditions</Link> and <Link to="/privacy-policy" target="_blank" className="font-medium text-[#00529b] hover:underline">Privacy Policy</Link>.</label></div>
+                        <div className="flex justify-between items-center pt-4">
+                           <button type="button" onClick={() => setRegistrationStep(1)} className="text-sm font-medium text-gray-600 hover:text-[#00529b]">Back to details</button>
+                           <Button type="submit" primary disabled={!termsAccepted}>Create Account</Button>
+                       </div>
+                   </form>
+                );
+            case 3: // Email Verification
+                 return (
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4">Please Verify Your Email</h2>
+                        <p className="text-gray-700 mb-6">We've sent a verification link to <strong>{formData.email}</strong>. Please check your inbox and click the link to activate your account.</p>
+                        <p className="text-sm text-gray-500 mb-6">Didn't receive the email? Check your spam folder or...</p>
+                        <div className="space-y-3">
+                           <Button onClick={() => alert('Verification email resent!')} primary className="w-full">Resend Verification Email</Button>
+                           <Button onClick={() => { localStorage.removeItem('registrationProgress'); setRegistrationStep(4); }} secondary className="w-full">Continue (Simulate Verification)</Button>
+                        </div>
+                    </div>
+                );
+            case 4: // Success / 2FA
+                return (
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Set Up Two-Factor Authentication</h2>
+                        <p className="text-gray-600 mb-6">Scan this QR code with your authenticator app.</p>
+                        <div className="flex justify-center my-4">
+                           <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=otpauth://totp/Hayapass:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Hayapass" alt="QR Code Placeholder" />
+                        </div>
+                        <FormInput name="2faCode" label="Verification Code" value={formData['2faCode'] || ''} onChange={handleInputChange} placeholder="Enter 6-digit code" required />
+                         <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                           <Button onClick={() => navigate('/dashboard', { state: { accountType } })} primary className="w-full">Verify & Finish</Button>
+                           <Button onClick={() => navigate('/dashboard', { state: { accountType } })} secondary className="w-full">Skip for Now</Button>
+                        </div>
+                    </div>
+                );
+            default:
+                setRegistrationStep(0);
+                return null;
+        }
     };
 
     const renderMainContent = () => {
@@ -749,11 +937,7 @@ export const ClientAuthPage: React.FC = () => {
                     </form>
                 );
             case 'register':
-                 return (
-                    <div className="text-center">
-                        <p className="text-gray-700">Registration is currently handled by our team. Please <Link to="/contact" className="font-medium text-[#00529b] hover:underline">contact us</Link> to set up an account.</p>
-                    </div>
-                );
+                return renderRegistrationForm();
             case 'forgotPassword':
                 if (forgotPasswordEmailSent) {
                     return (
@@ -795,10 +979,15 @@ export const ClientAuthPage: React.FC = () => {
                      <Link to="/"><img src={SITE_CONFIG.logoUrl} alt="Logo" className="mx-auto h-12 mb-4"/></Link>
                 </div>
                 
-                <div className="mb-6 flex justify-center border border-gray-300 rounded-lg p-1 bg-gray-200">
-                    <button onClick={() => setAuthMode('login')} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'login' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Login</button>
-                    <button onClick={() => { setAuthMode('register');}} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'register' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Register</button>
-                </div>
+                {authMode !== 'forgotPassword' && authMode !== 'resetPassword' && (
+                    <>
+                        <div className="mb-6 flex justify-center border border-gray-300 rounded-lg p-1 bg-gray-200">
+                            <button onClick={() => setAuthMode('login')} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'login' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Login</button>
+                            <button onClick={() => { setAuthMode('register'); setRegistrationStep(0); setAccountType(null); }} className={`w-1/2 py-2 text-sm font-medium rounded-md transition-colors ${authMode === 'register' ? 'bg-white shadow-sm text-[#00529b]' : 'text-gray-600'}`}>Register</button>
+                        </div>
+                        {authMode === 'register' && registrationStep < registrationSteps.length -1 && <ProgressStepper steps={registrationSteps} currentStep={registrationStep} />}
+                    </>
+                )}
                 
                 {renderMainContent()}
 
@@ -806,6 +995,7 @@ export const ClientAuthPage: React.FC = () => {
         </div>
     );
 };
+
 
 // --- START: CLIENT DASHBOARD PAGE & VIEWS ---
 
@@ -1324,10 +1514,13 @@ const AdminDashboardReportsView: React.FC = () => {
 };
 
 const AdminDashboardSettingsView: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('financials');
+    const [activeSetting, setActiveSetting] = useState<string | null>(null);
+
+    // Existing states for forms
     const [gatewaySettings, setGatewaySettings] = useState<PaymentGatewaySettings>(MOCK_PAYMENT_GATEWAY_SETTINGS);
     const [shippingRates, setShippingRates] = useState<ShippingRate[]>(ADMIN_SHIPPING_RATES_DATA);
 
+    // Existing handlers for forms
     const handleGatewayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         const [gateway, key] = name.split('.');
@@ -1338,67 +1531,138 @@ const AdminDashboardSettingsView: React.FC = () => {
         alert('Payment gateway settings saved!');
         console.log(gatewaySettings);
     };
-    
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="border-b mb-6">
-                <nav className="flex space-x-4">
-                    <button onClick={() => setActiveTab('financials')} className={`py-2 px-4 font-medium text-sm ${activeTab === 'financials' ? 'border-b-2 border-[#00529b] text-[#00529b]' : 'text-gray-500'}`}>Financial</button>
-                    <button onClick={() => setActiveTab('shippingRates')} className={`py-2 px-4 font-medium text-sm ${activeTab === 'shippingRates' ? 'border-b-2 border-[#00529b] text-[#00529b]' : 'text-gray-500'}`}>Shipping Rates</button>
-                </nav>
-            </div>
 
-            {activeTab === 'financials' && (
-                <div className="max-w-2xl">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Gateway Configuration</h3>
-                     <div className="space-y-6">
-                        <div className="p-4 border rounded-md">
-                            <h4 className="font-semibold text-gray-700 mb-2">Stripe</h4>
-                            <div className="space-y-2">
-                                <FormInput name="stripe.publicKey" label="Public Key" value={gatewaySettings.stripe.publicKey} onChange={handleGatewayChange} />
-                                <FormInput name="stripe.secretKey" label="Secret Key" type="password" value={gatewaySettings.stripe.secretKey} onChange={handleGatewayChange} />
+    // Card component
+    const SettingsCard: React.FC<{ title: string; description: string; icon: React.ReactNode; onClick: () => void; }> = ({ title, description, icon, onClick }) => (
+        <button onClick={onClick} className="bg-white p-6 rounded-lg shadow-sm text-left hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00529b]">
+            <div className="w-12 h-12 bg-[#00529b]/10 text-[#00529b] rounded-full flex items-center justify-center mb-4">
+                <IconWrapper className="w-6 h-6">{icon}</IconWrapper>
+            </div>
+            <h4 className="font-bold text-lg text-gray-800">{title}</h4>
+            <p className="text-sm text-gray-500 mt-1">{description}</p>
+        </button>
+    );
+
+    // Settings data for cards
+    const settingsCards = [
+        { id: 'financials', title: 'Financial', description: 'Manage payment gateways like Stripe and Paystack.', icon: <IconCreditCard /> },
+        { id: 'shippingRates', title: 'Shipping Rates', description: 'Configure shipping costs, zones, and options.', icon: <IconTruck /> },
+        { id: 'roles', title: 'Roles & Permissions', description: 'Manage admin user accounts and their permissions.', icon: <IconShieldLock /> },
+        { id: 'notifications', title: 'Notifications', description: 'Configure system alerts and client email templates.', icon: <IconBellFill /> },
+        { id: 'workflows', title: 'Workflows', description: 'Automate tasks like post-delivery feedback emails.', icon: <IconRecycle /> },
+        { id: 'api', title: 'API & Integrations', description: 'Manage API keys and webhook endpoints for integrations.', icon: <IconPlug /> },
+        { id: 'security', title: 'Security', description: 'Update password policies and manage 2FA settings.', icon: <IconKey /> },
+    ];
+
+    // Placeholder for unimplemented views
+    const PlaceholderSettingView: React.FC<{title: string}> = ({title}) => (
+        <div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
+            <div className="p-8 border-2 border-dashed rounded-md bg-gray-50 text-center text-gray-500">
+                This feature is a placeholder and has not been implemented.
+            </div>
+        </div>
+    );
+    
+    // Renders the specific settings view based on activeSetting
+    const renderSettingView = () => {
+        switch(activeSetting) {
+            case 'financials':
+                return (
+                    <div className="max-w-2xl">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Gateway Configuration</h3>
+                         <div className="space-y-6">
+                            <div className="p-4 border rounded-md">
+                                <h4 className="font-semibold text-gray-700 mb-2">Stripe</h4>
+                                <div className="space-y-2">
+                                    <FormInput name="stripe.publicKey" label="Public Key" value={gatewaySettings.stripe.publicKey} onChange={handleGatewayChange} />
+                                    <FormInput name="stripe.secretKey" label="Secret Key" type="password" value={gatewaySettings.stripe.secretKey} onChange={handleGatewayChange} />
+                                </div>
                             </div>
-                        </div>
-                         <div className="p-4 border rounded-md">
-                            <h4 className="font-semibold text-gray-700 mb-2">Paystack</h4>
-                            <div className="space-y-2">
-                                <FormInput name="paystack.publicKey" label="Public Key" value={gatewaySettings.paystack.publicKey} onChange={handleGatewayChange} />
-                                <FormInput name="paystack.secretKey" label="Secret Key" type="password" value={gatewaySettings.paystack.secretKey} onChange={handleGatewayChange} />
+                             <div className="p-4 border rounded-md">
+                                <h4 className="font-semibold text-gray-700 mb-2">Paystack</h4>
+                                <div className="space-y-2">
+                                    <FormInput name="paystack.publicKey" label="Public Key" value={gatewaySettings.paystack.publicKey} onChange={handleGatewayChange} />
+                                    <FormInput name="paystack.secretKey" label="Secret Key" type="password" value={gatewaySettings.paystack.secretKey} onChange={handleGatewayChange} />
+                                </div>
                             </div>
-                        </div>
-                         <div className="p-4 border rounded-md">
-                            <h4 className="font-semibold text-gray-700 mb-2">PayPal</h4>
-                            <div className="space-y-2">
-                                <FormInput name="paypal.clientId" label="Client ID" value={gatewaySettings.paypal.clientId} onChange={handleGatewayChange} />
+                             <div className="p-4 border rounded-md">
+                                <h4 className="font-semibold text-gray-700 mb-2">PayPal</h4>
+                                <div className="space-y-2">
+                                    <FormInput name="paypal.clientId" label="Client ID" value={gatewaySettings.paypal.clientId} onChange={handleGatewayChange} />
+                                </div>
                             </div>
+                            <AdminButton primary onClick={handleSaveGateways}>Save Financial Settings</AdminButton>
                         </div>
-                        <AdminButton primary onClick={handleSaveGateways}>Save Financial Settings</AdminButton>
+                    </div>
+                );
+            case 'shippingRates':
+                return (
+                     <div>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Manage Shipping Rates</h3>
+                        <Table
+                            headers={[ {key: 'serviceName', label: 'Service'}, {key: 'route', label: 'Route'}, {key: 'basePrice', label: 'Base Price'}, {key: 'pricePerKg', label: 'Price/kg'}, {key: 'actions', label: 'Actions'} ]}
+                            data={shippingRates}
+                            renderRow={(rate: ShippingRate) => (
+                                 <tr key={rate.id}>
+                                    <td className="py-3 px-4 text-sm font-medium">{rate.serviceName}</td>
+                                    <td className="py-3 px-4 text-sm">{rate.origin} → {rate.destination}</td>
+                                    <td className="py-3 px-4 text-sm">£{rate.basePrice.toFixed(2)}</td>
+                                    <td className="py-3 px-4 text-sm">£{rate.pricePerKg.toFixed(2)}</td>
+                                    <td className="py-3 px-4 text-sm"><AdminButton>Edit</AdminButton></td>
+                                 </tr>
+                            )}
+                        />
+                    </div>
+                );
+            case 'roles': return <PlaceholderSettingView title="Roles & Permissions" />;
+            case 'notifications': return <PlaceholderSettingView title="Notifications & Alerts" />;
+            case 'workflows': return <PlaceholderSettingView title="Workflows" />;
+            case 'api': return <PlaceholderSettingView title="API & Integrations" />;
+            case 'security': return <PlaceholderSettingView title="Security" />;
+            default:
+                return <div>Setting not found. Please go back.</div>;
+        }
+    };
+
+    if (activeSetting) {
+        const currentSetting = settingsCards.find(s => s.id === activeSetting);
+        return (
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="flex items-center mb-6 border-b pb-4">
+                    <button onClick={() => setActiveSetting(null)} className="p-2 rounded-full hover:bg-gray-100 mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </button>
+                    <div>
+                         <h2 className="text-xl font-bold text-gray-800">{currentSetting?.title}</h2>
+                         <p className="text-sm text-gray-500">{currentSetting?.description}</p>
                     </div>
                 </div>
-            )}
-            
-            {activeTab === 'shippingRates' && (
-                 <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Manage Shipping Rates</h3>
-                    <Table
-                        headers={[ {key: 'serviceName', label: 'Service'}, {key: 'route', label: 'Route'}, {key: 'basePrice', label: 'Base Price'}, {key: 'pricePerKg', label: 'Price/kg'}, {key: 'actions', label: 'Actions'} ]}
-                        data={shippingRates}
-                        renderRow={(rate: ShippingRate) => (
-                             <tr key={rate.id}>
-                                <td className="py-3 px-4 text-sm font-medium">{rate.serviceName}</td>
-                                <td className="py-3 px-4 text-sm">{rate.origin} → {rate.destination}</td>
-                                <td className="py-3 px-4 text-sm">£{rate.basePrice.toFixed(2)}</td>
-                                <td className="py-3 px-4 text-sm">£{rate.pricePerKg.toFixed(2)}</td>
-                                <td className="py-3 px-4 text-sm"><AdminButton>Edit</AdminButton></td>
-                             </tr>
-                        )}
+                {renderSettingView()}
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-800">Settings</h2>
+            <p className="text-gray-600">Manage your application's configuration, financial settings, and operational parameters.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {settingsCards.map(card => (
+                    <SettingsCard
+                        key={card.id}
+                        title={card.title}
+                        description={card.description}
+                        icon={card.icon}
+                        onClick={() => setActiveSetting(card.id)}
                     />
-                </div>
-            )}
+                ))}
+            </div>
         </div>
     );
 };
-
 const AdminDashboardContentView: React.FC = () => {
     const [activeTab, setActiveTab] = useState('hero');
     const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(HERO_SLIDES);
@@ -1411,254 +1675,61 @@ const AdminDashboardContentView: React.FC = () => {
     const [editingItem, setEditingItem] = useState<HeroSlide | FaqItemData | Service | null>(null);
     const [modalType, setModalType] = useState<'hero' | 'faq' | 'service' | null>(null);
     
-    const [editingPage, setEditingPage] = useState<keyof typeof MANAGEABLE_PAGES_CONTENT>('about');
+    const [editingPage, setEditingPage] = useState<keyof typeof MANAGEABLE_PAGES_CONTENT | null>(null);
 
-    const openModal = (item: HeroSlide | FaqItemData | Service | null, type: 'hero' | 'faq' | 'service') => {
-        setEditingItem(item ? JSON.parse(JSON.stringify(item)) : null); // Deep copy to avoid state mutation issues
-        setModalType(type);
-        setIsModalOpen(true);
-    };
-
-    const handleSave = () => {
-        if (!editingItem) return;
-
-        if (modalType === 'hero') {
-            const slide = editingItem as HeroSlide;
-            setHeroSlides(prev => slide.id ? prev.map(s => s.id === slide.id ? slide : s) : [...prev, { ...slide, id: Date.now() }]);
-        } else if (modalType === 'faq') {
-            const faq = editingItem as FaqItemData;
-            setFaqs(prev => faq.id ? prev.map(f => f.id === faq.id ? faq : f) : [...prev, { ...faq, id: Date.now(), answer: faq.answer.toString() }]);
-        } else if (modalType === 'service') {
-            const service = editingItem as Service;
-            setServices(prev => service.title ? prev.map(s => s.title === service.title ? service : s) : [...prev, service]);
-        }
-        setIsModalOpen(false);
-    };
-    
-    const handleDelete = (id: number | string, type: 'hero' | 'faq' | 'service') => {
-        if (!window.confirm('Are you sure you want to delete this item?')) return;
-        if (type === 'hero') setHeroSlides(prev => prev.filter(s => s.id !== id));
-        else if (type === 'faq') setFaqs(prev => prev.filter(f => f.id !== id));
-        else if (type === 'service') setServices(prev => prev.filter(s => s.title !== id));
+    const handleSavePage = (pageKey: keyof typeof MANAGEABLE_PAGES_CONTENT, newContent: string) => {
+        // In a real app, this would also update the React.ReactNode version or have a parser
+        setPageContent(prev => ({...prev, [pageKey]: {...prev[pageKey], rawContent: newContent}}));
+        setEditingPage(null);
+        alert(`${pageContent[pageKey].title} page saved!`);
     };
 
-    const moveFaq = (id: number, direction: 'up' | 'down') => {
-        setFaqs(currentFaqs => {
-            const faqsCopy = [...currentFaqs];
-            const index = faqsCopy.findIndex(f => f.id === id);
-            if (index === -1) return faqsCopy;
-            const newIndex = direction === 'up' ? index - 1 : index + 1;
-            if (newIndex < 0 || newIndex >= faqsCopy.length) return faqsCopy;
-            [faqsCopy[index], faqsCopy[newIndex]] = [faqsCopy[newIndex], faqsCopy[index]]; // Swap
-            return faqsCopy;
-        });
-    };
-
-    const handleSiteConfigChange = (field: keyof SiteConfig, value: string) => {
-        setSiteConfig(prev => ({ ...prev, [field]: value }));
-    };
-
-    const handleNestedSiteConfigChange = (section: 'contact' | 'social', field: string, value: string) => {
-        setSiteConfig(prev => ({
-            ...prev,
-            [section]: {
-                ...prev[section],
-                [field]: value
-            }
-        }));
-    };
-    
-    // --- Hero Slide Button Handlers ---
-    const handleButtonChange = (index: number, field: string, value: string | boolean) => {
-        if (editingItem && modalType === 'hero') {
-            const slide = editingItem as HeroSlide;
-            const updatedButtons = [...slide.buttons];
-            updatedButtons[index] = { ...updatedButtons[index], [field]: value };
-            setEditingItem({ ...slide, buttons: updatedButtons });
-        }
-    };
-    const addButton = () => {
-        if (editingItem && modalType === 'hero') {
-            const newButton = { text: 'New Button', href: '/', primary: false };
-            setEditingItem({ ...editingItem, buttons: [...(editingItem as HeroSlide).buttons, newButton] });
-        }
-    };
-    const removeButton = (index: number) => {
-        if (editingItem && modalType === 'hero') {
-            const updatedButtons = (editingItem as HeroSlide).buttons.filter((_, i) => i !== index);
-            setEditingItem({ ...editingItem, buttons: updatedButtons });
-        }
-    };
-    
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="border-b mb-6">
-                <nav className="flex space-x-2 sm:space-x-4 overflow-x-auto pb-2">
-                    {['hero', 'services', 'pages', 'faq', 'siteInfo'].map(tab => (
-                         <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-3 sm:px-4 font-medium text-sm whitespace-nowrap ${activeTab === tab ? 'border-b-2 border-[#00529b] text-[#00529b]' : 'text-gray-500'}`}>
-                            {tab.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                         </button>
-                    ))}
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Website Content Management</h3>
+             <div className="border-b">
+                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button onClick={() => setActiveTab('pages')} className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'pages' ? 'border-[#00529b] text-[#00529b]' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>Manageable Pages</button>
                 </nav>
             </div>
-
-            {activeTab === 'hero' && (
-                <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">Manage Hero Slides</h3>
-                        <AdminButton primary onClick={() => openModal({ id: 0, headline: '', tagline: '', image: '', buttons: [] }, 'hero')}>Add New Slide</AdminButton>
+            <div className="py-6">
+                {editingPage ? (
+                     <div>
+                        <h4 className="text-xl font-bold mb-4">Editing: {pageContent[editingPage].title}</h4>
+                        <FormTextarea 
+                            name="pageContent" 
+                            label="Page Content (HTML)" 
+                            value={pageContent[editingPage].rawContent || ''} 
+                            onChange={(e) => setPageContent(prev => ({...prev, [editingPage]: {...prev[editingPage], rawContent: e.target.value}}))}
+                            rows={20}
+                        />
+                        <div className="flex gap-2 mt-4">
+                            <AdminButton primary onClick={() => handleSavePage(editingPage, pageContent[editingPage].rawContent || '')}>Save Page</AdminButton>
+                            <AdminButton secondary onClick={() => setEditingPage(null)}>Cancel</AdminButton>
+                        </div>
                     </div>
-                    <Table headers={[{key: 'headline', label: 'Headline'}, {key: 'actions', label: 'Actions'}]} data={heroSlides}
-                        renderRow={(slide: HeroSlide) => (
-                            <tr key={slide.id}>
-                                <td className="py-3 px-4 text-sm font-medium">{slide.headline}</td>
-                                <td className="py-3 px-4 text-sm space-x-2"><AdminButton onClick={() => openModal(slide, 'hero')}>Edit</AdminButton><AdminButton danger onClick={() => handleDelete(slide.id, 'hero')}>Delete</AdminButton></td>
-                            </tr>
-                        )}
-                    />
-                </div>
-            )}
-
-            {activeTab === 'services' && (
-                 <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">Manage Services</h3>
-                        <AdminButton primary onClick={() => openModal({ title: '', description: '', icon: '', link: '' }, 'service')}>Add New Service</AdminButton>
-                    </div>
-                     <Table headers={[{key: 'title', label: 'Title'}, {key: 'icon', label: 'Icon'}, {key: 'actions', label: 'Actions'}]} data={services}
-                        renderRow={(service: Service) => (
-                            <tr key={service.title}>
-                                <td className="py-3 px-4 text-sm font-medium">{service.title}</td>
-                                <td className="py-3 px-4 text-sm">{service.icon}</td>
-                                <td className="py-3 px-4 text-sm space-x-2"><AdminButton onClick={() => openModal(service, 'service')}>Edit</AdminButton><AdminButton danger onClick={() => handleDelete(service.title, 'service')}>Delete</AdminButton></td>
-                            </tr>
-                        )}
-                    />
-                </div>
-            )}
-            
-            {activeTab === 'faq' && (
-                 <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">Manage FAQs</h3>
-                        <AdminButton primary onClick={() => openModal({ id: 0, question: '', answer: '' }, 'faq')}>Add New FAQ</AdminButton>
-                    </div>
-                    <Table headers={[{key: 'question', label: 'Question'}, {key: 'actions', label: 'Actions'}]} data={faqs}
-                        renderRow={(faq: FaqItemData, index: number) => (
-                            <tr key={faq.id}>
-                                <td className="py-3 px-4 text-sm font-medium">{faq.question}</td>
-                                <td className="py-3 px-4 text-sm space-x-2">
-                                    <AdminButton onClick={() => moveFaq(faq.id, 'up')} disabled={index === 0}>↑</AdminButton>
-                                    <AdminButton onClick={() => moveFaq(faq.id, 'down')} disabled={index === faqs.length - 1}>↓</AdminButton>
-                                    <AdminButton onClick={() => openModal(faq, 'faq')}>Edit</AdminButton>
-                                    <AdminButton danger onClick={() => handleDelete(faq.id, 'faq')}>Delete</AdminButton>
-                                </td>
-                            </tr>
-                        )}
-                    />
-                </div>
-            )}
-            
-            {activeTab === 'pages' && (
-                 <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Edit Page Content</h3>
-                    <div className="mb-4">
-                        <label htmlFor="page-select" className="sr-only">Select page</label>
-                        <select id="page-select" value={editingPage} onChange={(e) => setEditingPage(e.target.value as any)} className="p-2 border rounded-md">
-                            <option value="about">About Us</option><option value="privacy">Privacy Policy</option><option value="terms">Terms & Conditions</option>
-                        </select>
-                    </div>
-                     <div className="p-4 border rounded-md space-y-4">
-                        <FormInput name="title" label="Title" value={pageContent[editingPage].title} onChange={(e) => setPageContent(p => ({...p, [editingPage]: {...p[editingPage], title: e.target.value}}))} />
-                        <FormInput name="subtitle" label="Subtitle" value={pageContent[editingPage].subtitle} onChange={(e) => setPageContent(p => ({...p, [editingPage]: {...p[editingPage], subtitle: e.target.value}}))} />
-                        <FormTextarea name="rawContent" label="Content (HTML enabled)" rows={10} value={pageContent[editingPage].rawContent || ''} onChange={(e) => setPageContent(p => ({...p, [editingPage]: {...p[editingPage], rawContent: e.target.value}}))} />
-                         <AdminButton primary onClick={() => alert('Page Content Saved!')}>Save {pageContent[editingPage].title}</AdminButton>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'siteInfo' && (
-                <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Manage Site Information</h3>
-                    <div className="space-y-6 max-w-3xl">
-                        <fieldset className="p-4 border rounded-md space-y-4">
-                            <legend className="font-semibold px-2">General</legend>
-                            <FormInput label="Brand Name" value={siteConfig.brandName} onChange={e => handleSiteConfigChange('brandName', e.target.value)} />
-                            <FormInput label="Tagline" value={siteConfig.tagline} onChange={e => handleSiteConfigChange('tagline', e.target.value)} />
-                            <FormInput label="Logo URL" value={siteConfig.logoUrl} onChange={e => handleSiteConfigChange('logoUrl', e.target.value)} />
-                        </fieldset>
-                        <fieldset className="p-4 border rounded-md space-y-4">
-                            <legend className="font-semibold px-2">Contact Details</legend>
-                            <FormInput label="Email" value={siteConfig.contact.email} onChange={e => handleNestedSiteConfigChange('contact', 'email', e.target.value)} />
-                            <FormInput label="Phone (UK)" value={siteConfig.contact.phoneUK} onChange={e => handleNestedSiteConfigChange('contact', 'phoneUK', e.target.value)} />
-                            <FormInput label="Phone (NG)" value={siteConfig.contact.phoneNG} onChange={e => handleNestedSiteConfigChange('contact', 'phoneNG', e.target.value)} />
-                            <FormTextarea label="Address (UK)" value={siteConfig.contact.addressUK} onChange={e => handleNestedSiteConfigChange('contact', 'addressUK', e.target.value)} />
-                            <FormTextarea label="Address (NG)" value={siteConfig.contact.addressNG} onChange={e => handleNestedSiteConfigChange('contact', 'addressNG', e.target.value)} />
-                            <FormInput label="WhatsApp Number" value={siteConfig.contact.whatsapp} onChange={e => handleNestedSiteConfigChange('contact', 'whatsapp', e.target.value)} />
-                        </fieldset>
-                        <fieldset className="p-4 border rounded-md space-y-4">
-                            <legend className="font-semibold px-2">Social Media</legend>
-                            <FormInput label="Facebook URL" value={siteConfig.social.facebook} onChange={e => handleNestedSiteConfigChange('social', 'facebook', e.target.value)} />
-                            <FormInput label="Twitter/X URL" value={siteConfig.social.twitter} onChange={e => handleNestedSiteConfigChange('social', 'twitter', e.target.value)} />
-                            <FormInput label="Instagram URL" value={siteConfig.social.instagram} onChange={e => handleNestedSiteConfigChange('social', 'instagram', e.target.value)} />
-                            <FormInput label="LinkedIn URL" value={siteConfig.social.linkedin} onChange={e => handleNestedSiteConfigChange('social', 'linkedin', e.target.value)} />
-                        </fieldset>
-                        <AdminButton primary onClick={() => alert('Site Information Saved!')}>Save Site Info</AdminButton>
-                    </div>
-                </div>
-            )}
-            
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={`Edit ${modalType}`}>
-                {modalType === 'hero' && editingItem && (
-                     <div className="space-y-4">
-                        <FormInput label="Headline" name="headline" value={(editingItem as HeroSlide).headline} onChange={e => setEditingItem({...editingItem, headline: e.target.value})} />
-                        <FormInput label="Tagline" name="tagline" value={(editingItem as HeroSlide).tagline} onChange={e => setEditingItem({...editingItem, tagline: e.target.value})} />
-                        <FormInput label="Image URL" name="image" value={(editingItem as HeroSlide).image} onChange={e => setEditingItem({...editingItem, image: e.target.value})} />
-                        <div className="border-t pt-4 mt-4">
-                            <h4 className="font-semibold mb-2">Buttons</h4>
-                            {(editingItem as HeroSlide).buttons?.map((btn, index) => (
-                                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2 items-end border p-2 rounded-md mb-2">
-                                    <FormInput label="Text" name={`btn-text-${index}`} value={btn.text} onChange={(e) => handleButtonChange(index, 'text', e.target.value)} />
-                                    <FormInput label="Link" name={`btn-href-${index}`} value={btn.href} onChange={(e) => handleButtonChange(index, 'href', e.target.value)} />
-                                    <div className="flex items-center gap-4 pb-2">
-                                        <div className="flex items-center"><input type="checkbox" id={`btn-primary-${index}`} checked={btn.primary} onChange={(e) => handleButtonChange(index, 'primary', e.target.checked)} className="h-4 w-4" /><label htmlFor={`btn-primary-${index}`} className="ml-2 text-sm">Primary</label></div>
-                                        <AdminButton danger onClick={() => removeButton(index)}>X</AdminButton>
+                ) : (
+                    <ul className="space-y-3">
+                        {/* FIX: Use Object.keys to iterate for better type inference and avoid 'unknown' type on page object. */}
+                        {Object.keys(pageContent).map((key) => {
+                            const pageKey = key as keyof typeof MANAGEABLE_PAGES_CONTENT;
+                            const page = pageContent[pageKey];
+                            return (
+                                <li key={key} className="p-4 border rounded-md flex justify-between items-center">
+                                    <div>
+                                        <h5 className="font-semibold text-gray-800">{page.title}</h5>
+                                        <p className="text-sm text-gray-500">/{key === 'terms' ? 'terms' : key}</p>
                                     </div>
-                                </div>
-                            ))}
-                            <AdminButton secondary onClick={addButton}>Add Button</AdminButton>
-                        </div>
-                     </div>
+                                    <AdminButton onClick={() => setEditingPage(pageKey)}>Edit</AdminButton>
+                                </li>
+                            );
+                        })}
+                    </ul>
                 )}
-                 {modalType === 'faq' && editingItem && (
-                     <div className="space-y-4">
-                        <FormInput label="Question" name="question" value={(editingItem as FaqItemData).question} onChange={e => setEditingItem({...editingItem, question: e.target.value})} />
-                        <FormTextarea label="Answer (can use basic HTML)" name="answer" value={(editingItem as FaqItemData).answer?.toString() || ''} onChange={e => setEditingItem({...editingItem, answer: e.target.value})} />
-                     </div>
-                )}
-                {modalType === 'service' && editingItem && (
-                     <div className="space-y-4">
-                        <FormInput label="Title" name="title" value={(editingItem as Service).title} onChange={e => setEditingItem({...editingItem, title: e.target.value})} />
-                        <FormTextarea label="Description" name="description" value={(editingItem as Service).description} onChange={e => setEditingItem({...editingItem, description: e.target.value})} />
-                        <FormInput label="Link" name="link" value={(editingItem as Service).link} onChange={e => setEditingItem({...editingItem, link: e.target.value})} />
-                        <div>
-                           <label className="block text-sm font-medium text-gray-700">Icon</label>
-                           <select name="icon" value={(editingItem as Service).icon} onChange={e => setEditingItem({...editingItem, icon: e.target.value})} className="mt-1 block w-full p-2 border rounded-md">
-                             {Object.keys(ICON_MAP).map(iconKey => <option key={iconKey} value={iconKey}>{iconKey}</option>)}
-                           </select>
-                        </div>
-                     </div>
-                )}
-                <div className="pt-4 mt-4 border-t flex justify-end">
-                    <AdminButton secondary onClick={() => setIsModalOpen(false)} className="mr-2">Cancel</AdminButton>
-                    <AdminButton primary onClick={handleSave}>Save Changes</AdminButton>
-                </div>
-            </Modal>
+            </div>
         </div>
     );
 };
-
-// FIX: Added the main AdminDashboardPage component and export to fix the error in App.tsx.
 export const AdminDashboardPage: React.FC = () => {
     const [activeView, setActiveView] = useState('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -1679,19 +1750,35 @@ export const AdminDashboardPage: React.FC = () => {
         setIsSidebarOpen(false);
     };
 
-    const renderView = () => {
-        const PlaceholderView: React.FC<{title: string}> = ({title}) => <div className="bg-white p-6 rounded-lg shadow-sm">This is the {title} view. The component for this view has not been fully implemented.</div>;
+    const PlaceholderView: React.FC<{title: string}> = ({title}) => (
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
+            <div className="p-8 border-2 border-dashed rounded-md bg-gray-50 text-center text-gray-500">
+                This feature is a placeholder and has not been implemented.
+            </div>
+        </div>
+    );
 
+    const renderView = () => {
         switch (activeView) {
-            case 'overview': return <AdminDashboardOverviewView onViewAll={setActiveView} />;
-            case 'shipments': return <AdminDashboardShipmentsView />;
-            case 'clients': return <AdminDashboardClientsView />;
-            case 'support': return <AdminDashboardSupportView />;
-            case 'reports': return <AdminDashboardReportsView />;
-            case 'settings': return <AdminDashboardSettingsView />;
-            case 'content': return <AdminDashboardContentView />;
-            case 'finance': return <PlaceholderView title="Finance"/>;
-            default: return <AdminDashboardOverviewView onViewAll={setActiveView} />;
+            case 'overview':
+                return <AdminDashboardOverviewView onViewAll={setActiveView} />;
+            case 'shipments':
+                return <AdminDashboardShipmentsView />;
+            case 'clients':
+                return <AdminDashboardClientsView />;
+            case 'support':
+                return <AdminDashboardSupportView />;
+            case 'reports':
+                return <AdminDashboardReportsView />;
+            case 'settings':
+                return <AdminDashboardSettingsView />;
+            case 'content':
+                return <AdminDashboardContentView />;
+            case 'finance':
+                return <PlaceholderView title="Finance" />;
+            default:
+                return <AdminDashboardOverviewView onViewAll={setActiveView} />;
         }
     };
     

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { SITE_CONFIG, HEADER_MENU_ITEMS, HERO_SLIDES, ICON_MAP, IconPackage, IconShieldCheck, FOOTER_QUICK_LINKS, FOOTER_LEGAL_LINKS } from './constants';
+import { SITE_CONFIG, HEADER_MENU_ITEMS, HERO_SLIDES, ICON_MAP, IconPackage, IconShieldCheck, FOOTER_QUICK_LINKS, FOOTER_LEGAL_LINKS, IconFileText, IconUpload } from './constants';
 import type { Service, Feature, Testimonial, TrackingData, FaqItemData } from './types';
 import { MOCK_TRACKING_DATA } from './constants';
 import { IconFacebook, IconTwitterX, IconInstagram, IconLinkedIn, IconWhatsapp, IconWrapper } from './constants';
@@ -88,6 +88,102 @@ export const FormTextarea: React.FC<{ name: string, label: string, value: string
         {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
 );
+
+// --- NEW: REGISTRATION HELPER COMPONENTS ---
+export const ProgressStepper: React.FC<{ steps: string[]; currentStep: number }> = ({ steps, currentStep }) => (
+    <nav aria-label="Progress" className="my-8">
+        <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
+            {steps.map((step, stepIdx) => (
+                <li key={step} className="md:flex-1">
+                    {stepIdx <= currentStep ? (
+                        <div className="group flex flex-col border-l-4 border-[#00529b] py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span className="text-sm font-medium text-[#00529b]">{`Step ${stepIdx + 1}`}</span>
+                            <span className="text-sm font-medium">{step}</span>
+                        </div>
+                    ) : (
+                        <div className="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span className="text-sm font-medium text-gray-500">{`Step ${stepIdx + 1}`}</span>
+                            <span className="text-sm font-medium">{step}</span>
+                        </div>
+                    )}
+                </li>
+            ))}
+        </ol>
+    </nav>
+);
+
+export const PasswordStrengthMeter: React.FC<{ password?: string }> = ({ password = '' }) => {
+    const checkPasswordStrength = (pass: string) => {
+        let score = 0;
+        if (!pass) return 0;
+        if (pass.length > 7) score++;
+        if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) score++;
+        if (/[0-9]/.test(pass)) score++;
+        if (/[^a-zA-Z0-9]/.test(pass)) score++;
+        return score;
+    };
+
+    const strength = checkPasswordStrength(password);
+    const strengthLabels = ['Weak', 'Weak', 'Okay', 'Good', 'Strong'];
+    const strengthColors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-lime-500', 'bg-green-500'];
+
+    return (
+        <div>
+            <div className="flex gap-1 mt-1">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className={`h-1 flex-1 rounded-full ${strength > i ? strengthColors[strength] : 'bg-gray-200'}`}></div>
+                ))}
+            </div>
+            {password.length > 0 && <p className={`text-xs mt-1 font-medium ${strengthColors[strength].replace('bg-', 'text-')}`}>{strengthLabels[strength]}</p>}
+        </div>
+    );
+};
+
+export const EnhancedFileUpload: React.FC<{ label: string; id: string; required?: boolean; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; file: File | null; onRemove: () => void; description: string }> = ({ label, id, required, onChange, file, onRemove, description }) => {
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (file && file.type.startsWith('image/')) {
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+            return () => URL.revokeObjectURL(url);
+        }
+        setPreviewUrl(null);
+    }, [file]);
+    
+    return (
+    <div>
+        <label className="block text-sm font-medium text-gray-700">{label}</label>
+        {file ? (
+            <div className="mt-1 p-2 border border-gray-300 rounded-md flex items-center justify-between bg-gray-50">
+                <div className="flex items-center gap-3 overflow-hidden">
+                    {previewUrl ? (
+                         <img src={previewUrl} alt="Preview" className="h-12 w-12 object-cover rounded-md flex-shrink-0" />
+                    ) : (
+                        <IconWrapper className="h-10 w-10 text-gray-400 flex-shrink-0"><IconFileText/></IconWrapper>
+                    )}
+                    <span className="text-sm text-gray-800 truncate">{file.name}</span>
+                </div>
+                <button type="button" onClick={onRemove} className="text-sm text-red-600 hover:text-red-800 font-medium flex-shrink-0 ml-2">Remove</button>
+            </div>
+        ) : (
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div className="space-y-1 text-center">
+                    <IconWrapper className="mx-auto h-12 w-12 text-gray-400"><IconUpload/></IconWrapper>
+                    <div className="flex text-sm text-gray-600">
+                        <label htmlFor={id} className="relative cursor-pointer bg-white rounded-md font-medium text-[#00529b] hover:text-[#b58e31] focus-within:outline-none">
+                            <span>Upload a file</span>
+                            <input id={id} name={id} type="file" className="sr-only" required={required} onChange={onChange} accept=".pdf,.png,.jpg,.jpeg" />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">{description}</p>
+                </div>
+            </div>
+        )}
+    </div>
+    );
+};
 
 
 // --- HEADER ---
